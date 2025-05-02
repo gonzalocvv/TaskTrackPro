@@ -8,6 +8,11 @@ public class Usuario
         validarCamposString(nombre, "El nombre");
         validarCamposString(apellido, "El apellido");
         validarCamposString(email, "El email");
+        ValidarFormatoEmail(email);
+    }
+
+    private static void ValidarFormatoEmail(string email)
+    {
         if (!email.Contains("@") || !email.Contains("."))
         {
             throw new ArgumentException("El email debe tener un formato valido");
