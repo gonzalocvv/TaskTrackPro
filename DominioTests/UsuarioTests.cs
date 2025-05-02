@@ -36,8 +36,15 @@ public class UsuarioTests
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioApellidoVacio()
+    public void UsuarioApellidoVacioExcepcion()
     {
         var usuario = new Usuario("Gonzalo","", "gonzalo@ejemplo.com", "07-09-2004", "Gonzalo9@");
     }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioEmailVacioExcepcion()
+    {
+        var usuario = new Usuario("Gonzalo","Cabrera", "", "07-09-2004", "Gonzalo9@");
+    }
+    
 }
