@@ -7,6 +7,7 @@ public class Usuario
     {
         validarCamposString(nombre, "El nombre");
         validarCamposString(apellido, "El apellido");
+        validarCamposString(email, "El email");
     }
 
     private static void validarCamposString(string dato, string nombreCampo)
