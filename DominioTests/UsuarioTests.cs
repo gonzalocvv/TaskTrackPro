@@ -46,5 +46,11 @@ public class UsuarioTests
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "", "07-09-2004", "Gonzalo9@");
     }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioEmailFormatoErroneoExcepcion()
+    {
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera", "07-09-2004", "Gonzalo9@");
+    }
     
 }
