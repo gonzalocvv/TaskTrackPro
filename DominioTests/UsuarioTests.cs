@@ -32,6 +32,6 @@ public class UsuarioTests
     [ExpectedException(typeof(ArgumentException))]
     public void CrearUsuario_NombreVacio_LanzaExcepcion()
     {
-        var usuario = new Usuario("", "gonzalo@ejemplo.com");
+        var usuario = new Usuario("","Cabrera", "gonzalo@ejemplo.com", "07-09-2004", "Gonzalo9@");
     }
 }
