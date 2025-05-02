@@ -6,7 +6,7 @@ public class Usuario
     public Usuario(string nombre, string apellido, string email, string fechaNacimiento, string contraseña)
     {
         validarCamposString(nombre, "El nombre");
-        validarCamposString(nombre, "El apellido");
+        
     }
 
     private static void validarCamposString(string dato, string nombreCampo)
