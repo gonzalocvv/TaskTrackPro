@@ -13,6 +13,11 @@ public class Usuario
         ValidarFormatoEmail(email);
         ValidarFechaPosteriorActualidad(fechaNacimiento);
         ValidarLargoContraseña(contraseña);
+        ValidarContraseñaContieneMayuscula(contraseña);
+    }
+
+    private static void ValidarContraseñaContieneMayuscula(string contraseña)
+    {
         bool tieneMayuscula = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Any(letra => contraseña.Contains(letra));
         if (!tieneMayuscula)
         {
