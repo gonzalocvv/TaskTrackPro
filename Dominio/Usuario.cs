@@ -9,6 +9,13 @@ public class Usuario
         validarCamposString(apellido, "El apellido");
         validarCamposString(email, "El email");
         ValidarFormatoEmail(email);
+        DateTime fechaActual = DateTime.Now;
+        DateTime fechaNacimientoParseada = DateTime.Parse(fechaNacimiento);
+
+        if (fechaNacimientoParseada > fechaActual)
+        {
+            throw new ArgumentException("Para validar la fecha tiene que ser anterior a la actualidad");
+        }
     }
 
     private static void ValidarFormatoEmail(string email)
