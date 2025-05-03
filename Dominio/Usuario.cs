@@ -15,8 +15,12 @@ public class Usuario
         ValidarLargoContraseña(contraseña);
         ValidarContraseñaContieneMayuscula(contraseña);
         validarContraseñaContieneNumero(contraseña);
-        
-        bool tieneCaracter = "!@#$%&*()_+-=?/{}|:;,.<>~^".Any(digito => contraseña.Contains(digito));
+        validarContraseñaConCaracterEspecial(contraseña);
+    }
+
+    private static void validarContraseñaConCaracterEspecial(string contraseña)
+    {
+        bool tieneCaracter = "!@#$%&*()_+-=?/{}|:;,.<>~^".Any(caracter => contraseña.Contains(caracter));
         if (!tieneCaracter)
         {
             throw new ArgumentException("La contraseña debe contener al menos un caracter especial");
