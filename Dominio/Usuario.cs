@@ -12,7 +12,10 @@ public class Usuario
         validarCamposString(contraseña, "La contraseña");
         ValidarFormatoEmail(email);
         validarFechaPosteriorActualidad(fechaNacimiento);
-        
+        if (contraseña.Length < 8)
+        {
+            throw new ArgumentException("La contraseña debe tener al menos 8 caracteres");
+        }
     }
 
     private static void validarFechaPosteriorActualidad(string fechaNacimiento)
