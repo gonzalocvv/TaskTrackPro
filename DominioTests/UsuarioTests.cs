@@ -76,6 +76,11 @@ public class UsuarioTests
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2004", "Gonzalo@");
     }
-    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioContraseñaSinCaracterEspecialTest()
+    {
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2004", "Gonzalo9");
+    }
     
 }

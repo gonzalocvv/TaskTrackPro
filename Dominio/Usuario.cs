@@ -14,6 +14,13 @@ public class Usuario
         ValidarFechaPosteriorActualidad(fechaNacimiento);
         ValidarLargoContraseña(contraseña);
         ValidarContraseñaContieneMayuscula(contraseña);
+        validarContraseñaContieneNumero(contraseña);
+        
+        
+    }
+
+    private static void validarContraseñaContieneNumero(string contraseña)
+    {
         bool tieneNumero = "0123456789".Any(digito => contraseña.Contains(digito));
         if (!tieneNumero)
         {
