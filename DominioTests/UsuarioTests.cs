@@ -11,21 +11,21 @@ public class UsuarioTests
      * Crear usuario con email vacío -
      * Crear usuario con formato de email inválido -
      * Crear usuario con fecha de nacimiento futura -
-     * Crear usuario con fecha de nacimiento válida -
-     * Crear usuario con contraseña válida (cumple todos los requisitos) -
+     Se hizo test para ValidarCampoString, que no sean vacios, se usa para todos los campos
+     
      * Crear usuario con contraseña corta (menos de 8 caracteres) -
      * Crear usuario con contraseña sin mayúsculas -
      * Crear usuario con contraseña sin minúsculas -
      * Crear usuario con contraseña sin números -
      * Crear usuario con contraseña sin caracteres especiales -
-     * Crear usuario con contraseña nula o vacía -
-     * Crear usuario sin contraseña (cuando lo crea un administrador) -
-     * Administrador reinicia contraseña correctamente -
+     * Crear usuario con contraseña válida (cumple todos los requisitos) -
+     * 
      * Usuario cambia su contraseña correctamente (estando logueado) -
      * Usuario intenta cambiar contraseña sin estar logueado -
      * Contraseña debe persistirse cifrada, no en texto plano -
      * Crear usuario con todos los campos válidos -
-     
+     * Crear usuario sin contraseña (cuando lo crea un administrador) -
+     * Administrador reinicia contraseña correctamente -
      */
     
     [TestMethod]
@@ -57,6 +57,11 @@ public class UsuarioTests
     public void UsuarioFechaNacFutura()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2025", "Gonzalo9@");
+    }[TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioContraseñaCorta()
+    {
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2004", "Gon9@");
     }
     
 }

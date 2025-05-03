@@ -8,7 +8,15 @@ public class Usuario
         validarCamposString(nombre, "El nombre");
         validarCamposString(apellido, "El apellido");
         validarCamposString(email, "El email");
+        validarCamposString(fechaNacimiento, "La fecha de nacimiento");
+        validarCamposString(contraseña, "La contraseña");
         ValidarFormatoEmail(email);
+        validarFechaPosteriorActualidad(fechaNacimiento);
+        
+    }
+
+    private static void validarFechaPosteriorActualidad(string fechaNacimiento)
+    {
         DateTime fechaActual = DateTime.Now;
         DateTime fechaNacimientoParseada = DateTime.Parse(fechaNacimiento);
 
@@ -29,6 +37,6 @@ public class Usuario
     private static void validarCamposString(string dato, string nombreCampo)
     {
         if (string.IsNullOrWhiteSpace(dato))
-            throw new ArgumentException($"{nombreCampo} no puede estar vacío.");
+            throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
     }
 }
