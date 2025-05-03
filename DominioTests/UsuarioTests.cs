@@ -52,5 +52,11 @@ public class UsuarioTests
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera", "07-09-2004", "Gonzalo9@");
     }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioFechaNacFutura()
+    {
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2025", "Gonzalo9@");
+    }
     
 }
