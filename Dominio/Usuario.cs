@@ -5,20 +5,25 @@ public class Usuario
     
     public Usuario(string nombre, string apellido, string email, string fechaNacimiento, string contraseña)
     {
-        validarCamposString(nombre, "El nombre");
-        validarCamposString(apellido, "El apellido");
-        validarCamposString(email, "El email");
-        validarCamposString(fechaNacimiento, "La fecha de nacimiento");
-        validarCamposString(contraseña, "La contraseña");
+        ValidarCamposString(nombre, "El nombre");
+        ValidarCamposString(apellido, "El apellido");
+        ValidarCamposString(email, "El email");
+        ValidarCamposString(fechaNacimiento, "La fecha de nacimiento");
+        ValidarCamposString(contraseña, "La contraseña");
         ValidarFormatoEmail(email);
-        validarFechaPosteriorActualidad(fechaNacimiento);
+        ValidarFechaPosteriorActualidad(fechaNacimiento);
+        ValidarLargoContraseña(contraseña);
+    }
+
+    private static void ValidarLargoContraseña(string contraseña)
+    {
         if (contraseña.Length < 8)
         {
             throw new ArgumentException("La contraseña debe tener al menos 8 caracteres");
         }
     }
 
-    private static void validarFechaPosteriorActualidad(string fechaNacimiento)
+    private static void ValidarFechaPosteriorActualidad(string fechaNacimiento)
     {
         DateTime fechaActual = DateTime.Now;
         DateTime fechaNacimientoParseada = DateTime.Parse(fechaNacimiento);
@@ -37,7 +42,7 @@ public class Usuario
         }
     }
 
-    private static void validarCamposString(string dato, string nombreCampo)
+    private static void ValidarCamposString(string dato, string nombreCampo)
     {
         if (string.IsNullOrWhiteSpace(dato))
             throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
