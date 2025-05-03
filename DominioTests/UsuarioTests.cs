@@ -30,38 +30,46 @@ public class UsuarioTests
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioNombreVacioExcepcion()
+    public void UsuarioNombreVacioExcepcionTest()
     {
         var usuario = new Usuario("","Cabrera", "gonzalo@ejemplo.com", "07-09-2004", "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioApellidoVacioExcepcion()
+    public void UsuarioApellidoVacioExcepcionTest()
     {
         var usuario = new Usuario("Gonzalo","", "gonzalo@ejemplo.com", "07-09-2004", "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioEmailVacioExcepcion()
+    public void UsuarioEmailVacioExcepcionTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "", "07-09-2004", "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioEmailFormatoErroneoExcepcion()
+    public void UsuarioEmailFormatoErroneoExcepcionTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera", "07-09-2004", "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioFechaNacFutura()
+    public void UsuarioFechaNacFuturaTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2025", "Gonzalo9@");
-    }[TestMethod]
+    }
+    [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaCorta()
+    public void UsuarioContraseñaCortaTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2004", "Gon9@");
     }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioContraseñaSinMayusculaTest()
+    {
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2004", "gonzalo9@");
+    }
+    
     
 }

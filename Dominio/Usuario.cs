@@ -13,6 +13,7 @@ public class Usuario
         ValidarFormatoEmail(email);
         ValidarFechaPosteriorActualidad(fechaNacimiento);
         ValidarLargoContraseña(contraseña);
+        
     }
 
     private static void ValidarLargoContraseña(string contraseña)
