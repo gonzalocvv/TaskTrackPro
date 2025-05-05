@@ -20,4 +20,10 @@ public class Tarea
         if (dato == null)
             throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
     }
+
+    private static void ValidarFechaDeInicioValida(string fechaDeInicio)
+    {
+        if (DateTime.Parse(fechaDeInicio)< DateTime.Today)
+            throw new ArgumentException("La fecha de inicio no puede ser anterior a hoy.");
+    }
 }

@@ -26,4 +26,13 @@ public class TareaTests
     {
         var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", "09-08-2025", null);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void TareaFechaDeInicioValidaExceptionTest()
+    {
+        string fechaPasada = DateTime.Today.AddDays(-1).ToString("dd-MM-yyyy");
+
+        var tarea = new Tarea("Cotizar", "otizar reforma del frente del edificio", fechaPasada, 5);
+    }
 }
