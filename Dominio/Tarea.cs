@@ -2,11 +2,9 @@ namespace Dominio;
 
 public class Tarea
 {
-    public Tarea(string titulo, string descripcion, string fechaDeInicio, int? duracion)
+    public Tarea(string titulo, string descripcion, string fechaDeInicio, int duracion)
     {
         ValidarCamposString(titulo, "El titulo");
-        ValidarCamposString(descripcion, "La descripcion");
-        ValidarCamposInt(duracion, "La duracion");
         ValidarFechaDeInicioValida(fechaDeInicio);
     }
     
@@ -16,12 +14,6 @@ public class Tarea
             throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
     }
     
-    private static void ValidarCamposInt(int? dato, string nombreCampo)
-    {
-        if (dato == null)
-            throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
-    }
-
     private static void ValidarFechaDeInicioValida(string fechaDeInicio)
     {
         if (DateTime.Parse(fechaDeInicio)< DateTime.Today)

@@ -19,14 +19,6 @@ public class TareaTests
         var tarea = new Tarea("Cotizar", "", "09-08-2025", 10);
     }
     
-    
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void TareaDuracionVacioExceptionTest()
-    {
-        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", "09-08-2025", null);
-    }
-
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaFechaDeInicioValidaExceptionTest()
