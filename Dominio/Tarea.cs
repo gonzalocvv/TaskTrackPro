@@ -7,6 +7,7 @@ public class Tarea
         ValidarCamposString(titulo, "El titulo");
         ValidarCamposString(descripcion, "La descripcion");
         ValidarCamposInt(duracion, "La duracion");
+        ValidarFechaDeInicioValida(fechaDeInicio);
     }
     
     private static void ValidarCamposString(string dato, string nombreCampo)
@@ -26,4 +27,5 @@ public class Tarea
         if (DateTime.Parse(fechaDeInicio)< DateTime.Today)
             throw new ArgumentException("La fecha de inicio no puede ser anterior a hoy.");
     }
+    
 }
