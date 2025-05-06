@@ -88,6 +88,11 @@ public class Usuario
         ValidarContraseñaContieneMayuscula(contraseña);
         ValidarContraseñaContieneNumero(contraseña);
         ValidarContraseñaConCaracterEspecial(contraseña);
+        bool tieneMinuscula = "abcdefghijklmnopqrstuvwxyz".Any(letra => contraseña.Contains(letra));
+        if (!tieneMinuscula)
+        {
+            throw new ArgumentException("La contraseña debe contener al menos una minúscula");
+        }
     }
 
     private static void ValidarContraseñaConCaracterEspecial(string contraseña)
