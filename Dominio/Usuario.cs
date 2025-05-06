@@ -16,13 +16,52 @@ public class Usuario
     public string Nombre
     {
         get => _nombre;
-        set => _nombre = value;
+        set
+        {
+            ValidarCamposString(value, "El nombre");
+            _nombre = value;
+        }
     }
 
-    public string Apellido { get => _apellido; set => _apellido = value; }
-    public string Email { get => _email; set => _email = value; }
-    public DateTime FechaNacimiento { get => _fechaNacimiento; set => _fechaNacimiento = value; }
-    public string Contraseña { get => _contraseña; set => _contraseña = value; }
+    public string Apellido { 
+        get => _apellido;
+        set
+        {
+            ValidarCamposString(value, "El apellido");
+            _apellido = value;
+        }
+    }
+
+    public string Email
+    {
+        get => _email;
+        set
+        {
+            ValidarFormatoEmail(value);
+            ValidarCamposString(value, "El email");
+            _email = value;
+        }
+    }
+
+    public DateTime FechaNacimiento
+    {
+        get => _fechaNacimiento;
+        set
+        {
+            ValidarFechaPosteriorActualidad(value);
+            _fechaNacimiento = value;
+        }
+    }
+
+    public string Contraseña
+    {
+        get => _contraseña;
+        set
+        {
+            ValidarContraeña(value);
+            _contraseña = value;
+        }
+    }
     
     public Usuario(string nombre, string apellido, string email, DateTime fechaNacimiento, string contraseña)
     {
@@ -33,6 +72,13 @@ public class Usuario
         ValidarFormatoEmail(email);
         ValidarFechaPosteriorActualidad(fechaNacimiento);
         ValidarContraeña(contraseña);
+        
+        _nombre = nombre;
+        _apellido = apellido;
+        _email = email;
+        _fechaNacimiento = fechaNacimiento;
+        _contraseña = contraseña;
+
     }
 
     private static void ValidarContraeña(string contraseña)
