@@ -74,6 +74,12 @@ public class UsuarioTests
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioContraseñaSinMinusculaTest()
+    {
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "GONZALO9@");
+    }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
     public void UsuarioContraseñaSinNumeroTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gonzalo@");
