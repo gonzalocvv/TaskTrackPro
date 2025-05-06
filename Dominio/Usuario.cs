@@ -48,7 +48,7 @@ public class Usuario
         get => _fechaNacimiento;
         set
         {
-            ValidarFechaPosteriorActualidad(value);
+            ValidarFecha(value);
             _fechaNacimiento = value;
         }
     }
@@ -70,7 +70,7 @@ public class Usuario
         ValidarCamposString(email, "El email");
         ValidarCamposString(fechaNacimiento.ToString(), "La fecha de nacimiento");
         ValidarFormatoEmail(email);
-        ValidarFechaPosteriorActualidad(fechaNacimiento);
+        ValidarFecha(fechaNacimiento);
         ValidarContraeña(contraseña);
         
         _nombre = nombre;
@@ -88,6 +88,11 @@ public class Usuario
         ValidarContraseñaContieneMayuscula(contraseña);
         ValidarContraseñaContieneNumero(contraseña);
         ValidarContraseñaConCaracterEspecial(contraseña);
+        ValidarContraseñaConMinuscula(contraseña);
+    }
+
+    private static void ValidarContraseñaConMinuscula(string contraseña)
+    {
         bool tieneMinuscula = "abcdefghijklmnopqrstuvwxyz".Any(letra => contraseña.Contains(letra));
         if (!tieneMinuscula)
         {
@@ -130,14 +135,22 @@ public class Usuario
         }
     }
 
-    private static void ValidarFechaPosteriorActualidad(DateTime fechaNacimiento)
+    private static void ValidarFecha(DateTime fechaNacimiento)
     {
-        DateTime fechaActual = DateTime.Now;
+        ValidarFechaNoVacia(fechaNacimiento);
+        ValidarFechaAnterioraActual(fechaNacimiento);
+    }
 
-        if (fechaNacimiento > fechaActual)
-        {
-            throw new ArgumentException("Para validar la fecha tiene que ser anterior a la actualidad");
-        }
+    private static void ValidarFechaAnterioraActual(DateTime fechaNacimiento)
+    {
+        if (fechaNacimiento > DateTime.Now)
+            throw new ArgumentException("La fecha de nacimiento no puede ser futura.");
+    }
+
+    private static void ValidarFechaNoVacia(DateTime fechaNacimiento)
+    {
+        if (fechaNacimiento == DateTime.MinValue)
+            throw new ArgumentException("La fecha de nacimiento no puede estar vacía.");
     }
 
     private static void ValidarFormatoEmail(string email)

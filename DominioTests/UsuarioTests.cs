@@ -62,6 +62,18 @@ public class UsuarioTests
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioFechaNacimientoMinValue_LanzaExcepcion()
+    {
+        var usuario = new Usuario(
+            "Gonzalo",
+            "Cabrera",
+            "gonzalo@ejemplo.com",
+            DateTime.MinValue,
+            "Gonzalo9@"
+        );
+    }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
     public void UsuarioContraseñaCortaTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gon9@");
