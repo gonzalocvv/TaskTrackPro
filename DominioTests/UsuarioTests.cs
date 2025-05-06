@@ -27,60 +27,82 @@ public class UsuarioTests
      * Crear usuario sin contraseña (cuando lo crea un administrador) -
      * Administrador reinicia contraseña correctamente -
      */
-    
+    DateTime fechaNacCorrecta = new DateTime(2004, 9, 7);
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioNombreVacioExcepcionTest()
     {
-        var usuario = new Usuario("","Cabrera", "gonzalo@ejemplo.com", "07-09-2004", "Gonzalo9@");
+        
+        var usuario = new Usuario("","Cabrera", "gonzalo@ejemplo.com", fechaNacCorrecta, "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioApellidoVacioExcepcionTest()
     {
-        var usuario = new Usuario("Gonzalo","", "gonzalo@ejemplo.com", "07-09-2004", "Gonzalo9@");
+        var usuario = new Usuario("Gonzalo","", "gonzalo@ejemplo.com", fechaNacCorrecta, "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioEmailVacioExcepcionTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "", "07-09-2004", "Gonzalo9@");
+        var usuario = new Usuario("Gonzalo","Cabrera", "", fechaNacCorrecta, "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioEmailFormatoErroneoExcepcionTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera", "07-09-2004", "Gonzalo9@");
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera", fechaNacCorrecta, "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioFechaNacFuturaTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2025", "Gonzalo9@");
+        DateTime fechaFutura = new DateTime(2025, 9, 7);
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaFutura, "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioContraseñaCortaTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2004", "Gon9@");
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gon9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioContraseñaSinMayusculaTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2004", "gonzalo9@");
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioContraseñaSinNumeroTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2004", "Gonzalo@");
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gonzalo@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioContraseñaSinCaracterEspecialTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", "07-09-2004", "Gonzalo9");
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gonzalo9");
     }
+    [TestMethod]
+    public void UsuarioCreacionValidaTest()
+    {
+        var nombre = "Gonzalo";
+        var apellido = "Cabrera";
+        var email = "gonzalo@ejemplo.com";
+        var fechaNacimiento = new DateTime(2004, 9, 7);
+        var contraseña = "Gonzalo9@";
+
+        
+        var usuario = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
+
+        
+        Assert.IsNotNull(usuario);
+        Assert.AreEqual(nombre, usuario.Nombre);
+        Assert.AreEqual(apellido, usuario.Apellido);
+        Assert.AreEqual(email, usuario.Email);
+        Assert.AreEqual(fechaNacimiento, usuario.FechaNacimiento);
+    }
+
     
 }

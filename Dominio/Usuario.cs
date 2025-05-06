@@ -1,24 +1,50 @@
-﻿namespace Dominio;
+﻿
+
+namespace Dominio;
 
 public class Usuario
 {
+    private const int MinimoContraseña = 8;
+    private const string ArrobaParaEmail = "@";
+    private const string PuntoParaEmail = ".";
+    private string _nombre;
+    private string _apellido;
+    private string _email;
+    private DateTime _fechaNacimiento;
+    private string _contraseña;
+
+    public string Nombre
+    {
+        get => _nombre;
+        set => _nombre = value;
+    }
+
+    public string Apellido { get => _apellido; set => _apellido = value; }
+    public string Email { get => _email; set => _email = value; }
+    public DateTime FechaNacimiento { get => _fechaNacimiento; set => _fechaNacimiento = value; }
+    public string Contraseña { get => _contraseña; set => _contraseña = value; }
     
-    public Usuario(string nombre, string apellido, string email, string fechaNacimiento, string contraseña)
+    public Usuario(string nombre, string apellido, string email, DateTime fechaNacimiento, string contraseña)
     {
         ValidarCamposString(nombre, "El nombre");
         ValidarCamposString(apellido, "El apellido");
         ValidarCamposString(email, "El email");
-        ValidarCamposString(fechaNacimiento, "La fecha de nacimiento");
-        ValidarCamposString(contraseña, "La contraseña");
+        ValidarCamposString(fechaNacimiento.ToString(), "La fecha de nacimiento");
         ValidarFormatoEmail(email);
         ValidarFechaPosteriorActualidad(fechaNacimiento);
-        ValidarLargoContraseña(contraseña);
-        ValidarContraseñaContieneMayuscula(contraseña);
-        validarContraseñaContieneNumero(contraseña);
-        validarContraseñaConCaracterEspecial(contraseña);
+        ValidarContraeña(contraseña);
     }
 
-    private static void validarContraseñaConCaracterEspecial(string contraseña)
+    private static void ValidarContraeña(string contraseña)
+    {
+        ValidarCamposString(contraseña, "La contraseña");
+        ValidarLargoContraseña(contraseña);
+        ValidarContraseñaContieneMayuscula(contraseña);
+        ValidarContraseñaContieneNumero(contraseña);
+        ValidarContraseñaConCaracterEspecial(contraseña);
+    }
+
+    private static void ValidarContraseñaConCaracterEspecial(string contraseña)
     {
         bool tieneCaracter = "!@#$%&*()_+-=?/{}|:;,.<>~^".Any(caracter => contraseña.Contains(caracter));
         if (!tieneCaracter)
@@ -27,7 +53,7 @@ public class Usuario
         }
     }
 
-    private static void validarContraseñaContieneNumero(string contraseña)
+    private static void ValidarContraseñaContieneNumero(string contraseña)
     {
         bool tieneNumero = "0123456789".Any(digito => contraseña.Contains(digito));
         if (!tieneNumero)
@@ -47,18 +73,17 @@ public class Usuario
 
     private static void ValidarLargoContraseña(string contraseña)
     {
-        if (contraseña.Length < 8)
+        if (contraseña.Length < MinimoContraseña)
         {
             throw new ArgumentException("La contraseña debe tener al menos 8 caracteres");
         }
     }
 
-    private static void ValidarFechaPosteriorActualidad(string fechaNacimiento)
+    private static void ValidarFechaPosteriorActualidad(DateTime fechaNacimiento)
     {
         DateTime fechaActual = DateTime.Now;
-        DateTime fechaNacimientoParseada = DateTime.Parse(fechaNacimiento);
 
-        if (fechaNacimientoParseada > fechaActual)
+        if (fechaNacimiento > fechaActual)
         {
             throw new ArgumentException("Para validar la fecha tiene que ser anterior a la actualidad");
         }
@@ -66,7 +91,7 @@ public class Usuario
 
     private static void ValidarFormatoEmail(string email)
     {
-        if (!email.Contains("@") || !email.Contains("."))
+        if (!email.Contains(ArrobaParaEmail) || !email.Contains(PuntoParaEmail))
         {
             throw new ArgumentException("El email debe tener un formato valido");
         }
