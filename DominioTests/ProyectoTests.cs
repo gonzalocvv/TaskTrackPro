@@ -34,8 +34,6 @@ public class ProyectoTests
     [ExpectedException(typeof(ArgumentException))]
     public void ProyectoFechaInicioAnteriorExcepcionTest()
     {
-        DateTime fechaInicioAnterior = new DateTime(2020, 09, 08);
-        var proyecto = new Proyecto("Limpieza", "En este proyecto se tiene como objetivo limpiar el salon",fechaInicioAnterior);
-
+        var proyecto = new Proyecto("Limpieza", "En este proyecto se tiene como objetivo limpiar el salon",DateTime.MinValue);
     }
 }
