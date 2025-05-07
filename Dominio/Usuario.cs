@@ -1,6 +1,4 @@
-﻿
-
-namespace Dominio;
+﻿namespace Dominio;
 
 public class Usuario
 {
