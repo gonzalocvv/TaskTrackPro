@@ -3,6 +3,8 @@
 /workspace.xml
 # Rider ignored files
 /modules.xml
+.idea/
+
 /.idea.TaskTrackPro.iml
 /projectSettingsUpdater.xml
 /contentModel.xml
