@@ -8,6 +8,7 @@ public class Proyecto
         ValidarCamposString(descripcion, "La descripcion");
         ValidarCamposString(fechaInicio.ToString(), "La fecha de inicio");
         ValidarLargoDescripcion(descripcion);
+        ValidarFechaDeInicioValida(fechaInicio);
     }
 
     private static void ValidarLargoDescripcion(string descripcion)
@@ -21,5 +22,13 @@ public class Proyecto
     {
         if (string.IsNullOrWhiteSpace(dato))
             throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
+    }
+
+    private static void ValidarFechaDeInicioValida(DateTime fechaInicio)
+    {
+        if (fechaInicio<DateTime.Now)
+        {
+            throw new ArgumentException("La fecha de inicio tiene que ser mayor o igual a la actual");
+        }
     }
 }
