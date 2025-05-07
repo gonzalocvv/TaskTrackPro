@@ -5,6 +5,7 @@ public class Tarea
     public Tarea(string titulo, string descripcion, string fechaDeInicio, int duracion)
     {
         ValidarCamposString(titulo, "El titulo");
+        ValidarCamposString(descripcion, "La descripcion");
         ValidarFechaDeInicioValida(fechaDeInicio);
     }
     
