@@ -2,11 +2,11 @@ namespace Dominio;
 
 public class Proyecto
 {
-    public Proyecto(string nombre, string descripcion, string fechaInicio)
+    public Proyecto(string nombre, string descripcion, DateTime fechaInicio)
     {
         ValidarCamposString(nombre, "El nombre");
         ValidarCamposString(descripcion, "La descripcion");
-        ValidarCamposString(fechaInicio, "La fecha de inicio");
+        ValidarCamposString(fechaInicio.ToString(), "La fecha de inicio");
         ValidarLargoDescripcion(descripcion);
     }
 
