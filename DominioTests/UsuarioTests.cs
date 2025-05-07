@@ -55,14 +55,14 @@ public class UsuarioTests
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioFechaNacFuturaTest()
+    public void UsuarioFechaNacFuturaExcepcionTest()
     {
         DateTime fechaFutura = new DateTime(2025, 9, 7);
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaFutura, "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioFechaNacimientoMinValue_LanzaExcepcion()
+    public void UsuarioFechaNacimientoMinValue_LanzaExcepcionTest()
     {
         var usuario = new Usuario(
             "Gonzalo",
@@ -74,31 +74,31 @@ public class UsuarioTests
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaCortaTest()
+    public void UsuarioContraseñaCortaExcepcionTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gon9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaSinMayusculaTest()
+    public void UsuarioContraseñaSinMayusculaExcepcionTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaSinMinusculaTest()
+    public void UsuarioContraseñaSinMinusculaExcepcionTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "GONZALO9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaSinNumeroTest()
+    public void UsuarioContraseñaSinNumeroExcepcionTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gonzalo@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaSinCaracterEspecialTest()
+    public void UsuarioContraseñaSinCaracterEspecialExcepcionTest()
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gonzalo9");
     }
