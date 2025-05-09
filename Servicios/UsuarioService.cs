@@ -6,6 +6,7 @@ public class UsuarioService
 {
     public Usuario CrearUsuario(string nombre, string apellido, string email, DateTime fechaNacimiento, string contraseña)
     {
-        throw new NotImplementedException();
+        Usuario u = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
+        return u;
     }
 }
