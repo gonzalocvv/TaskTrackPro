@@ -6,7 +6,7 @@ namespace ServicesTests;
 public class UsuarioServicesTest
 {
     [TestMethod]
-    public void CrearUsuarioTests()
+    public void CrearUsuarioTest()
     {
         string nombre = "Nicolas";
         string apellido = "Ruy Lopez";
@@ -16,7 +16,5 @@ public class UsuarioServicesTest
         UsuarioService service = new UsuarioService();
         var result = service.CrearUsuario(nombre, apellido, email, fechaNacimiento, contraseña);
         Assert.AreEqual(result.Nombre, nombre);
-
-
     }
 }
