@@ -1,7 +1,7 @@
 namespace ServicesTests;
 
 [TestClass]
-public class UnitTest1
+public class UsuarioServicesTest
 {
     [TestMethod]
     public void TestMethod1()
