@@ -7,9 +7,9 @@ public class UsuarioService
     private List<Usuario> _list = new List<Usuario>();
     public Usuario CrearUsuario(string nombre, string apellido, string email, DateTime fechaNacimiento, string contraseña)
     {
-        Usuario newUser = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
-        _list.Add(newUser);
-        return newUser;
+        Usuario nuevoUsuario = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
+        _list.Add(nuevoUsuario);
+        return nuevoUsuario;
     }
 
 
