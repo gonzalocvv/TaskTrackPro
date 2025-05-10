@@ -7,13 +7,19 @@ public class UsuarioService
     private List<Usuario> _list = new List<Usuario>();
     public Usuario CrearUsuario(string nombre, string apellido, string email, DateTime fechaNacimiento, string contraseña)
     {
-        Usuario u = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
-        return u;
+        Usuario newUser = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
+        _list.Add(newUser);
+        return newUser;
     }
 
 
     public Usuario GetUsuarioPorNombre(string nombre)
     {
-        throw new NotImplementedException();
+       var usuarioParaDevolver =_list.Find(usuario => usuario.Nombre == nombre);
+       if (usuarioParaDevolver == null)
+       {
+           throw new ArgumentNullException("El usuario no existe");
+       }
+       return usuarioParaDevolver;
     }
-}
+}  

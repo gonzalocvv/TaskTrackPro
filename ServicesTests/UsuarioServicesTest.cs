@@ -30,6 +30,19 @@ public class UsuarioServicesTest
         UsuarioService service = new UsuarioService();
         service.CrearUsuario(nombre, apellido, email, fechaNacimiento, contraseña);
         Usuario result = service.GetUsuarioPorNombre(nombre);
+        Assert.AreEqual(result.Nombre, nombre);
+
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetUsuarioPorNombreQueNoExisteExcepctionTest()
+    {
+        string nombre = "Nicolas";
+        
+        UsuarioService service = new UsuarioService();
+        
+        Usuario result = service.GetUsuarioPorNombre(nombre);
 
     }
 }
