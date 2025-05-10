@@ -1,0 +1,60 @@
+﻿@page "/registrarUsuario"
+@using Dtos;
+@using Microsoft.AspNetCore.Components
+@attribute [StreamRendering]
+
+<PageTitle>Registrar Usuario</PageTitle>
+
+<h1 class="mb-4">Registrar usuario</h1>
+
+<!-- Formulario con data‑binding y validación -->
+<EditForm Model="@model" OnValidSubmit="RegisterAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <!-- Nombre -->
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <InputText class="form-control" @bind-Value="model.Nombre" />
+    </div>
+
+    <!-- Apellido -->
+    <div class="mb-3">
+        <label class="form-label">Apellido</label>
+        <InputText class="form-control" @bind-Value="model.Apellido" />
+    </div>
+
+    <!-- Email -->
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText class="form-control" @bind-Value="model.Email" type="email" />
+    </div>
+
+    <!-- Fecha de nacimiento -->
+    <div class="mb-3">
+        <label class="form-label">Fecha de nacimiento</label>
+        <InputDate class="form-control" @bind-Value="model.FechaNacimiento" />
+    </div>
+
+    <!-- Contraseña -->
+    <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <InputText class="form-control" @bind-Value="model.Password"
+                   type="password" minlength="8" />
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+</EditForm>
+
+
+
+@code {
+    private CreateUsuarioDto model = new();
+
+    private async Task RegisterAsync()
+    {
+        throw new ArgumentException("Se registró el usuario");
+        // Servicios.CreateUsuarioDto(model);
+    }
+
+}
