@@ -52,6 +52,10 @@ public class Proyecto
     }
     public List<Usuario> MiembrosProyecto => _miembrosProyecto;
 
+    public Proyecto()
+    {
+        // Constructor por defecto
+    }
     public Proyecto(string nombre, string descripcion, DateTime fechaInicio, Usuario administradorP)
     {
         ValidarCamposString(nombre, "El nombre");
