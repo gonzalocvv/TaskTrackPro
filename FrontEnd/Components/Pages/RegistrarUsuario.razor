@@ -1,6 +1,8 @@
 ﻿@page "/registrarUsuario"
 @using Dtos;
 @using Microsoft.AspNetCore.Components
+@using Servicios
+@inject UsuarioService usuarioService;
 @attribute [StreamRendering]
 
 <PageTitle>Registrar Usuario</PageTitle>
@@ -8,53 +10,94 @@
 <h1 class="mb-4">Registrar usuario</h1>
 
 <!-- Formulario con data‑binding y validación -->
-<EditForm Model="@model" OnValidSubmit="RegisterAsync">
+<EditForm Model="@user" OnValidSubmit="RegisterAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     <!-- Nombre -->
     <div class="mb-3">
         <label class="form-label">Nombre</label>
-        <InputText class="form-control" @bind-Value="model.Nombre" />
+        <InputText class="form-control" @bind-Value="user.Nombre" />
     </div>
 
     <!-- Apellido -->
     <div class="mb-3">
         <label class="form-label">Apellido</label>
-        <InputText class="form-control" @bind-Value="model.Apellido" />
+        <InputText class="form-control" @bind-Value="user.Apellido" />
     </div>
 
     <!-- Email -->
     <div class="mb-3">
         <label class="form-label">Email</label>
-        <InputText class="form-control" @bind-Value="model.Email" type="email" />
+        <InputText class="form-control" @bind-Value="user.Email" type="email" />
     </div>
 
     <!-- Fecha de nacimiento -->
     <div class="mb-3">
         <label class="form-label">Fecha de nacimiento</label>
-        <InputDate class="form-control" @bind-Value="model.FechaNacimiento" />
+        <InputDate class="form-control" @bind-Value="user.FechaNacimiento" />
     </div>
 
     <!-- Contraseña -->
     <div class="mb-3">
         <label class="form-label">Contraseña</label>
-        <InputText class="form-control" @bind-Value="model.Password"
+        <InputText class="form-control" @bind-Value="user.Password"
                    type="password" minlength="8" />
     </div>
 
     <button type="submit" class="btn btn-primary w-100">Registrarse</button>
 </EditForm>
 
+@if (showSuccessMessage)
+{
+    <br/>
+    <div class="alert alert-success" role="alert">
+        Usuario registrado existosamente
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        Los campos deben estar completos correctamente
+    </div>
+}
 
 
 @code {
-    private CreateUsuarioDto model = new();
+    CreateUsuarioDto user;
+    private bool showSuccessMessage = false;
+    private string errorMessage;
+
+    protected override void OnInitialized()
+    {
+        user = new CreateUsuarioDto();
+    }
 
     private async Task RegisterAsync()
     {
-        throw new ArgumentException("Se registró el usuario");
-        // Servicios.CreateUsuarioDto(model);
+        try
+        {
+            var usuarioCreado = usuarioService.CrearUsuario(user.Nombre, user.Apellido, user.Email, user.FechaNacimiento, user.Password);
+            showSuccessMessage = true;
+            errorMessage = null;
+            
+            user.Nombre = string.Empty;
+            user.Apellido = string.Empty;
+            user.Email = string.Empty;
+            user.FechaNacimiento = DateTime.MinValue;
+            user.Password = string.Empty;
+            
+
+        }
+        catch (Exception e)
+        {
+            showSuccessMessage = false;
+            errorMessage = e.Message;
+            
+        }
+            
     }
 
 }
