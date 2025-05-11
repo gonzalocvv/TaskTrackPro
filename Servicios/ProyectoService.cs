@@ -6,6 +6,7 @@ public class ProyectoService
 {
     public Proyecto CrearProyecto(string nombre, string descripcion, DateTime fechaInicio, Usuario administradorP)
     {
-        throw new NotImplementedException();
+        Proyecto nuevoProyecto = new Proyecto(nombre, descripcion, fechaInicio, administradorP);
+        return nuevoProyecto;
     }
 }
