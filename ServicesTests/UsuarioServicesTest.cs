@@ -16,11 +16,11 @@ public class UsuarioServicesTest
         string contraseña = "Ab123456789!";
         UsuarioService service = new UsuarioService();
         var result = service.CrearUsuario(nombre, apellido, email, fechaNacimiento, contraseña);
-        Assert.AreEqual(result.Nombre, nombre);
+        Assert.AreEqual(result.Email, email);
     }
 
     [TestMethod]
-    public void GetUsuarioPorNombreTest()
+    public void GetUsuarioPorEmailTest()
     {
         string nombre = "Nicolas";
         string apellido = "Ruy Lopez";
@@ -29,20 +29,20 @@ public class UsuarioServicesTest
         string contraseña = "Ab123456789!";
         UsuarioService service = new UsuarioService();
         service.CrearUsuario(nombre, apellido, email, fechaNacimiento, contraseña);
-        Usuario result = service.GetUsuarioPorNombre(nombre);
-        Assert.AreEqual(result.Nombre, nombre);
+        Usuario result = service.GetUsuarioPorEmail(email);
+        Assert.AreEqual(result.Email, email);
 
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
-    public void GetUsuarioPorNombreQueNoExisteExcepctionTest()
+    public void GetUsuarioPorEmailqueNoExisteExcepctionTest()
     {
-        string nombre = "Nicolas";
+        string email = "nicolas@gmail.com";
         
         UsuarioService service = new UsuarioService();
         
-        Usuario result = service.GetUsuarioPorNombre(nombre);
+        Usuario result = service.GetUsuarioPorEmail(email);
 
     }
 }
