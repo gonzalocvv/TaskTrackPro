@@ -31,4 +31,15 @@ public class ProyectoServicesTest
         Proyecto result = service.GetProyectoPorNombre(nombre);
         Assert.AreEqual(result.Nombre, nombre);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetProyectoPorNombreQueNoExisteExcepctionTest()
+    {
+        string nombre = "Proyecto 1";
+        
+        ProyectoService service = new ProyectoService();
+        
+        Proyecto result = service.GetProyectoPorNombre(nombre);
+    }
 }
