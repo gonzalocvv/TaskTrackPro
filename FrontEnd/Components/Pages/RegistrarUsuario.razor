@@ -10,7 +10,7 @@
 <h1 class="mb-4">Registrar usuario</h1>
 
 <!-- Formulario con data‑binding y validación -->
-<EditForm Model="@user" OnValidSubmit="RegisterAsync">
+<EditForm Model="@user" OnValidSubmit="CrearUsuarioDesdeFormulario">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -75,7 +75,7 @@
         user = new CreateUsuarioDto();
     }
 
-    private async Task RegisterAsync()
+    private async Task CrearUsuarioDesdeFormulario()
     {
         try
         {

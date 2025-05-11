@@ -5,7 +5,7 @@ namespace Servicios;
 public class ProyectoService
 {
     private List<Proyecto> _list = new List<Proyecto>();
-    public Proyecto CrearProyecto(string nombre, string descripcion, DateTime fechaInicio, Usuario administradorP)
+    public Proyecto CrearProyecto(string nombre, string descripcion, DateTime fechaInicio, Usuario administradorP, List<Usuario> MiembrosProyecto = null)
     {
         Proyecto nuevoProyecto = new Proyecto(nombre, descripcion, fechaInicio, administradorP);
         _list.Add(nuevoProyecto);

@@ -1,3 +1,4 @@
+using Dominio;
 using FrontEnd.Components;
 using Servicios;
 
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddSingleton<UsuarioService>();
+builder.Services.AddSingleton<ProyectoService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

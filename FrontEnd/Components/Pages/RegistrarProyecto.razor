@@ -1,33 +1,34 @@
 @page "/registrarProyecto"
-@using Dominio
 @using Dtos
+@using Servicios
+@inject ProyectoService proyectoService
 @attribute [StreamRendering]
 
 <PageTitle>Crear proyecto</PageTitle>
 
 <h1 class="mb-4">Crear proyecto</h1>
 
-<EditForm Model="@nuevoProyecto" OnValidSubmit="CrearProyectoDesdeFormulario">
+<EditForm Model="@proyecto" OnValidSubmit="CrearProyectoDesdeFormulario">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
     
     <div class="mb-3">
         <label class="form-label">Nombre</label>
-        <InputText class="form-control" @bind-Value="nuevoProyecto.Nombre" />
+        <InputText class="form-control" @bind-Value="proyecto.Nombre" />
     </div>
 
     
     <div class="mb-3">
         <label class="form-label">Descripción (máx. 400 caracteres)</label>
-        <InputTextArea class="form-control" @bind-Value="nuevoProyecto.Descripcion"
+        <InputTextArea class="form-control" @bind-Value="proyecto.Descripcion"
                        maxlength="400" rows="4" />
     </div>
 
     
     <div class="mb-3">
         <label class="form-label">Fecha de inicio estimada</label>
-        <InputDate class="form-control" @bind-Value="nuevoProyecto.FechaInicio" />
+        <InputDate class="form-control" @bind-Value="proyecto.fechaInicio" />
     </div>
 
     <!-- Selección de miembros -->
@@ -48,31 +49,29 @@
 </EditForm>
 
 @code {
-    
-    private Proyecto nuevoProyecto = new();      
-    private List<Guid> usuariosSeleccionados = new();     
-
-    // --- Fuente de datos para el select ---
+    CreateProyectoDto proyecto;
+    private List<string> usuariosSeleccionados = new();
     private List<GetUsuarioDto> usuariosRegistrados = new();
-
-    protected override async Task OnInitializedAsync()
+    private bool showSuccessMessage = false;
+    private string errorMessage;
+    
+    protected override void OnInitialized()
     {
-        // Trae la lista de usuarios registrados para poblar el <select>
-        // usuariosRegistrados = await UsuarioSvc.GetAllAsync();
+        proyecto = new CreateProyectoDto();
     }
-
     private async Task CrearProyectoDesdeFormulario()
     {
         try
         {
-            // nuevoProyecto.MiembroIds = usuariosSeleccionados;  // asigna miembros
-          //  (nuevoProyecto);
-
+            var proyectoCreado = proyectoService.CrearProyecto(proyecto.Nombre, proyecto.Descripcion, proyecto.fechaInicio, proyecto.administradorp, proyecto.MiembrosProyecto);
             
+            showSuccessMessage = true;
+            errorMessage = null;
         }
         catch (Exception ex)
         {
-            
+            errorMessage = "Error al crear el proyecto: " + ex.Message;
+            showSuccessMessage = false;
         }
     }
 }
