@@ -48,11 +48,27 @@
     <button type="submit" class="btn btn-primary w-100">Registrarse</button>
 </EditForm>
 
+@if (showSuccessMessage)
+{
+    <br/>
+    <div class="alert alert-success" role="alert">
+        Usuario registrado existosamente
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        Los campos deben estar completos correctamente
+    </div>
+}
 
 
 @code {
     CreateUsuarioDto user;
-    
+    private bool showSuccessMessage = false;
+    private string errorMessage;
 
     protected override void OnInitialized()
     {
@@ -61,8 +77,27 @@
 
     private async Task RegisterAsync()
     {
-        // Servicios.CreateUsuarioDto(model);
-        var usuarioCreado = usuarioService.CrearUsuario(user.Nombre, user.Apellido, user.Email, user.FechaNacimiento, user.Password);
+        try
+        {
+            var usuarioCreado = usuarioService.CrearUsuario(user.Nombre, user.Apellido, user.Email, user.FechaNacimiento, user.Password);
+            showSuccessMessage = true;
+            errorMessage = null;
+            
+            user.Nombre = string.Empty;
+            user.Apellido = string.Empty;
+            user.Email = string.Empty;
+            user.FechaNacimiento = DateTime.MinValue;
+            user.Password = string.Empty;
+            
+
+        }
+        catch (Exception e)
+        {
+            showSuccessMessage = false;
+            errorMessage = e.Message;
+            
+        }
+            
     }
 
 }
