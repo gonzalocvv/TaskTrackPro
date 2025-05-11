@@ -65,5 +65,13 @@ public class TareaTests
         var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5);
         tarea1.AgregarDependencia(tarea1);
     }
+    [TestMethod]
+    public void TareaAgregarDependenciaTest()
+    {
+        var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        var tarea2 = new Tarea("Titulo2","Desc2", ejFechaInicio, 5);
+        tarea1.AgregarDependencia(tarea2);
+        Assert.IsTrue(tarea1.DependenciasTareas.Contains(tarea2));
+    }
     
 }
