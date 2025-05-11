@@ -6,6 +6,8 @@ namespace DominioTests;
 public class TareaTests
 {
     DateTime ejFechaInicio = new DateTime(2025, 8, 9);
+    Usuario pepe   = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
+    Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaTituloVacioExceptionTest()
@@ -40,15 +42,20 @@ public class TareaTests
     {
         var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", ejFechaInicio, -4);
     }
-    private readonly DateTime fecha = new(2025, 8, 9);
-    private readonly Usuario pepe   = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
-    private readonly Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana123@");
+    
 
     [TestMethod]
-    public void TareaEstadoInicialPendienteSinDeps()
+    public void TareaEstadoInicialPendienteSinDepsTest()
     {
-        var tarea = new Tarea("Titulo","Desc", fecha, 5);
+        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5);
         Assert.AreEqual(EstadoTarea.Pendiente, tarea.Estado);
     }
-    
+    [TestMethod]
+    public void TareaConDependenciaEstadoBloqueadoTest()
+    {
+        var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        var tarea2 = new Tarea("Titulo2","Desc2", ejFechaInicio, 5);
+        tarea1.AgregarDependencia(tarea2);
+        Assert.AreEqual(EstadoTarea.Bloqueada, tarea1.Estado);
+    }
 }

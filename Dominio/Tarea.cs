@@ -1,8 +1,24 @@
 namespace Dominio;
 
+public enum EstadoTarea
+{
+    Pendiente,
+    Bloqueada,
+    Completada
+};
 public class Tarea
 {
-    private string _titulo
+    private const int duracionMinimaDeTarea = 0;
+    private string _titulo;
+    private string _descripcion;
+    private DateTime? _fechaDeInicio;
+    private int _duracion;
+    public EstadoTarea Estado { get; private set; } // Cambiado a público para pruebas
+
+    private List<Tarea> _dependenciasTareas { get; set; } = new List<Tarea>();
+    private List<Usuario> _usuariosAsignados { get; set; } = new List<Usuario>();
+
+    public string Titulo
     {
         get => _titulo;
         set
@@ -12,26 +28,29 @@ public class Tarea
         }
     }
 
-    private string _descripcion
+    public string Descripcion
     {
-        get => _descripcion; 
-        set 
+        get => _descripcion;
+        set
         {
             ValidarCamposString(value, "La descripción");
             _descripcion = value;
         }
     }
 
-    private DateTime _fechaDeInicio
+    public DateTime? FechaDeInicio
     {
         get => _fechaDeInicio;
         set  
         {
-            ValidarFechaDeInicioValida(value);
+            if (value.HasValue)
+                ValidarFechaDeInicioValida(value.Value);
             _fechaDeInicio = value;
         }
     }
-    private int _duracion { 
+
+    public int Duracion
+    {
         get => _duracion;
         set
         {
@@ -40,33 +59,46 @@ public class Tarea
         } 
     }
     
-    private List<Tarea> _DependenciasTareas { get; set; } = new List<Tarea>();
 
-    
-
-    public Tarea(string titulo, string descripcion, DateTime fechaDeInicio, int duracion)
+    public Tarea(string titulo, string descripcion, DateTime? fechaDeInicio, int duracion)
     {
         ValidarCamposString(titulo, "El título");
         ValidarCamposString(descripcion, "La descripción");
-        ValidarFechaDeInicioValida(fechaDeInicio);
+        if (fechaDeInicio.HasValue)
+            ValidarFechaDeInicioValida(fechaDeInicio.Value);
         ValidarDuracion(duracion);
         _titulo = titulo;
         _descripcion = descripcion;
         _fechaDeInicio = fechaDeInicio;
         _duracion = duracion;
-        
+        Estado = EstadoTarea.Pendiente;
     }
+
+    public void AgregarDependencia(Tarea tarea)
+    {
+        if (tarea == null)
+            throw new ArgumentNullException(nameof(tarea));
+        if (_dependenciasTareas.Contains(tarea))
+            throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
+        _dependenciasTareas.Add(tarea);
+        if (Estado == EstadoTarea.Pendiente)
+            Estado = EstadoTarea.Bloqueada;
+    }
+
+    
+    
     private static void ValidarDuracion(int value)
     {
-        if (value <= 0)
-            throw new ArgumentException("La duracion debe ser mayor a 0.");
+        if (value <= duracionMinimaDeTarea)
+            throw new ArgumentException("La duración debe ser mayor a 0.");
     }
+
     private static void ValidarCamposString(string dato, string nombreCampo)
     {
         if (string.IsNullOrWhiteSpace(dato))
             throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
     }
-    
+
     private static void ValidarFechaDeInicioValida(DateTime fechaDeInicio)
     {
         if (fechaDeInicio < DateTime.Today)
