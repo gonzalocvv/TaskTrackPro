@@ -39,6 +39,11 @@ public class Tarea
             _duracion = value;
         } 
     }
+    private List<Tarea> _DependenciasTareas
+    {
+        get => _DependenciasTareas;
+        set => _DependenciasTareas = value;
+    }
 
     
 
@@ -48,6 +53,7 @@ public class Tarea
         ValidarCamposString(descripcion, "La descripcion");
         ValidarFechaDeInicioValida(fechaDeInicio);
         ValidarDuracion(duracion);
+        List<Tarea> dependenciasTarea = new List<Tarea>();
     }
     private static void ValidarDuracion(int value)
     {
