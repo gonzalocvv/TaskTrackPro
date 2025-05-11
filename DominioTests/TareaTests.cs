@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.JavaScript;
 using Dominio;
 
 namespace DominioTests;
@@ -5,26 +6,39 @@ namespace DominioTests;
 [TestClass]
 public class TareaTests
 {
+    DateTime ejFechaInicio = new DateTime(2025, 8, 9);
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaTituloVacioExceptionTest()
     {
-        var tarea = new Tarea("", "Cotizar reforma del frente del edificio", "09-08-2025", 10);
+        var tarea = new Tarea("", "Cotizar reforma del frente del edificio", ejFechaInicio, 10);
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaDescripcionVacioExceptionTest()
     {
-        var tarea = new Tarea("Cotizar", "", "09-08-2025", 10);
+        var tarea = new Tarea("Cotizar", "", ejFechaInicio, 10);
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaFechaDeInicioValidaExceptionTest()
     {
-        string fechaPasada = DateTime.Today.AddDays(-1).ToString("dd-MM-yyyy");
+        DateTime fechaPasada = DateTime.Today.AddDays(-1);
 
-        var tarea = new Tarea("Cotizar", "otizar reforma del frente del edificio", fechaPasada, 5);
+        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", fechaPasada, 5);
+    }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void TareaDuracionIgual0ExceptionTest()
+    {
+        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", ejFechaInicio, 0);
+    }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void TareaDuracionMenor0ExceptionTest()
+    {
+        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", ejFechaInicio, -4);
     }
 }
