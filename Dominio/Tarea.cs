@@ -7,7 +7,7 @@ public class Tarea
         get => _titulo;
         set
         {
-            ValidarCamposString(value, "El titulo");
+            ValidarCamposString(value, "El título");
             _titulo = value;
         }
     }
@@ -17,7 +17,7 @@ public class Tarea
         get => _descripcion; 
         set 
         {
-            ValidarCamposString(value, "La descripcion");
+            ValidarCamposString(value, "La descripción");
             _descripcion = value;
         }
     }
@@ -39,21 +39,22 @@ public class Tarea
             _duracion = value;
         } 
     }
-    private List<Tarea> _DependenciasTareas
-    {
-        get => _DependenciasTareas;
-        set => _DependenciasTareas = value;
-    }
+    
+    private List<Tarea> _DependenciasTareas { get; set; } = new List<Tarea>();
 
     
 
     public Tarea(string titulo, string descripcion, DateTime fechaDeInicio, int duracion)
     {
-        ValidarCamposString(titulo, "El titulo");
-        ValidarCamposString(descripcion, "La descripcion");
+        ValidarCamposString(titulo, "El título");
+        ValidarCamposString(descripcion, "La descripción");
         ValidarFechaDeInicioValida(fechaDeInicio);
         ValidarDuracion(duracion);
-        List<Tarea> dependenciasTarea = new List<Tarea>();
+        _titulo = titulo;
+        _descripcion = descripcion;
+        _fechaDeInicio = fechaDeInicio;
+        _duracion = duracion;
+        
     }
     private static void ValidarDuracion(int value)
     {

@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
 using Dominio;
 
 namespace DominioTests;
@@ -41,4 +40,15 @@ public class TareaTests
     {
         var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", ejFechaInicio, -4);
     }
+    private readonly DateTime fecha = new(2025, 8, 9);
+    private readonly Usuario pepe   = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
+    private readonly Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana123@");
+
+    [TestMethod]
+    public void TareaEstadoInicialPendienteSinDeps()
+    {
+        var tarea = new Tarea("Titulo","Desc", fecha, 5);
+        Assert.AreEqual(EstadoTarea.Pendiente, tarea.Estado);
+    }
+    
 }
