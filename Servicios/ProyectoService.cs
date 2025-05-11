@@ -15,6 +15,10 @@ public class ProyectoService
     public Proyecto GetProyectoPorNombre(string nombre)
     {
         var proyectoParaDevolver = _list.Find(proyecto => proyecto.Nombre == nombre);
+        if (proyectoParaDevolver == null)
+        {
+            throw new ArgumentNullException("El proyecto no existe");
+        }
         return proyectoParaDevolver;
     }
 }
