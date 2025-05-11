@@ -58,4 +58,12 @@ public class TareaTests
         tarea1.AgregarDependencia(tarea2);
         Assert.AreEqual(EstadoTarea.Bloqueada, tarea1.Estado);
     }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void TareaAgregarDependenciaCiclicaExceptionTest()
+    {
+        var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        tarea1.AgregarDependencia(tarea1);
+    }
+    
 }
