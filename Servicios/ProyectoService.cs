@@ -9,4 +9,9 @@ public class ProyectoService
         Proyecto nuevoProyecto = new Proyecto(nombre, descripcion, fechaInicio, administradorP);
         return nuevoProyecto;
     }
+
+    public Proyecto GetProyectoPorNombre(string nombre)
+    {
+        throw new NotImplementedException();
+    }
 }
