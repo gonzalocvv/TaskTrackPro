@@ -80,6 +80,8 @@ public class Tarea
             throw new ArgumentNullException(nameof(tarea));
         if (_dependenciasTareas.Contains(tarea))
             throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
+        if (tarea == this)
+            throw new ArgumentException("No se puede agregar una tarea como dependencia de sí misma.");
         _dependenciasTareas.Add(tarea);
         if (Estado == EstadoTarea.Pendiente)
             Estado = EstadoTarea.Bloqueada;
