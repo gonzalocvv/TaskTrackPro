@@ -40,20 +40,20 @@ public class Tarea
         } 
     }
 
-    private static void ValidarDuracion(int value)
-    {
-        if (value <= 0)
-            throw new ArgumentException("La duracion debe ser mayor a 0.");
-    }
+    
 
     public Tarea(string titulo, string descripcion, DateTime fechaDeInicio, int duracion)
     {
         ValidarCamposString(titulo, "El titulo");
         ValidarCamposString(descripcion, "La descripcion");
         ValidarFechaDeInicioValida(fechaDeInicio);
-        
+        ValidarDuracion(duracion);
     }
-    
+    private static void ValidarDuracion(int value)
+    {
+        if (value <= 0)
+            throw new ArgumentException("La duracion debe ser mayor a 0.");
+    }
     private static void ValidarCamposString(string dato, string nombreCampo)
     {
         if (string.IsNullOrWhiteSpace(dato))
