@@ -99,6 +99,15 @@ public class TareaTests
         tarea.AsignarUsuario(pepe);
         Assert.IsTrue(tarea.UsuariosAsignados.Contains(pepe));
     }
+    // test exception usuario no asignado completa tarea
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void CompletarTareaSinUsuarioAsignadoTest()
+    {
+        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        tarea.CompletarTarea(pepe);
+        Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
+    }
     
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
@@ -109,5 +118,23 @@ public class TareaTests
         tarea1.AgregarDependencia(tarea2);
         tarea1.CompletarTarea();
     }
+    [TestMethod]
+    public void CompletarTareaTest()
+    {
+        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        tarea.AsignarUsuario(pepe);
+        tarea.CompletarTarea(pepe);
+        Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
+    }
+    
+    [TestMethod]
+    public void CambiarEstadoTest()
+    {
+        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        tarea.CambiarEstado(EstadoTarea.Completada);
+        Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
+    }
+    
+    
     
 }
