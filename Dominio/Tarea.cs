@@ -45,8 +45,7 @@ public class Tarea
         get => _fechaDeInicio;
         set  
         {
-            if (value.HasValue)
-                ValidarFechaDeInicioValida(value.Value);
+            FechaInicioTieneValor(value);
             _fechaDeInicio = value;
         }
     }
@@ -66,8 +65,7 @@ public class Tarea
     {
         ValidarCamposString(titulo, "El título");
         ValidarCamposString(descripcion, "La descripción");
-        if (fechaDeInicio.HasValue)
-            ValidarFechaDeInicioValida(fechaDeInicio.Value);
+        FechaInicioTieneValor(fechaDeInicio);
         ValidarDuracion(duracion);
         _titulo = titulo;
         _descripcion = descripcion;
@@ -76,10 +74,15 @@ public class Tarea
         Estado = EstadoTarea.Pendiente;
     }
 
+    private static void FechaInicioTieneValor(DateTime? fechaDeInicio)
+    {
+        if (fechaDeInicio.HasValue)
+            ValidarFechaDeInicioValida(fechaDeInicio.Value);
+    }
+
     public void AgregarDependencia(Tarea tarea)
     {
-        if (tarea == null)
-            throw new ArgumentNullException(nameof(tarea));
+        ValidarTareaNull(tarea);
         if (_dependenciasTareas.Contains(tarea))
             throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
         if (tarea == this)
@@ -88,6 +91,13 @@ public class Tarea
         if (Estado == EstadoTarea.Pendiente)
             Estado = EstadoTarea.Bloqueada;
     }
+
+    private static void ValidarTareaNull(Tarea tarea)
+    {
+        if (tarea == null)
+            throw new ArgumentNullException(nameof(tarea));
+    }
+
     public void AsignarUsuario(Usuario usuario)
     {
         if (usuario == null)

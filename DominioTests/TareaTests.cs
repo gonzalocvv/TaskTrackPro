@@ -100,6 +100,6 @@ public class TareaTests
         Assert.IsTrue(tarea.UsuariosAsignados.Contains(pepe));
     }
     
-    [TestMethod]  
+    
     
 }
