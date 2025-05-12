@@ -87,7 +87,14 @@ public class Tarea
         if (Estado == EstadoTarea.Pendiente)
             Estado = EstadoTarea.Bloqueada;
     }
-    
+    public void AsignarUsuario(Usuario usuario)
+    {
+        if (usuario == null)
+            throw new ArgumentNullException(nameof(usuario));
+        if (_usuariosAsignados.Contains(usuario))
+            throw new InvalidOperationException("El usuario ya está asignado a esta tarea.");
+        _usuariosAsignados.Add(usuario);
+    }
 
     
     

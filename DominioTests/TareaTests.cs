@@ -75,7 +75,7 @@ public class TareaTests
     }
 
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [ExpectedException(typeof(InvalidOperationException))]
     public void AsignarUsuarioUnicoTest()
     {
         var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5);
