@@ -10,6 +10,7 @@ public class Usuario
     private string _email;
     private DateTime _fechaNacimiento;
     private string _contraseña;
+    private List <Rol> _roles = new List<Rol>();
 
     public string Nombre
     {
@@ -76,7 +77,7 @@ public class Usuario
         _email = email;
         _fechaNacimiento = fechaNacimiento;
         _contraseña = contraseña;
-
+        _roles.Add(new Rol(Rol.MiembroProyecto));
     }
 
     private static void ValidarContraeña(string contraseña)
