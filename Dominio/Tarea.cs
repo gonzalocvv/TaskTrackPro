@@ -126,5 +126,15 @@ public class Tarea
         if (fechaDeInicio < DateTime.Today)
             throw new ArgumentException("La fecha de inicio no puede ser anterior a hoy.");
     }
-    
+    public void CambiarEstado(EstadoTarea nuevoEstado)
+    {
+        Estado = nuevoEstado;
+    }
+    public void CompletarTarea()
+    {
+        if (Estado == EstadoTarea.Pendiente)
+            CambiarEstado(EstadoTarea.Completada);
+        else
+            throw new InvalidOperationException("No se puede completar una tarea que no está pendiente.");
+    }
 }
