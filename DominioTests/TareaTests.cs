@@ -100,6 +100,14 @@ public class TareaTests
         Assert.IsTrue(tarea.UsuariosAsignados.Contains(pepe));
     }
     
-    
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void CompletarTareaBloqueadaExceptionTest()
+    {
+        var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        var tarea2 = new Tarea("Titulo2","Desc2", ejFechaInicio, 5);
+        tarea1.AgregarDependencia(tarea2);
+        tarea1.CompletarTarea();
+    }
     
 }
