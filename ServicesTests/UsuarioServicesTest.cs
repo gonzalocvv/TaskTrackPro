@@ -59,4 +59,20 @@ public class UsuarioServicesTest
         Usuario result = service.GetUsuarioPorEmail(email);
         Assert.AreEqual(result.Email, email);
     }
+
+
+    [TestMethod]
+    public void IniciarSesionTest()
+    {
+        string nombre = "Gonzalo";
+        string apellido = "Cabrera";
+        string email = "gonzalo@gmail.com";
+        DateTime fechaNacimiento = new DateTime(2004, 07, 09);
+        string contraseña = "Ab123456789!";
+        UsuarioService service = new UsuarioService();
+        var user = service.CrearUsuario(nombre, apellido, email, fechaNacimiento, contraseña);
+        var result = service.IniciarSesion(email, contraseña);
+        Assert.AreEqual(result.Email, email);
+        Assert.AreEqual(service.SesionActual, result);
+    }
 }
