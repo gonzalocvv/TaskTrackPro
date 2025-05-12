@@ -19,6 +19,7 @@ public class Tarea
     private List<Usuario> _usuariosAsignados { get; set; } = new List<Usuario>();
     
     public List<Tarea> DependenciasTareas => _dependenciasTareas;
+    public List<Usuario> UsuariosAsignados => _usuariosAsignados;
     public string Titulo
     {
         get => _titulo;

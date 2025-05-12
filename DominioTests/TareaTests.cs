@@ -73,7 +73,16 @@ public class TareaTests
         tarea1.AgregarDependencia(tarea2);
         Assert.IsTrue(tarea1.DependenciasTareas.Contains(tarea2));
     }
-
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void AgregarTareaRepetidaTest()
+    {
+        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        var tarea2 = new Tarea("Titulo2","Desc2", ejFechaInicio, 5);
+        tarea.AgregarDependencia(tarea2);
+        tarea.AgregarDependencia(tarea2);
+    }
+    
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void AsignarUsuarioUnicoTest()
@@ -83,5 +92,14 @@ public class TareaTests
         tarea.AsignarUsuario(pepe);
     }
     
+    [TestMethod]
+    public void AsignarUsuarioTest()
+    {
+        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        tarea.AsignarUsuario(pepe);
+        Assert.IsTrue(tarea.UsuariosAsignados.Contains(pepe));
+    }
+    
+    [TestMethod]  
     
 }
