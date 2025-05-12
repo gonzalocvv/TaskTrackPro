@@ -86,11 +86,14 @@ public class Tarea
     public void AgregarDependencia(Tarea tarea)
     {
         ValidarTareaNull(tarea);
-        if (TareasQueYoDependo.Contains(tarea))
+        if (_TareasYoDependo.Contains(tarea))
             throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
         if (tarea == this)
             throw new ArgumentException("No se puede agregar una tarea como dependencia de sí misma.");
-        TareasQueYoDependo.Add(tarea);
+
+        _TareasYoDependo.Add(tarea);
+        tarea._TareasDependenDeMi.Add(this);
+
         if (Estado == EstadoTarea.Pendiente)
             Estado = EstadoTarea.Bloqueada;
     }
@@ -143,8 +146,14 @@ public class Tarea
             throw new InvalidOperationException("No se puede completar una tarea que no está pendiente.");
         if (!UsuarioEstaAsignado(usuario))
             throw new InvalidOperationException("El usuario no está asignado a esta tarea.");
+
         CambiarEstado(EstadoTarea.Completada);
         
+        foreach (var tareaDependiente in _TareasDependenDeMi)
+        {
+            tareaDependiente._TareasYoDependo.Remove(this);
+            tareaDependiente.SinDependenciasCambiaEstado();
+        }
     }
 
     private bool TareaEstaPendiente()
@@ -156,19 +165,22 @@ public class Tarea
     {
         ValidarTareaNull(tarea);
         TareaNoPerteneceDependencias(tarea);
-        TareasQueYoDependo.Remove(tarea);
+
+        _TareasYoDependo.Remove(tarea);
+        tarea._TareasDependenDeMi.Remove(this);
+
         SinDependenciasCambiaEstado();
     }
 
     private void SinDependenciasCambiaEstado()
     {
-        if (TareasQueYoDependo.Count == 0)
+        if (_TareasYoDependo.Count == 0 && Estado == EstadoTarea.Bloqueada)
             CambiarEstado(EstadoTarea.Pendiente);
     }
 
     private void TareaNoPerteneceDependencias(Tarea tarea)
     {
-        if (!TareasQueYoDependo.Contains(tarea))
+        if (!_TareasYoDependo.Contains(tarea))
             throw new InvalidOperationException("La tarea no está en la lista de dependencias.");
     }
 }

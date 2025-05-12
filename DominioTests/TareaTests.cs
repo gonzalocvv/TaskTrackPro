@@ -154,13 +154,12 @@ public class TareaTests
         Assert.AreEqual(EstadoTarea.Pendiente, tarea1.Estado);
     }
     
-    // completar una tarea dependiente a bloqueada se elimina de la lista de dependencias y cambia estado a pendiente
     [TestMethod]
     public void CompletarTareaDependienteTest()
     {
         var tarea1 = new Tarea("Título","Desc", ejFechaInicio, 5);
         var tarea2 = new Tarea("Título2","Desc2", ejFechaInicio, 5);
-        tarea1.AgregarDependencia(tarea2);
+        tarea2.AgregarDependencia(tarea1);
         tarea1.AsignarUsuario(pepe);
         tarea1.CompletarTarea(pepe);
         Assert.AreEqual(EstadoTarea.Pendiente, tarea2.Estado);
