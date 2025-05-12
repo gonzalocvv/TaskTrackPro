@@ -36,4 +36,14 @@ public class MemoryDBTests
         db.AgregarUsuario(usuario);
         Assert.IsTrue(db.ExisteUsuario(usuario.Email));
     }
+
+    [TestMethod]
+    public void ExisteUsuarioTest()
+    {
+        MemoryDB db = new MemoryDB();
+        Usuario usuario = new Usuario("Gonzalo", "Cabrera", "gonzalo@gmail.com", new DateTime(2004, 07, 09),
+            "Ab123456789!");
+        db.AgregarUsuario(usuario);
+        Assert.IsTrue(db.ExisteUsuario(usuario.Email));
+    }
 }
