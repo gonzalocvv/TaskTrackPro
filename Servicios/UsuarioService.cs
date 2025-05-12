@@ -23,4 +23,13 @@ public class UsuarioService
        }
        return usuarioParaDevolver;
     }
+    public Usuario GetUsuarioPorEmail(string email)
+    {
+        var usuarioParaDevolver =_list.Find(usuario => usuario.Email == email);
+        if (usuarioParaDevolver == null)
+        {
+            throw new ArgumentNullException("El usuario no existe");
+        }
+        return usuarioParaDevolver;
+    }
 }  
