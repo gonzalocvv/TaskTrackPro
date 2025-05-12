@@ -222,4 +222,21 @@ public class TareaTests
 
         t3.AgregarDependencia(t1);
     }
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void QuitarDependenciaNoExisteExcepcionTest()
+    {
+        var tarea1 = new Tarea("T1", "D1", ejFechaInicio, 3);
+        var tareaInexistente = new Tarea("T2", "D2", ejFechaInicio, 1);
+        tarea1.QuitarDependencia(tareaInexistente);
+    }
+    [TestMethod]
+    public void TareaCompletarDosVecesNoFalla()
+    {
+        var t = new Tarea("T", "D", ejFechaInicio, 2);
+        t.AsignarUsuario(pepe);
+        t.CompletarTarea(pepe);
+        t.CompletarTarea(pepe);
+        Assert.AreEqual(EstadoTarea.Completada, t.Estado);
+    }
 }
