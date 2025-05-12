@@ -90,6 +90,8 @@ public class Tarea
             throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
         if (tarea == this)
             throw new ArgumentException("No se puede agregar una tarea como dependencia de sí misma.");
+        if (tarea.TieneDependenciaRecursiva(this))
+            throw new InvalidOperationException("Dependencia cíclica detectada.");
 
         _TareasYoDependo.Add(tarea);
         tarea._TareasDependenDeMi.Add(this);
@@ -98,6 +100,18 @@ public class Tarea
             Estado = EstadoTarea.Bloqueada;
     }
 
+    private bool TieneDependenciaRecursiva(Tarea objetivo)
+    {
+        if (_TareasYoDependo.Contains(objetivo))
+            return true;
+        
+        foreach (var dep in _TareasYoDependo)
+            if (dep.TieneDependenciaRecursiva(objetivo))
+                return true;
+
+        return false;
+    }
+    
     private static void ValidarTareaNull(Tarea tarea)
     {
         if (tarea == null)
