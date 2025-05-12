@@ -183,4 +183,6 @@ public class Tarea
         if (!_TareasYoDependo.Contains(tarea))
             throw new InvalidOperationException("La tarea no está en la lista de dependencias.");
     }
+    
+    
 }

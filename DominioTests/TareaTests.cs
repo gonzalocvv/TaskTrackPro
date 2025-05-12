@@ -208,4 +208,18 @@ public class TareaTests
         Assert.IsTrue(tarea1.TareasQueDependenDeMi.Contains(tarea2));
         Assert.IsTrue(tarea2.TareasQueYoDependo.Contains(tarea1));
     }
+    
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void AgregarDependenciaIndirectaCiclicaExceptionTest()
+    {
+        var t1 = new Tarea("T1", "D1", ejFechaInicio, 3);
+        var t2 = new Tarea("T2", "D2", ejFechaInicio, 3);
+        var t3 = new Tarea("T3", "D3", ejFechaInicio, 3);
+
+        t1.AgregarDependencia(t2);
+        t2.AgregarDependencia(t3);
+
+        t3.AgregarDependencia(t1);
+    }
 }
