@@ -149,4 +149,14 @@ public class Tarea
     {
         return Estado == EstadoTarea.Pendiente;
     }
+    
+    public void QuitarDependencia(Tarea tarea)
+    {
+        ValidarTareaNull(tarea);
+        if (!_dependenciasTareas.Contains(tarea))
+            throw new InvalidOperationException("La tarea no está en la lista de dependencias.");
+        _dependenciasTareas.Remove(tarea);
+        if (_dependenciasTareas.Count == 0)
+            Estado = EstadoTarea.Pendiente;
+    }
 }
