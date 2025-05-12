@@ -144,6 +144,16 @@ public class TareaTests
         Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
     }
     
+    // QuitarDependencia_DesbloqueaPendiente
+    [TestMethod]
+    public void QuitarDependenciaDesbloqueaPendienteTest()
+    {
+        var tarea1 = new Tarea("Título","Desc", ejFechaInicio, 5);
+        var tarea2 = new Tarea("Título2","Desc2", ejFechaInicio, 5);
+        tarea1.AgregarDependencia(tarea2);
+        tarea1.QuitarDependencia(tarea2);
+        Assert.AreEqual(EstadoTarea.Pendiente, tarea1.Estado);
+    }
     
     
 }
