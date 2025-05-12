@@ -132,10 +132,12 @@ public class Tarea
     }
     public void CompletarTarea(Usuario usuario)
     {
-        if (TareaEstaPendiente() && EsUsuarioAsignado(usuario))
-            CambiarEstado(EstadoTarea.Completada);
-        else
+        if (!TareaEstaPendiente())
             throw new InvalidOperationException("No se puede completar una tarea que no está pendiente.");
+        if (!EsUsuarioAsignado(usuario))
+            throw new InvalidOperationException("El usuario no está asignado a esta tarea.");
+        CambiarEstado(EstadoTarea.Completada);
+        
     }
 
     private bool EsUsuarioAsignado(Usuario usuario)

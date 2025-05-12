@@ -7,7 +7,7 @@ public class TareaTests
 {
     DateTime ejFechaInicio = new DateTime(2025, 8, 9);
     Usuario pepe   = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
-    // Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
+    Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaTituloVacioExceptionTest()
@@ -100,14 +100,12 @@ public class TareaTests
         Assert.IsTrue(tarea.UsuariosAsignados.Contains(pepe));
     }
     
-    // test exception usuario no asignado completa tarea
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void CompletarTareaSinUsuarioAsignadoTest()
     {
         var tarea = new Tarea("Título","Desc", ejFechaInicio, 5);
         tarea.CompletarTarea(pepe);
-        Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
     }
     
     [TestMethod]
@@ -127,6 +125,15 @@ public class TareaTests
         tarea.AsignarUsuario(pepe);
         tarea.CompletarTarea(pepe);
         Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void CompletarTareaUsuarioNoAsignadoExceptionTest()
+    {
+        var tarea = new Tarea("Título","Desc", ejFechaInicio, 5);
+        tarea.AsignarUsuario(pepe);
+        tarea.CompletarTarea(ana);
     }
     
     [TestMethod]
