@@ -54,7 +54,7 @@ public class MemoryDBTests
         Usuario usuario = new Usuario("Gonzalo", "Cabrera", "gonzalo@gmail.com", new DateTime(2004, 07, 09),
             "Ab123456789!");
         db.AgregarUsuario(usuario);
-        var usuarioObtenido = db.GetUsuarioNombre(usuario);
+        var usuarioObtenido = db.GetUsuarioPorNombre(usuario.Nombre);
         Assert.AreEqual(usuario, usuarioObtenido);
     }
 }

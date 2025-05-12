@@ -25,4 +25,10 @@ public class MemoryDB
     {
         return _listUsuarios.Any(usuario => usuario.Email == email);
     }
+
+    public Usuario GetUsuarioPorNombre(string nombre)
+    {
+        return this._listUsuarios.Find(usuario => usuario.Nombre == nombre);
+    }
+    
 }
