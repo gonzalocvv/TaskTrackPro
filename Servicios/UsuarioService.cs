@@ -1,5 +1,6 @@
 ﻿using Dominio;
 using DataAccess;
+using Dtos;
 namespace Servicios;
 
 public class UsuarioService
@@ -14,9 +15,12 @@ public class UsuarioService
     public Usuario SesionActual => _sesionActual;
 
     
-    public Usuario CrearUsuario(string nombre, string apellido, string email, DateTime fechaNacimiento, string contraseña)
+    public Usuario CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
-        Usuario nuevoUsuario = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
+        Usuario nuevoUsuario = new Usuario(UsuarioDto.Nombre, UsuarioDto.Apellido, UsuarioDto.Email,
+            UsuarioDto.FechaNacimiento, UsuarioDto.Contraseña);
+        if (_db.ExisteUsuario(nuevoUsuario.Email))
+            throw new ArgumentException("El usuario ya existe");
         _db.AgregarUsuario(nuevoUsuario);
         return nuevoUsuario;
     }
@@ -24,13 +28,13 @@ public class UsuarioService
 
     public Usuario GetUsuarioPorNombre(string nombre)
     {
-       var usuarioParaDevolver = _db.GetUsuarioNombre(usuario => usuario.Nombre == nombre);
+       var usuarioParaDevolver = _db.GetUsuarioPorNombre(nombre);
        UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
        return usuarioParaDevolver;
     }
     public Usuario GetUsuarioPorEmail(string email)
     {
-        var usuarioParaDevolver =_db.GetUsuarioEmail(usuario => usuario.Email == email);
+        var usuarioParaDevolver =_db.GetUsuarioPorEmail(email);
         UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
         return usuarioParaDevolver;
     }
@@ -43,8 +47,10 @@ public class UsuarioService
         }
     }
     
-    public Usuario IniciarSesion(string email, string contraseña)
+    public Usuario IniciarSesion(LoginDto loginDto)
     {
+        var email = loginDto.Email;
+        var contraseña = loginDto.Contraseña;
         var usuario = GetUsuarioPorEmail(email);
         UsuarioNullDevuelveExcepcion(usuario);
         ValidarContraseña(contraseña, usuario);

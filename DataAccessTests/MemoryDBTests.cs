@@ -1,5 +1,6 @@
 using DataAccess;
 using Dominio;
+using Servicios;
 namespace MemoryDBTests;
 
 [TestClass]

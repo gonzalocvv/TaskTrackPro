@@ -6,13 +6,13 @@ public class CreateUsuarioDto
     public string Apellido;
     public string Email;
     public DateTime FechaNacimiento;
-    public string Password;
+    public string Contraseña;
 }
 
 public class LoginDto
 {
     public string Email;
-    public string Password;
+    public string Contraseña;
 }
 
 public class GetUsuarioDto

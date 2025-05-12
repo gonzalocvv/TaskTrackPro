@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
       <ProjectReference Include="..\Dominio\Dominio.csproj" />
+      <ProjectReference Include="..\Dtos\Dtos.csproj" />
     </ItemGroup>
 
 </Project>
