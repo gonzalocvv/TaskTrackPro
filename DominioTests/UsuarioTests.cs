@@ -1,4 +1,5 @@
 using Dominio;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace DominioTests;
 
@@ -33,7 +34,7 @@ public class UsuarioTests
     public void UsuarioNombreVacioExcepcionTest()
     {
         
-        var usuario = new Usuario("","Cabrera", "gonzalo@ejemplo.com", fechaNacCorrecta, "Gonzalo9@");
+        Usuario usuario = new Usuario("","Cabrera", "gonzalo@ejemplo.com", fechaNacCorrecta, "Gonzalo9@");
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
@@ -120,6 +121,19 @@ public class UsuarioTests
         Assert.AreEqual(apellido, usuario.Apellido);
         Assert.AreEqual(email, usuario.Email);
         Assert.AreEqual(fechaNacimiento, usuario.FechaNacimiento);
+    }
+    
+    [TestMethod]
+    public void UsuarioTieneRolMiembroProyectoPorDefectoTest()
+    {
+        var nombre = "Gonzalo";
+        var apellido = "Cabrera";
+        var email = "gonzalo@ejemplo.com";
+        var fechaNacimiento = new DateTime(2004, 9, 7);
+        var contraseña = "Gonzalo9@";
+        var usuario = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
+
+        //Assert.IsTrue(usuario.ObtenerRoles().Any(rol => rol.Nombre == "Miembro del Proyecto"));
     }
 
     
