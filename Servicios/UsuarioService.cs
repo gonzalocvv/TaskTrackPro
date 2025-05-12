@@ -37,4 +37,12 @@ public class UsuarioService
             throw new ArgumentNullException("El usuario no existe");
         }
     }
+    
+    public Usuario IniciarSesion(string email, string contraseña)
+    {
+        var usuario = GetUsuarioPorEmail(email);
+        UsuarioNullDevuelveExcepcion(usuario);
+        _sesionActual = usuario;
+        return usuario;
+    }
 }  
