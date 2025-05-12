@@ -1,10 +1,15 @@
 ﻿using Dominio;
-
+using DataAccess;
 namespace Servicios;
 
 public class UsuarioService
 {
-    private List<Usuario> _list = new List<Usuario>();
+    private MemoryDB _db;
+
+    public UsuarioService(MemoryDB db)
+    {
+        _db = db;
+    }
     private Usuario _sesionActual;
     public Usuario SesionActual => _sesionActual;
 
@@ -12,20 +17,20 @@ public class UsuarioService
     public Usuario CrearUsuario(string nombre, string apellido, string email, DateTime fechaNacimiento, string contraseña)
     {
         Usuario nuevoUsuario = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
-        _list.Add(nuevoUsuario);
+        _db.AgregarUsuario(nuevoUsuario);
         return nuevoUsuario;
     }
 
 
     public Usuario GetUsuarioPorNombre(string nombre)
     {
-       var usuarioParaDevolver =_list.Find(usuario => usuario.Nombre == nombre);
+       var usuarioParaDevolver = _db.GetUsuarioNombre(usuario => usuario.Nombre == nombre);
        UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
        return usuarioParaDevolver;
     }
     public Usuario GetUsuarioPorEmail(string email)
     {
-        var usuarioParaDevolver =_list.Find(usuario => usuario.Email == email);
+        var usuarioParaDevolver =_db.GetUsuarioEmail(usuario => usuario.Email == email);
         UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
         return usuarioParaDevolver;
     }
@@ -42,7 +47,16 @@ public class UsuarioService
     {
         var usuario = GetUsuarioPorEmail(email);
         UsuarioNullDevuelveExcepcion(usuario);
+        ValidarContraseña(contraseña, usuario);
         _sesionActual = usuario;
         return usuario;
+    }
+
+    private static void ValidarContraseña(string contraseña, Usuario usuario)
+    {
+        if (usuario.Contraseña != contraseña)
+        {
+            throw new ArgumentException("La contraseña es incorrecta");
+        }
     }
 }  
