@@ -17,19 +17,21 @@ public class UsuarioService
     public Usuario GetUsuarioPorNombre(string nombre)
     {
        var usuarioParaDevolver =_list.Find(usuario => usuario.Nombre == nombre);
-       if (usuarioParaDevolver == null)
-       {
-           throw new ArgumentNullException("El usuario no existe");
-       }
+       UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
        return usuarioParaDevolver;
     }
     public Usuario GetUsuarioPorEmail(string email)
     {
         var usuarioParaDevolver =_list.Find(usuario => usuario.Email == email);
+        UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
+        return usuarioParaDevolver;
+    }
+
+    private static void UsuarioNullDevuelveExcepcion(Usuario? usuarioParaDevolver)
+    {
         if (usuarioParaDevolver == null)
         {
             throw new ArgumentNullException("El usuario no existe");
         }
-        return usuarioParaDevolver;
     }
 }  

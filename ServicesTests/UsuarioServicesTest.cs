@@ -46,7 +46,6 @@ public class UsuarioServicesTest
 
     }
     
-    // get usuario por email
     [TestMethod]
     public void GetUsuarioPorEmailTest()
     {
