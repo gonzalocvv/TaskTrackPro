@@ -6,7 +6,7 @@ public class CreateProyectoDto
 {
     public string Nombre;
     public string Descripcion;
-    public DateTime fechaInicio;
+    public DateTime FechaInicio;
     public Usuario administradorp;
     public List<Usuario> MiembrosProyecto;
     

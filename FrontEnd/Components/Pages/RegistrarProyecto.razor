@@ -12,29 +12,25 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    
     <div class="mb-3">
         <label class="form-label">Nombre</label>
         <InputText class="form-control" @bind-Value="proyecto.Nombre" />
     </div>
 
-    
     <div class="mb-3">
-        <label class="form-label">Descripción (máx. 400 caracteres)</label>
+        <label class="form-label">Descripción (máx. 400 caracteres)</label>
         <InputTextArea class="form-control" @bind-Value="proyecto.Descripcion"
                        maxlength="400" rows="4" />
     </div>
 
-    
     <div class="mb-3">
         <label class="form-label">Fecha de inicio estimada</label>
-        <InputDate class="form-control" @bind-Value="proyecto.fechaInicio" />
+        <InputDate class="form-control" @bind-Value="proyecto.FechaInicio" />
     </div>
 
     <!-- Selección de miembros -->
     <div class="mb-3">
         <label class="form-label">Miembros del proyecto</label>
-        <!-- multiselect con Bootstrap -->
         <select multiple class="form-select" style="height: 200px;"
                 @bind="usuariosSeleccionados">
             @foreach (var u in usuariosRegistrados)
@@ -42,29 +38,28 @@
                 <option value="@u.Email">@u.Nombre (@u.Email)</option>
             }
         </select>
-        <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
+        <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
     </div>
 
     <button type="submit" class="btn btn-success w-100">Crear proyecto</button>
 </EditForm>
 
 @code {
-    CreateProyectoDto proyecto;
+    private CreateProyectoDto proyecto;
     private List<string> usuariosSeleccionados = new();
     private List<GetUsuarioDto> usuariosRegistrados = new();
     private bool showSuccessMessage = false;
     private string errorMessage;
-    
+
     protected override void OnInitialized()
     {
         proyecto = new CreateProyectoDto();
     }
+
     private async Task CrearProyectoDesdeFormulario()
     {
         try
         {
-            var proyectoCreado = proyectoService.CrearProyecto(proyecto.Nombre, proyecto.Descripcion, proyecto.fechaInicio, proyecto.administradorp, proyecto.MiembrosProyecto);
-            
             showSuccessMessage = true;
             errorMessage = null;
         }

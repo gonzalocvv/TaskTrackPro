@@ -1,15 +1,14 @@
 ﻿@page "/registrarUsuario"
-@using Dtos;
+@using Dtos
 @using Microsoft.AspNetCore.Components
 @using Servicios
-@inject UsuarioService usuarioService;
+@inject UsuarioService usuarioService
 @attribute [StreamRendering]
 
 <PageTitle>Registrar Usuario</PageTitle>
 
 <h1 class="mb-4">Registrar usuario</h1>
 
-<!-- Formulario con data‑binding y validación -->
 <EditForm Model="@user" OnValidSubmit="CrearUsuarioDesdeFormulario">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -18,31 +17,37 @@
     <div class="mb-3">
         <label class="form-label">Nombre</label>
         <InputText class="form-control" @bind-Value="user.Nombre" />
+        <ValidationMessage For="@(() => user.Nombre)" />
     </div>
 
     <!-- Apellido -->
     <div class="mb-3">
         <label class="form-label">Apellido</label>
         <InputText class="form-control" @bind-Value="user.Apellido" />
+        <ValidationMessage For="@(() => user.Apellido)" />
     </div>
 
     <!-- Email -->
     <div class="mb-3">
         <label class="form-label">Email</label>
         <InputText class="form-control" @bind-Value="user.Email" type="email" />
+        <ValidationMessage For="@(() => user.Email)" />
     </div>
 
     <!-- Fecha de nacimiento -->
     <div class="mb-3">
         <label class="form-label">Fecha de nacimiento</label>
         <InputDate class="form-control" @bind-Value="user.FechaNacimiento" />
+        <ValidationMessage For="@(() => user.FechaNacimiento)" />
     </div>
 
     <!-- Contraseña -->
     <div class="mb-3">
         <label class="form-label">Contraseña</label>
         <InputText class="form-control" @bind-Value="user.Password"
-                   type="password" minlength="8" />
+                   type="password"requiredpattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$" 
+                   title="Mínimo 8 caracteres, al menos una mayúscula, una minúscula y un carácter especial." />
+        <ValidationMessage For="@(() => user.Password)" />
     </div>
 
     <button type="submit" class="btn btn-primary w-100">Registrarse</button>
