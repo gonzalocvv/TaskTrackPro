@@ -15,10 +15,13 @@ public class Tarea
     private int _duracion;
     public EstadoTarea Estado { get; private set; }
 
-    private List<Tarea> _dependenciasTareas { get; set; } = new List<Tarea>();
+    private List<Tarea> _TareasYoDependo { get; set; } = new List<Tarea>();
+    private List<Tarea> _TareasDependenDeMi { get; set; } = new List<Tarea>();
     private List<Usuario> _usuariosAsignados { get; set; } = new List<Usuario>();
     
-    public List<Tarea> DependenciasTareas => _dependenciasTareas;
+    public List<Tarea> TareasQueYoDependo => _TareasYoDependo;
+    public List<Tarea> TareasQueDependenDeMi => _TareasDependenDeMi;
+    
     public List<Usuario> UsuariosAsignados => _usuariosAsignados;
     public string Titulo
     {
@@ -83,11 +86,11 @@ public class Tarea
     public void AgregarDependencia(Tarea tarea)
     {
         ValidarTareaNull(tarea);
-        if (_dependenciasTareas.Contains(tarea))
+        if (TareasQueYoDependo.Contains(tarea))
             throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
         if (tarea == this)
             throw new ArgumentException("No se puede agregar una tarea como dependencia de sí misma.");
-        _dependenciasTareas.Add(tarea);
+        TareasQueYoDependo.Add(tarea);
         if (Estado == EstadoTarea.Pendiente)
             Estado = EstadoTarea.Bloqueada;
     }
@@ -153,19 +156,19 @@ public class Tarea
     {
         ValidarTareaNull(tarea);
         TareaNoPerteneceDependencias(tarea);
-        _dependenciasTareas.Remove(tarea);
+        TareasQueYoDependo.Remove(tarea);
         SinDependenciasCambiaEstado();
     }
 
     private void SinDependenciasCambiaEstado()
     {
-        if (_dependenciasTareas.Count == 0)
+        if (TareasQueYoDependo.Count == 0)
             CambiarEstado(EstadoTarea.Pendiente);
     }
 
     private void TareaNoPerteneceDependencias(Tarea tarea)
     {
-        if (!_dependenciasTareas.Contains(tarea))
+        if (!TareasQueYoDependo.Contains(tarea))
             throw new InvalidOperationException("La tarea no está en la lista de dependencias.");
     }
 }

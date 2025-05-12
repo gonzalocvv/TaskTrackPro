@@ -71,7 +71,7 @@ public class TareaTests
         var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5);
         var tarea2 = new Tarea("Titulo2","Desc2", ejFechaInicio, 5);
         tarea1.AgregarDependencia(tarea2);
-        Assert.IsTrue(tarea1.DependenciasTareas.Contains(tarea2));
+        Assert.IsTrue(tarea1.TareasQueYoDependo.Contains(tarea2));
     }
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
@@ -154,5 +154,59 @@ public class TareaTests
         Assert.AreEqual(EstadoTarea.Pendiente, tarea1.Estado);
     }
     
-    
+    // completar una tarea dependiente a bloqueada se elimina de la lista de dependencias y cambia estado a pendiente
+    [TestMethod]
+    public void CompletarTareaDependienteTest()
+    {
+        var tarea1 = new Tarea("Título","Desc", ejFechaInicio, 5);
+        var tarea2 = new Tarea("Título2","Desc2", ejFechaInicio, 5);
+        tarea1.AgregarDependencia(tarea2);
+        tarea1.AsignarUsuario(pepe);
+        tarea1.CompletarTarea(pepe);
+        Assert.AreEqual(EstadoTarea.Pendiente, tarea2.Estado);
+    }
+
+    [TestMethod]
+    public void CompletarTareaActualizaDependientesTest()
+    {
+        var tarea1 = new Tarea("Título1", "Desc1", ejFechaInicio, 5);
+        var tarea2 = new Tarea("Título2", "Desc2", ejFechaInicio, 5);
+        var tarea3 = new Tarea("Título3", "Desc3", ejFechaInicio, 5);
+
+        tarea2.AgregarDependencia(tarea1);
+        tarea3.AgregarDependencia(tarea1);
+
+        tarea1.AsignarUsuario(pepe);
+        tarea1.CompletarTarea(pepe);
+
+        Assert.AreEqual(EstadoTarea.Pendiente, tarea2.Estado);
+        Assert.AreEqual(EstadoTarea.Pendiente, tarea3.Estado);
+        Assert.IsFalse(tarea2.TareasQueYoDependo.Contains(tarea1));
+        Assert.IsFalse(tarea3.TareasQueYoDependo.Contains(tarea1));
+    }
+
+    [TestMethod]
+    public void QuitarDependenciaActualizaDependientesTest()
+    {
+        var tarea1 = new Tarea("Título1", "Desc1", ejFechaInicio, 5);
+        var tarea2 = new Tarea("Título2", "Desc2", ejFechaInicio, 5);
+
+        tarea2.AgregarDependencia(tarea1);
+        tarea2.QuitarDependencia(tarea1);
+
+        Assert.AreEqual(EstadoTarea.Pendiente, tarea2.Estado);
+        Assert.IsFalse(tarea1.TareasQueDependenDeMi.Contains(tarea2));
+    }
+
+    [TestMethod]
+    public void AgregarDependenciaActualizaDependientesTest()
+    {
+        var tarea1 = new Tarea("Título1", "Desc1", ejFechaInicio, 5);
+        var tarea2 = new Tarea("Título2", "Desc2", ejFechaInicio, 5);
+
+        tarea2.AgregarDependencia(tarea1);
+
+        Assert.IsTrue(tarea1.TareasQueDependenDeMi.Contains(tarea2));
+        Assert.IsTrue(tarea2.TareasQueYoDependo.Contains(tarea1));
+    }
 }
