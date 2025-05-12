@@ -144,7 +144,6 @@ public class TareaTests
         Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
     }
     
-    // QuitarDependencia_DesbloqueaPendiente
     [TestMethod]
     public void QuitarDependenciaDesbloqueaPendienteTest()
     {

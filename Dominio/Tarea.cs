@@ -102,13 +102,17 @@ public class Tarea
     {
         if (usuario == null)
             throw new ArgumentNullException(nameof(usuario));
-        if (_usuariosAsignados.Contains(usuario))
+        if (UsuarioEstaAsignado(usuario))
             throw new InvalidOperationException("El usuario ya está asignado a esta tarea.");
         _usuariosAsignados.Add(usuario);
     }
 
-    
-    
+    private bool UsuarioEstaAsignado(Usuario usuario)
+    {
+        return _usuariosAsignados.Contains(usuario);
+    }
+
+
     private static void ValidarDuracion(int value)
     {
         if (value <= duracionMinimaDeTarea)
@@ -134,15 +138,10 @@ public class Tarea
     {
         if (!TareaEstaPendiente())
             throw new InvalidOperationException("No se puede completar una tarea que no está pendiente.");
-        if (!EsUsuarioAsignado(usuario))
+        if (!UsuarioEstaAsignado(usuario))
             throw new InvalidOperationException("El usuario no está asignado a esta tarea.");
         CambiarEstado(EstadoTarea.Completada);
         
-    }
-
-    private bool EsUsuarioAsignado(Usuario usuario)
-    {
-        return _usuariosAsignados.Contains(usuario);
     }
 
     private bool TareaEstaPendiente()
@@ -153,10 +152,20 @@ public class Tarea
     public void QuitarDependencia(Tarea tarea)
     {
         ValidarTareaNull(tarea);
+        TareaNoPerteneceDependencias(tarea);
+        _dependenciasTareas.Remove(tarea);
+        SinDependenciasCambiaEstado();
+    }
+
+    private void SinDependenciasCambiaEstado()
+    {
+        if (_dependenciasTareas.Count == 0)
+            CambiarEstado(EstadoTarea.Pendiente);
+    }
+
+    private void TareaNoPerteneceDependencias(Tarea tarea)
+    {
         if (!_dependenciasTareas.Contains(tarea))
             throw new InvalidOperationException("La tarea no está en la lista de dependencias.");
-        _dependenciasTareas.Remove(tarea);
-        if (_dependenciasTareas.Count == 0)
-            Estado = EstadoTarea.Pendiente;
     }
 }
