@@ -13,7 +13,7 @@ public class Tarea
     private string _descripcion;
     private DateTime? _fechaDeInicio;
     private int _duracion;
-    public EstadoTarea Estado { get; private set; } // Cambiado a público para pruebas
+    public EstadoTarea Estado { get; private set; }
 
     private List<Tarea> _dependenciasTareas { get; set; } = new List<Tarea>();
     private List<Usuario> _usuariosAsignados { get; set; } = new List<Usuario>();
@@ -87,6 +87,7 @@ public class Tarea
         if (Estado == EstadoTarea.Pendiente)
             Estado = EstadoTarea.Bloqueada;
     }
+    
 
     
     

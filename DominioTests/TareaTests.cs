@@ -7,7 +7,7 @@ public class TareaTests
 {
     DateTime ejFechaInicio = new DateTime(2025, 8, 9);
     Usuario pepe   = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
-    Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
+    // Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaTituloVacioExceptionTest()
@@ -73,5 +73,15 @@ public class TareaTests
         tarea1.AgregarDependencia(tarea2);
         Assert.IsTrue(tarea1.DependenciasTareas.Contains(tarea2));
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void AsignarUsuarioUnicoTest()
+    {
+        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5);
+        tarea.AsignarUsuario(pepe);
+        tarea.AsignarUsuario(pepe);
+    }
+    
     
 }
