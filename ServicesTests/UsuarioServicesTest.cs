@@ -45,4 +45,5 @@ public class UsuarioServicesTest
         Usuario result = service.GetUsuarioPorEmail(email);
 
     }
+    
 }

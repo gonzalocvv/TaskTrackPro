@@ -5,6 +5,18 @@ namespace Servicios
     public class UsuarioService
     {
         private List<Usuario> _list = new();
+        
+        public UsuarioService()
+        {
+            var adminUser = new Usuario(
+                "admin",
+                "User",
+                "admin@admin.com",
+                new DateTime(1990, 1, 1),
+                "Admin123@"
+            );
+            _list.Add(adminUser);
+        }
 
         public Usuario CrearUsuario(string nombre, string apellido, string email, DateTime fechaNacimiento, string contraseña)
         {
@@ -26,4 +38,7 @@ namespace Servicios
             return usuarioParaDevolver;
         }
     }
+    
+    
+    //
 }
