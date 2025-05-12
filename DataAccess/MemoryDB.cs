@@ -31,4 +31,9 @@ public class MemoryDB
         return this._listUsuarios.Find(usuario => usuario.Nombre == nombre);
     }
     
+    public Usuario GetUsuarioPorEmail(string email)
+    {
+        return this._listUsuarios.Find(usuario => usuario.Email == email);
+    }
+    
 }
