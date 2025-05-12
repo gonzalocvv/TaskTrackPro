@@ -1,0 +1,35 @@
+#Por ChatGPT
+name: CI
+
+on:
+  push:
+    branches: [ develop, main, feature/** ]
+  pull_request:
+    branches: [ develop, main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1) Clona tu repo
+      - uses: actions/checkout@v4
+
+      # 2) Instala .NET 8
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # 3) Restaura paquetes
+      - name: Restore
+        run: dotnet restore
+
+      # 4) Compila en Release
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      # 5) Ejecuta los tests
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
