@@ -99,4 +99,30 @@ public class UsuarioServicesTest
         Assert.AreEqual(result.Email, CrearUsuarioDto.Email);
         Assert.AreEqual(service.SesionActual, result);
     }
+
+    [TestMethod]
+    public void CerarSesionTest()
+    {
+        MemoryDB db = new MemoryDB();
+        UsuarioService service = new UsuarioService(db);
+        
+        var CrearUsuarioDto = new CreateUsuarioDto {
+            Nombre = "Gonzalo",
+            Apellido = "Cabrera",
+            Email = "gonzalo@gmail.com",
+            FechaNacimiento = new(2004, 7, 9),
+            Contraseña = "Ab123456789!"
+        };
+        
+        service.CrearUsuario(CrearUsuarioDto);
+        LoginDto loginDto = new LoginDto
+        {
+            Email = "gonzalo@gmail.com",
+            Contraseña = "Ab123456789!"
+        };
+        service.IniciarSesion(loginDto);
+        service.CerarSesion();
+        Assert.AreEqual(null, service.SesionActual);
+        
+    }
 }

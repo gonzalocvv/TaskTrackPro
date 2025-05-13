@@ -10,7 +10,18 @@ public class UsuarioService
     public UsuarioService(MemoryDB db)
     {
         _db = db;
+        
+        var adminUser = new Usuario(
+            "admin",
+            "User",
+            "admin@admin.com",
+            new DateTime(1990, 1, 1),
+            "Admin123@"
+        );
+        _db.AgregarUsuario(adminUser);
     }
+    
+    
     private Usuario _sesionActual;
     public Usuario SesionActual => _sesionActual;
 
@@ -43,7 +54,7 @@ public class UsuarioService
     {
         if (usuarioParaDevolver == null)
         {
-            throw new ArgumentNullException("El usuario no existe");
+            throw new ArgumentNullException(nameof(usuarioParaDevolver.Email), "El email no puede estar vacío y debe estar registrado.");
         }
     }
     
@@ -65,5 +76,9 @@ public class UsuarioService
             throw new ArgumentException("La contraseña es incorrecta");
         }
     }
-    
+
+    public void  CerarSesion()
+    {
+        _sesionActual = null;
+    }
 }  
