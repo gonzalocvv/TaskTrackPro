@@ -48,9 +48,9 @@
 </EditForm>
 
 @code {
-    
-    private Proyecto nuevoProyecto = new();      
-    private List<Guid> usuariosSeleccionados = new();     
+
+    private Proyecto nuevoProyecto;     
+    private List<string> usuariosSeleccionados = new();
 
     // --- Fuente de datos para el select ---
     private List<GetUsuarioDto> usuariosRegistrados = new();
@@ -65,8 +65,7 @@
     {
         try
         {
-            // nuevoProyecto.MiembroIds = usuariosSeleccionados;  // asigna miembros
-          //  (nuevoProyecto);
+          
 
             
         }
