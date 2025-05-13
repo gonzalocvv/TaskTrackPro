@@ -41,7 +41,7 @@
     <!-- Contraseña -->
     <div class="mb-3">
         <label class="form-label">Contraseña</label>
-        <InputText class="form-control" @bind-Value="user.Password"
+        <InputText class="form-control" @bind-Value="user.Contraseña"
                    type="password" minlength="8" />
     </div>
 
@@ -79,7 +79,15 @@
     {
         try
         {
-            var usuarioCreado = usuarioService.CrearUsuario(user.Nombre, user.Apellido, user.Email, user.FechaNacimiento, user.Password);
+            var UsuarioDto = new CreateUsuarioDto
+            {
+                Nombre = user.Nombre,
+                Apellido = user.Apellido,
+                Email = user.Email,
+                FechaNacimiento = user.FechaNacimiento,
+                Contraseña = user.Contraseña
+            };
+            var usuarioCreado = usuarioService.CrearUsuario(UsuarioDto);
             showSuccessMessage = true;
             errorMessage = null;
             
@@ -87,7 +95,7 @@
             user.Apellido = string.Empty;
             user.Email = string.Empty;
             user.FechaNacimiento = DateTime.MinValue;
-            user.Password = string.Empty;
+            user.Contraseña = string.Empty;
             
 
         }
