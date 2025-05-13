@@ -1,0 +1,85 @@
+@page "/IniciarSesion"
+@using Dtos
+@using Servicios
+
+<PageTitle>Task Track Pro</PageTitle>
+
+<h1 class="mb-4">Inicie Sesion</h1>
+
+
+<EditForm Model="@user" OnValidSubmit="IniciarSesionDesdeFormulario">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <!-- Email -->
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <InputText class="form-control" @bind-Value="user.Email" type="email" />
+        <ValidationMessage For="@(() => user.Email)" />
+    </div>
+
+    <!-- Contraseña -->
+    <div class="mb-3">
+        <label class="form-label">Contraseña</label>
+        <InputText class="form-control" @bind-Value="user.Contraseña" type="password" />
+        <ValidationMessage For="@(() => user.Contraseña)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+    
+</EditForm>
+
+@if (showSuccessMessage)
+{
+    <br/>
+    <div class="alert alert-success" role="alert">
+        Usuario logueado existosamente
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        Los campos deben estar completos correctamente
+    </div>
+}
+
+@code
+{
+    LoginDto user;
+    private bool showSuccessMessage;
+    private string errorMessage;
+
+    [Inject]
+    private UsuarioService usuarioService { get; set; }
+
+    protected override void OnInitialized()
+    {
+        user = new LoginDto();
+    }
+
+    private async Task IniciarSesionDesdeFormulario()
+    {
+        try
+        {
+            var usuarioValido = usuarioService.IniciarSesion(user);
+
+            if (usuarioValido != null)
+            {
+                showSuccessMessage = true;
+                errorMessage = null;
+            }
+            else
+            {
+                errorMessage = "Error al iniciar sesión. Verifica tus credenciales.";
+                showSuccessMessage = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Ocurrió un error: " + ex.Message;
+            showSuccessMessage = false;
+        }
+    }
+}
