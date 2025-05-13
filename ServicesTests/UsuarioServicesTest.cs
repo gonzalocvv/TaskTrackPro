@@ -120,7 +120,7 @@ public class UsuarioServicesTest
             Email = "gonzalo@gmail.com",
             Contraseña = "Ab123456789!"
         };
-        var result = service.CerarSesion();
-        Assert.AreEqual(result, CrearUsuarioDto);
+        service.CerarSesion();
+        Assert.AreEqual(null, service.SesionActual);
     }
 }

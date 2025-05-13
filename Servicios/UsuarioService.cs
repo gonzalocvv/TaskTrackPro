@@ -77,8 +77,8 @@ public class UsuarioService
         }
     }
 
-    public CreateUsuarioDto? CerarSesion()
+    public void  CerarSesion()
     {
-        throw new NotImplementedException();
+        _sesionActual = null;
     }
 }  
