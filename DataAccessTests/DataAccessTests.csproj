@@ -7,6 +7,7 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <RootNamespace>MemoryDBTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,7 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Dtos\Dtos.csproj" />
+      <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+      <ProjectReference Include="..\Dominio\Dominio.csproj" />
       <ProjectReference Include="..\Servicios\Servicios.csproj" />
     </ItemGroup>
 
