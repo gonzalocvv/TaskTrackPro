@@ -76,4 +76,9 @@ public class UsuarioService
             throw new ArgumentException("La contraseña es incorrecta");
         }
     }
+
+    public CreateUsuarioDto? CerarSesion()
+    {
+        throw new NotImplementedException();
+    }
 }  
