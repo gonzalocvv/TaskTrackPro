@@ -60,7 +60,7 @@
 {
     <br/>
     <div class="alert alert-danger" role="alert">
-        Los campos deben estar completos correctamente
+        @errorMessage
     </div>
 }
 
@@ -74,9 +74,37 @@
     {
         user = new CreateUsuarioDto();
     }
-
+    
     private async Task RegisterAsync()
     {
+        if (string.IsNullOrWhiteSpace(user.Nombre))
+        {
+            showSuccessMessage = false;
+            errorMessage = "El nombre no puede ser vacio";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.Apellido))
+        {
+            showSuccessMessage = false;
+            errorMessage = "El apellido no puede ser vacio";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.Email))
+        {
+            showSuccessMessage = false;
+            errorMessage = "El email no puede ser vacio";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.Contraseña))
+        {
+            showSuccessMessage = false;
+            errorMessage = "La contraseña no puede ser vacia";
+            return;
+        }
+
         try
         {
             var UsuarioDto = new CreateUsuarioDto
@@ -90,22 +118,18 @@
             var usuarioCreado = usuarioService.CrearUsuario(UsuarioDto);
             showSuccessMessage = true;
             errorMessage = null;
-            
+
             user.Nombre = string.Empty;
             user.Apellido = string.Empty;
             user.Email = string.Empty;
             user.FechaNacimiento = DateTime.MinValue;
             user.Contraseña = string.Empty;
-            
-
         }
         catch (Exception e)
         {
             showSuccessMessage = false;
             errorMessage = e.Message;
-            
         }
-            
     }
 
 }
