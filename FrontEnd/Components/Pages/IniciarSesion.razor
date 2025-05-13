@@ -63,7 +63,12 @@
     {
         try
         {
-            var usuarioValido = usuarioService.IniciarSesion(user);
+            var UsuarioDto = new LoginDto
+            {
+                Email = user.Email,
+                Contraseña = user.Contraseña
+            };
+            var usuarioValido = usuarioService.IniciarSesion(UsuarioDto);
 
             if (usuarioValido != null)
             {

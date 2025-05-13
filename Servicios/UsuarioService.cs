@@ -10,10 +10,7 @@ public class UsuarioService
     public UsuarioService(MemoryDB db)
     {
         _db = db;
-    }
-    
-    public UsuarioService()
-    {
+        
         var adminUser = new Usuario(
             "admin",
             "User",
@@ -23,6 +20,7 @@ public class UsuarioService
         );
         _db.AgregarUsuario(adminUser);
     }
+    
     
     private Usuario _sesionActual;
     public Usuario SesionActual => _sesionActual;
