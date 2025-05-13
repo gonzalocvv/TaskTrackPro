@@ -11,6 +11,19 @@ public class UsuarioService
     {
         _db = db;
     }
+    
+    public UsuarioService()
+    {
+        var adminUser = new Usuario(
+            "admin",
+            "User",
+            "admin@admin.com",
+            new DateTime(1990, 1, 1),
+            "Admin123@"
+        );
+        _db.AgregarUsuario(adminUser);
+    }
+    
     private Usuario _sesionActual;
     public Usuario SesionActual => _sesionActual;
 
