@@ -41,7 +41,7 @@
 {
     <br/>
     <div class="alert alert-danger" role="alert">
-        Los campos deben estar completos correctamente
+        @errorMessage 
     </div>
 }
 
@@ -51,8 +51,7 @@
     private bool showSuccessMessage;
     private string errorMessage;
 
-    [Inject]
-    private UsuarioService usuarioService { get; set; }
+    [Inject] private UsuarioService usuarioService { get; set; }
 
     protected override void OnInitialized()
     {
@@ -61,30 +60,35 @@
 
     private async Task IniciarSesionDesdeFormulario()
     {
+        
+        if (string.IsNullOrWhiteSpace(user.Email))
+        {
+            showSuccessMessage = false;
+            errorMessage = "El campo email no puede ser vacio";
+            return;
+        }
+        
         try
         {
-            var UsuarioDto = new LoginDto
-            {
-                Email = user.Email,
-                Contraseña = user.Contraseña
-            };
-            var usuarioValido = usuarioService.IniciarSesion(UsuarioDto);
-
-            if (usuarioValido != null)
-            {
-                showSuccessMessage = true;
-                errorMessage = null;
-            }
-            else
-            {
-                errorMessage = "Error al iniciar sesión. Verifica tus credenciales.";
-                showSuccessMessage = false;
-            }
+            var usuarioDto = new LoginDto { Email = user.Email, Contraseña = user.Contraseña };
+            var logged = usuarioService.IniciarSesion(usuarioDto);
+            showSuccessMessage = true;
+            errorMessage = null;
+        }
+        catch (ArgumentNullException)
+        {
+            showSuccessMessage = false;
+            errorMessage = "No existe un usuario registrado con ese email.";
+        }
+        catch (ArgumentException ex) when (ex.Message.Contains("contraseña"))
+        {
+            showSuccessMessage = false;
+            errorMessage = "Contraseña incorrecta.";
         }
         catch (Exception ex)
         {
-            errorMessage = "Ocurrió un error: " + ex.Message;
             showSuccessMessage = false;
+            errorMessage = "Ocurrió un error: " + ex.Message;
         }
     }
 }

@@ -123,5 +123,6 @@ public class UsuarioServicesTest
         service.IniciarSesion(loginDto);
         service.CerarSesion();
         Assert.AreEqual(null, service.SesionActual);
+        
     }
 }

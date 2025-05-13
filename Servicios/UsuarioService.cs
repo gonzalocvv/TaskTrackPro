@@ -54,7 +54,7 @@ public class UsuarioService
     {
         if (usuarioParaDevolver == null)
         {
-            throw new ArgumentNullException("El usuario no existe");
+            throw new ArgumentNullException(nameof(usuarioParaDevolver.Email), "El email no puede estar vacío y debe estar registrado.");
         }
     }
     
