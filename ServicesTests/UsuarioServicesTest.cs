@@ -8,56 +8,66 @@ namespace ServicesTests;
 [TestClass]
 public class UsuarioServicesTest
 {
-    [TestMethod]
-    public void CrearUsuarioTest()
+    private MemoryDB db;
+    private UsuarioService service;
+    private CreateUsuarioDto UsuarioDto;
+    private LoginDto loginDtoAdmin;
+    private LoginDto loginDtoUser;
+
+
+    [TestInitialize]
+    public void setUp()
     {
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
-        
-        var CrearUsuarioDto = new CreateUsuarioDto {
+        db = new MemoryDB();
+        service = new UsuarioService(db);
+        UsuarioDto = new CreateUsuarioDto
+        {
             Nombre = "Gonzalo",
             Apellido = "Cabrera",
             Email = "gonzalo@gmail.com",
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        var result = service.CrearUsuario(CrearUsuarioDto);
-        Assert.AreEqual(result.Nombre, CrearUsuarioDto.Nombre);
+        service.CrearUsuario(UsuarioDto);
+        loginDtoAdmin = new LoginDto
+        {
+            Email = "admin@admin.com",
+            Contraseña = "Admin123@"
+        };
+        loginDtoUser = new LoginDto
+        {
+            Email = UsuarioDto.Email,
+            Contraseña = UsuarioDto.Contraseña
+        };
+    }
+
+    [TestMethod]
+    public void CrearUsuarioTest()
+    {
+        var CrearUsuarioDto1 = new CreateUsuarioDto {
+            Nombre = "Gonzalo",
+            Apellido = "Cabrera",
+            Email = "gonzalo1@gmail.com",
+            FechaNacimiento = new(2004, 7, 9),
+            Contraseña = "Ab123456789!"
+        };
+        var result = service.CrearUsuario(CrearUsuarioDto1);
+        Assert.AreEqual(result.Nombre, CrearUsuarioDto1.Nombre);
     }
 
     [TestMethod]
     public void ContraseñaCifradaTest()
     {
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
-
-        var CrearUsuarioDto = new CreateUsuarioDto {
-            Nombre = "Gonzalo",
-            Apellido = "Cabrera",
-            Email = "gonzalo@gmail.com",
-            FechaNacimiento = new(2004, 7, 9),
-            Contraseña = "Ab123456789!"
-        };
-        var result = service.CrearUsuario(CrearUsuarioDto);
-        Assert.IsTrue(BCrypt.Net.BCrypt.Verify(CrearUsuarioDto.Contraseña, result.Contraseña));
+        var result = service.GetUsuarioPorEmail(UsuarioDto.Email);
+        Assert.AreNotEqual(UsuarioDto.Contraseña, result.Contraseña);
+        Assert.IsTrue(BCrypt.Net.BCrypt.Verify(UsuarioDto.Contraseña, result.Contraseña));
     }
-    
+
     [TestMethod]
     public void GetUsuarioPorNombreTest()
     {
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
-        
-        var CrearUsuarioDto = new CreateUsuarioDto {
-            Nombre = "Gonzalo",
-            Apellido = "Cabrera",
-            Email = "gonzalo@gmail.com",
-            FechaNacimiento = new(2004, 7, 9),
-            Contraseña = "Ab123456789!"
-        };
-        service.CrearUsuario(CrearUsuarioDto);
-        Usuario result = service.GetUsuarioPorNombre(CrearUsuarioDto.Nombre);
-        Assert.AreEqual(result.Nombre, CrearUsuarioDto.Nombre);
+        Usuario result = service.GetUsuarioPorNombre(UsuarioDto.Nombre);
+        Assert.AreEqual(result.Nombre, UsuarioDto.Nombre);
 
     }
     
@@ -65,9 +75,6 @@ public class UsuarioServicesTest
     [ExpectedException(typeof(ArgumentNullException))]
     public void GetUsuarioPorNombreQueNoExisteExcepctionTest()
     {
-        
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
         string nombre = "Nicolas";
         Usuario result = service.GetUsuarioPorNombre(nombre);
 
@@ -76,70 +83,54 @@ public class UsuarioServicesTest
     [TestMethod]
     public void GetUsuarioPorEmailTest()
     {
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
-        
-        var CrearUsuarioDto = new CreateUsuarioDto {
-            Nombre = "Gonzalo",
-            Apellido = "Cabrera",
-            Email = "gonzalo@gmail.com",
-            FechaNacimiento = new(2004, 7, 9),
-            Contraseña = "Ab123456789!"
-        };
-        service.CrearUsuario(CrearUsuarioDto);
-        Usuario result = service.GetUsuarioPorEmail(CrearUsuarioDto.Email);
-        Assert.AreEqual(result.Email, CrearUsuarioDto.Email);
+        Usuario result = service.GetUsuarioPorEmail(UsuarioDto.Email);
+        Assert.AreEqual(result.Email, UsuarioDto.Email);
     }
 
 
     [TestMethod]
     public void IniciarSesionTest()
     {
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
-        
-        var CrearUsuarioDto = new CreateUsuarioDto {
-            Nombre = "Gonzalo",
-            Apellido = "Cabrera",
-            Email = "gonzalo@gmail.com",
-            FechaNacimiento = new(2004, 7, 9),
-            Contraseña = "Ab123456789!"
-        };
-        
-        service.CrearUsuario(CrearUsuarioDto);
-        LoginDto loginDto = new LoginDto
-        {
-            Email = "gonzalo@gmail.com",
-            Contraseña = "Ab123456789!"
-        };
-        var result = service.IniciarSesion(loginDto);
-        Assert.AreEqual(result.Email, CrearUsuarioDto.Email);
+        var result = service.IniciarSesion(loginDtoAdmin);
+        Assert.AreEqual(result.Email, loginDtoAdmin.Email);
         Assert.AreEqual(service.SesionActual, result);
     }
 
     [TestMethod]
     public void CerrarSesionTest()
     {
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
-        
-        var CrearUsuarioDto = new CreateUsuarioDto {
-            Nombre = "Gonzalo",
-            Apellido = "Cabrera",
-            Email = "gonzalo@gmail.com",
-            FechaNacimiento = new(2004, 7, 9),
-            Contraseña = "Ab123456789!"
-        };
-        
-        service.CrearUsuario(CrearUsuarioDto);
-        LoginDto loginDto = new LoginDto
-        {
-            Email = "gonzalo@gmail.com",
-            Contraseña = "Ab123456789!"
-        };
-        service.IniciarSesion(loginDto);
+        service.IniciarSesion(loginDtoAdmin);
         service.CerrarSesion();
         Assert.AreEqual(null, service.SesionActual);
         
+    }
+    
+    
+    [TestMethod]
+    public void IniciarSesionAdminTest()
+    {
+        var result = service.IniciarSesion(loginDtoAdmin);
+        Assert.AreEqual(result.Email, loginDtoAdmin.Email);
+        Assert.AreEqual(service.SesionActual, result);
+    }
+
+    [TestMethod]
+    public void AdminSistemaResetContrasenaUsuarioMenorRango()
+    {
+        var admin = service.GetUsuarioPorEmail("admin@admin.com"); 
+        Usuario usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
+        service.IniciarSesion(loginDtoAdmin);
+        service.ResetearContrasenaDefecto(usuario);
+        Assert.IsTrue(BCrypt.Net.BCrypt.Verify("Valida123@", usuario.Contraseña));
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void AdminSistemaNoPuedeResetearContrasenaDeOtroAdminSistema()
+    {
+        var admin = service.GetUsuarioPorEmail("admin@admin.com"); 
+        var admin2 = new Usuario("Admin2", "Sistema", "admin2@sistema.com", new DateTime(1985, 1, 1), "Admin456@");
+        admin2.AgregarRol(new Rol("Administrador del Sistema"));
+        //admin.ResetearContrasenaDefecto(admin2);
     }
 }

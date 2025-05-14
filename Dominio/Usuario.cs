@@ -138,6 +138,8 @@ public class Usuario
     {
         ValidarFechaNoVacia(fechaNacimiento);
         ValidarFechaAnterioraActual(fechaNacimiento);
+        ValidarRangoEdadValido(fechaNacimiento);
+
     }
 
     private static void ValidarFechaAnterioraActual(DateTime fechaNacimiento)
@@ -145,7 +147,23 @@ public class Usuario
         if (fechaNacimiento > DateTime.Now)
             throw new ArgumentException("La fecha de nacimiento no puede ser futura.");
     }
+    private static void ValidarRangoEdadValido(DateTime fechaNacimiento)
+    {
+        int edad = DateTime.Now.Year - fechaNacimiento.Year;
+        if (fechaNacimiento > DateTime.Now.AddYears(-edad))
+        {
+            edad--;
+        }
 
+        if (edad < 18)
+        {
+            throw new ArgumentException("El usuario debe ser mayor o igual a 18 años.");
+        }
+        if (edad > 100)
+        {
+            throw new ArgumentException("El usuario no puede ser mayor a 100 años.");
+        }
+    }
     private static void ValidarFechaNoVacia(DateTime fechaNacimiento)
     {
         if (fechaNacimiento == DateTime.MinValue)

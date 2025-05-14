@@ -13,6 +13,7 @@ public class Tarea
     private string _descripcion;
     private DateTime? _fechaDeInicio;
     private int _duracion;
+    
     public EstadoTarea Estado { get; private set; }
 
     private List<Tarea> _TareasYoDependo { get; set; } = new List<Tarea>();
