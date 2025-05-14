@@ -41,7 +41,7 @@
     <!-- Contraseña -->
     <div class="mb-3">
         <label class="form-label">Contraseña</label>
-        <InputText class="form-control" @bind-Value="user.Password"
+        <InputText class="form-control" @bind-Value="user.Contraseña"
                    type="password" minlength="8" />
     </div>
 
@@ -60,7 +60,7 @@
 {
     <br/>
     <div class="alert alert-danger" role="alert">
-        Los campos deben estar completos correctamente
+        @errorMessage
     </div>
 }
 
@@ -74,30 +74,62 @@
     {
         user = new CreateUsuarioDto();
     }
-
+    
     private async Task RegisterAsync()
     {
+        if (string.IsNullOrWhiteSpace(user.Nombre))
+        {
+            showSuccessMessage = false;
+            errorMessage = "El nombre no puede ser vacio";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.Apellido))
+        {
+            showSuccessMessage = false;
+            errorMessage = "El apellido no puede ser vacio";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.Email))
+        {
+            showSuccessMessage = false;
+            errorMessage = "El email no puede ser vacio";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.Contraseña))
+        {
+            showSuccessMessage = false;
+            errorMessage = "La contraseña no puede ser vacia";
+            return;
+        }
+
         try
         {
-            var usuarioCreado = usuarioService.CrearUsuario(user.Nombre, user.Apellido, user.Email, user.FechaNacimiento, user.Password);
+            var UsuarioDto = new CreateUsuarioDto
+            {
+                Nombre = user.Nombre,
+                Apellido = user.Apellido,
+                Email = user.Email,
+                FechaNacimiento = user.FechaNacimiento,
+                Contraseña = user.Contraseña
+            };
+            var usuarioCreado = usuarioService.CrearUsuario(UsuarioDto);
             showSuccessMessage = true;
             errorMessage = null;
-            
+
             user.Nombre = string.Empty;
             user.Apellido = string.Empty;
             user.Email = string.Empty;
             user.FechaNacimiento = DateTime.MinValue;
-            user.Password = string.Empty;
-            
-
+            user.Contraseña = string.Empty;
         }
         catch (Exception e)
         {
             showSuccessMessage = false;
             errorMessage = e.Message;
-            
         }
-            
     }
 
 }

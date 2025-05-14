@@ -7,9 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
       <ProjectReference Include="..\Dominio\Dominio.csproj" />
       <ProjectReference Include="..\Dtos\Dtos.csproj" />
       <ProjectReference Include="..\Servicios\Servicios.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Components\App.css">
+        <DependentUpon>App.razor</DependentUpon>
+      </None>
     </ItemGroup>
 
 </Project>
