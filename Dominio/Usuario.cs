@@ -151,7 +151,7 @@ public class Usuario
         if (fechaNacimiento == DateTime.MinValue)
             throw new ArgumentException("La fecha de nacimiento no puede estar vacía.");
     }
-
+    
     private static void ValidarFormatoEmail(string email)
     {
         if (!email.Contains(ArrobaParaEmail) || !email.Contains(PuntoParaEmail))
@@ -165,4 +165,17 @@ public class Usuario
         if (string.IsNullOrWhiteSpace(dato))
             throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
     }
+    public List<Rol> ObtenerRoles()
+    {
+        return _roles;
+    }
+    public void AgregarRol(Rol rol)
+    {
+        if (_roles.Any(r => r.Nombre == rol.Nombre))
+        {
+            throw new InvalidOperationException("El usuario ya tiene este rol.");
+        }
+        _roles.Add(rol);
+    }
+    
 }

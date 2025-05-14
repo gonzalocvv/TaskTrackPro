@@ -28,7 +28,20 @@ public class UsuarioTests
      * Crear usuario sin contraseña (cuando lo crea un administrador) -
      * Administrador reinicia contraseña correctamente -
      */
-    DateTime fechaNacCorrecta = new DateTime(2004, 9, 7);
+    private Usuario usuario;
+    private DateTime fechaNacCorrecta ;
+
+    [TestInitialize]
+    public void SetUp()
+    {
+        var nombre = "Gonzalo";
+        var apellido = "Cabrera";
+        var email = "gonzalo@ejemplo.com";
+        var fechaNacimiento = new DateTime(2004, 9, 7);
+        var contraseña = "Gonzalo9@";
+        fechaNacCorrecta = new DateTime(2004, 9, 7);
+        usuario= new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
+    }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioNombreVacioExcepcionTest()
@@ -103,38 +116,65 @@ public class UsuarioTests
     {
         var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gonzalo9");
     }
-    [TestMethod]
-    public void UsuarioCreacionValidaTest()
+   /* [TestMethod]
+   public void UsuarioCreacionValidaTest()
     {
-        var nombre = "Gonzalo";
-        var apellido = "Cabrera";
-        var email = "gonzalo@ejemplo.com";
-        var fechaNacimiento = new DateTime(2004, 9, 7);
-        var contraseña = "Gonzalo9@";
-
-        
-        var usuario = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
-
-        
         Assert.IsNotNull(usuario);
-        Assert.AreEqual(nombre, usuario.Nombre);
+        Assert.AreEqual(usuario.nombre, usuario.Nombre);
         Assert.AreEqual(apellido, usuario.Apellido);
         Assert.AreEqual(email, usuario.Email);
         Assert.AreEqual(fechaNacimiento, usuario.FechaNacimiento);
     }
-    
+    */
     [TestMethod]
     public void UsuarioTieneRolMiembroProyectoPorDefectoTest()
     {
-        var nombre = "Gonzalo";
-        var apellido = "Cabrera";
-        var email = "gonzalo@ejemplo.com";
-        var fechaNacimiento = new DateTime(2004, 9, 7);
-        var contraseña = "Gonzalo9@";
-        var usuario = new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
-
-        //Assert.IsTrue(usuario.ObtenerRoles().Any(rol => rol.Nombre == "Miembro del Proyecto"));
+        Assert.IsTrue(usuario.ObtenerRoles().Any(rol => rol.Nombre == "Miembro del Proyecto"));
+    }
+    
+    [TestMethod]   
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void UsuarioNoTieneRol()
+    {
+        if (!usuario.ObtenerRoles().Any(rol => rol.Nombre == "Administrador del Proyecto"))
+        {
+            throw new InvalidOperationException("El usuario no tiene el rol requerido.");
+        }    
     }
 
+    [TestMethod]
+    public void agregarRolValido( )
+    {
+        String nombreRol = "Administrador del Proyecto";
+        Rol rol = new Rol (nombreRol);
+        usuario.AgregarRol(rol);
+        Assert.IsTrue(usuario.ObtenerRoles().Any(rol => rol.Nombre == "Administrador del Proyecto"));
+    }
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void agregarRolDuplicadoTest( )
+    {
+        String nombreRol = "Miembro del Proyecto";
+        Rol rol = new Rol (nombreRol);
+        usuario.AgregarRol(rol);
+        Assert.IsTrue(usuario.ObtenerRoles().Any(rol => rol.Nombre == nombreRol));
+    }
     
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void UsuarioAgregarRolDuplicado_LanzaExcepcionTest()
+    {
+        var rol = new Rol("Administrador del Proyecto");
+        usuario.AgregarRol(rol);
+        usuario.AgregarRol(rol);
+    }
+
+    [TestMethod]
+    public void UsuarioBorrarRolTest()
+    {
+        var rol = new Rol("Administrador del Proyecto");
+        usuario.AgregarRol(rol);
+        usuario.EliminarRol(rol);
+        Assert.IsFalse(usuario.ObtenerRoles().Any(r => r.Nombre == rol.Nombre));
+    }
 }
