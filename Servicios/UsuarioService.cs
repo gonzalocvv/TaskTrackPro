@@ -18,6 +18,8 @@ public class UsuarioService
             new DateTime(1990, 1, 1),
             "Admin123@"
         );
+        Rol rolAdmin = new Rol("Administrador del Sistema");
+        adminUser.AgregarRol(rolAdmin);
         _db.AgregarUsuario(adminUser);
     }
     
@@ -77,7 +79,7 @@ public class UsuarioService
         }
     }
 
-    public void  CerarSesion()
+    public void  CerrarSesion()
     {
         _sesionActual = null;
     }
