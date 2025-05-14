@@ -24,7 +24,10 @@ public class UsuarioServicesTest
         var result = service.CrearUsuario(CrearUsuarioDto);
         Assert.AreEqual(result.Nombre, CrearUsuarioDto.Nombre);
     }
-
+    
+    []
+    
+    
     [TestMethod]
     public void GetUsuarioPorNombreTest()
     {

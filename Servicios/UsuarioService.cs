@@ -1,6 +1,7 @@
 ﻿using Dominio;
 using DataAccess;
 using Dtos;
+using BCrypt.Net;
 namespace Servicios;
 
 public class UsuarioService
