@@ -4,8 +4,10 @@ namespace DataAccess;
 
 public class MemoryDB
 {
-    private List<Usuario> _listUsuarios = new List<Usuario>();
-    private List<Proyecto> _listProyectos = new List<Proyecto>();
+    private List<Usuario> _listUsuarios = new ();
+    private List<Proyecto> _listProyectos = new ();
+    private List<Tarea> _listTareas = new ();
+    
 
     public void AgregarUsuario(Usuario usuario)
     {
@@ -56,5 +58,14 @@ public class MemoryDB
     public Proyecto GetListaProyectosPorNombre(string nombre)
     {
         return _listProyectos.Find(proyecto => proyecto.Nombre == nombre);
+    }
+
+    public void AgregarTarea(Tarea tarea)
+    {
+        if (tarea == null)
+        {
+            throw new ArgumentNullException(nameof(tarea), "La tarea no puede ser nula.");
+        }
+        _listTareas.Add(tarea);
     }
 }

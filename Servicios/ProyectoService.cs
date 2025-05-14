@@ -29,4 +29,22 @@ public class ProyectoService
         }
         return proyectoParaDevolver;
     }
+    public List<GetProyectoDto> GetListaProyectos()
+    {
+        
+        List<GetProyectoDto> listaProyectos = new();
+        foreach (var proyecto in _db.GetListaProyectos())
+        {
+            GetProyectoDto proyectoDto = new GetProyectoDto
+            {
+                Nombre = proyecto.Nombre,
+                Descripcion = proyecto.Descripcion,
+                FechaInicio = proyecto.FechaInicio,
+                AdministradorEmail = proyecto.AdministradorP.Email,
+                MiembroEmails = proyecto.MiembrosProyecto.Select(m => m.Email).ToList()
+            };
+            listaProyectos.Add(proyectoDto);
+        }
+        return listaProyectos;
+    }
 }

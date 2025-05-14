@@ -8,6 +8,7 @@ public class Proyecto
     private DateTime _fechaInicio;
     private Usuario _administradorP;
     private List<Usuario> _miembrosProyecto = new();
+    private List<Tarea> _tareas = new();
 
     public string Nombre
     {
@@ -51,6 +52,7 @@ public class Proyecto
         }
     }
     public List<Usuario> MiembrosProyecto => _miembrosProyecto;
+    public List<Tarea> Tareas => _tareas;
     
     public Proyecto(string nombre, string descripcion, DateTime fechaInicio, Usuario administradorP)
     {
@@ -111,6 +113,24 @@ public class Proyecto
         if (fechaInicio < DateTime.Now)
         {
             throw new ArgumentException("La fecha de inicio tiene que ser mayor o igual a la actual");
+        }
+    }
+    public void AgregarTarea(Tarea tarea)
+    {
+        ValidarTareaNoNull(tarea);
+        _tareas.Add(tarea);
+    }
+    public void RemoverTarea(Tarea tarea)
+    {
+        ValidarTareaNoNull(tarea);
+        _tareas.Remove(tarea);
+    }
+
+    private static void ValidarTareaNoNull(Tarea tarea)
+    {
+        if (tarea == null)
+        {
+            throw new ArgumentNullException(nameof(tarea), "La tarea no puede ser nula.");
         }
     }
 }

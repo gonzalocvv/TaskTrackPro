@@ -9,6 +9,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddSingleton<MemoryDB>();
 builder.Services.AddSingleton<UsuarioService>();
 builder.Services.AddSingleton<ProyectoService>();
+builder.Services.AddSingleton<TareaService>();
 
 
 var app = builder.Build();
