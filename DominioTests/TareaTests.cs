@@ -9,21 +9,21 @@ public class TareaTests
     Usuario pepe   = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
     Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [ExpectedException(typeof(ArgumentNullException))]
     public void TareaTituloVacioExceptionTest()
     {
         var tarea = new Tarea("", "Cotizar reforma del frente del edificio", ejFechaInicio, 10);
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [ExpectedException(typeof(ArgumentNullException))]
     public void TareaDescripcionVacioExceptionTest()
     {
         var tarea = new Tarea("Cotizar", "", ejFechaInicio, 10);
     }
     
     [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
+    [ExpectedException(typeof(InvalidOperationException))]
     public void TareaFechaDeInicioValidaExceptionTest()
     {
         DateTime fechaPasada = DateTime.Today.AddDays(-1);

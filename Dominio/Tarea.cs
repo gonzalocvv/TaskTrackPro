@@ -142,13 +142,13 @@ public class Tarea
     private static void ValidarCamposString(string dato, string nombreCampo)
     {
         if (string.IsNullOrWhiteSpace(dato))
-            throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
+            throw new ArgumentNullException($"{nombreCampo} no puede ser vacío.");
     }
 
     private static void ValidarFechaDeInicioValida(DateTime fechaDeInicio)
     {
         if (fechaDeInicio < DateTime.Today)
-            throw new ArgumentException("La fecha de inicio no puede ser anterior a hoy.");
+            throw new InvalidOperationException("La fecha de inicio no puede ser anterior a hoy.");
     }
     public void CambiarEstado(EstadoTarea nuevoEstado)
     {
