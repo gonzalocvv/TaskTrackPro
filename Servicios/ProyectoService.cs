@@ -22,7 +22,7 @@ public class ProyectoService
 
     public Proyecto GetProyectoPorNombre(string nombre)
     {
-        var proyectoParaDevolver = _db.ObtenerListaProyectos(proyecto => proyecto.Nombre == nombre);
+        var proyectoParaDevolver = _db.GetListaProyectosPorNombre(nombre);
         if (proyectoParaDevolver == null)
         {
             throw new ArgumentNullException("El proyecto no existe");

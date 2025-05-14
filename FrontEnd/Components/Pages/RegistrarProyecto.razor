@@ -1,4 +1,5 @@
 @page "/registrarProyecto"
+@using System.Linq.Expressions
 @using Dtos
 @using Servicios
 @inject UsuarioService UsuarioService
@@ -37,10 +38,10 @@
     <div class="mb-3">
         <label class="form-label">Miembros del proyecto</label>
         <select multiple class="form-select" style="height:200px"
-                @bind="usuariosSeleccionados">
-            @foreach (var u in usuariosRegistrados)
+                @bind="emailsSeleccionados">
+            @foreach (var usuario in usuariosRegistrados)
             {
-                <option value="@u.Email">@u.Nombre (@u.Email)</option>
+                <option value="@usuario.Email">@usuario.Nombre (@usuario.Email)</option>
             }
         </select>
         <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
@@ -49,35 +50,63 @@
     <button type="submit" class="btn btn-success w-100">Crear proyecto</button>
 </EditForm>
 
-@if (!string.IsNullOrEmpty(mensaje))
+
+@if (showSuccessMessage)
 {
-    <br />
-    <div class="alert alert-success">@mensaje</div>
+    <br/>
+    <div class="alert alert-success" role="alert">
+        Proyecto registrado con éxito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        @errorMessage 
+    </div>
 }
 
 @code {
-    private CrearProyectoDto nuevoProyecto;
-    private List<string> usuariosSeleccionados = new();
+    private CrearProyectoDto nuevoProyecto = new();
     private List<GetUsuarioDto> usuariosRegistrados = new();
-    private string mensaje;
+    private string[] emailsSeleccionados = Array.Empty<string>();
+    private string errorMessage;
+    private bool showSuccessMessage = false;
 
     protected override async Task OnInitializedAsync()
     {
-        usuariosRegistrados = await UsuarioService.GetUsuariosRegistrados();
+        // crear varios usuarios para testear
+        
+        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados();
+        
     }
 
     private async Task CrearProyectoDesdeFormulario()
     {
+        if (UsuarioService.SesionActual is null)
+        {
+            errorMessage = "Debe iniciar sesión para crear proyectos.";
+            return;
+        }
         var administrador = UsuarioService.SesionActual;
-        var miembros = usuariosSeleccionados.Select(mail => UsuarioService.GetUsuarioPorEmail(mail)).ToList();
-        if (!miembros.Contains(administrador)) 
-            miembros.Add(administrador);
+        nuevoProyecto.AdministradorEmail = administrador.Email;
         
-        miembros.ForEach(nuevoProyecto.AgregarMiembro);
-
-        await ProyectoService.CrearProyecto(nuevoProyecto);
-        mensaje = "Proyecto creado con éxito.";
-        nuevoProyecto = new();          // limpia formulario
-        usuariosSeleccionados.Clear();  // limpia selección
+        if (!nuevoProyecto.MiembroEmails.Contains(administrador.Email)) 
+            nuevoProyecto.MiembroEmails.Add(administrador.Email);
+        nuevoProyecto.MiembroEmails = emailsSeleccionados.ToList();
+        try
+        { 
+            ProyectoService.CrearProyecto(nuevoProyecto);
+            errorMessage = "Proyecto creado con éxito.";
+            nuevoProyecto = new();
+            emailsSeleccionados = Array.Empty<string>();
+            showSuccessMessage = true;
+        }
+        catch(Exception excepcion)
+        {
+            errorMessage = $"Error: {excepcion.Message}";
+        }
+        
     }
 }

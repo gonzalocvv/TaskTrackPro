@@ -69,7 +69,7 @@ public class MemoryDBTests
         var usuarioObtenido = db.GetUsuarioPorEmail(usuario.Email);
         Assert.AreEqual(usuario, usuarioObtenido);
     }
-    
+
     [TestMethod]
     public void ObtenerListaUsuariosTest()
     {
@@ -80,7 +80,7 @@ public class MemoryDBTests
             "Ab123456789!");
         db.AgregarUsuario(usuario);
         db.AgregarUsuario(usuario2);
-        var listaUsuarios = db.GetListaUsuarios();
+        var listaUsuarios = db.GetListaUsuariosRegistrados();
         Assert.AreEqual(2, listaUsuarios.Count);
-    
+    }
 }

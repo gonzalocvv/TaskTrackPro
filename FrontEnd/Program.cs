@@ -8,6 +8,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddSingleton<MemoryDB>();
 builder.Services.AddSingleton<UsuarioService>();
+builder.Services.AddSingleton<ProyectoService>();
 
 
 var app = builder.Build();
@@ -20,7 +21,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+
 
 app.UseStaticFiles();
 app.UseAntiforgery();

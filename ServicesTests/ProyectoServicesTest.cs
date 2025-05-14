@@ -17,6 +17,7 @@ public class ProyectoServicesTest
         Usuario administradorP = new Usuario("Admin", "Admin", "admin@gmail.com", new DateTime(1990, 1, 1), "Admin123!");
         MemoryDB db = new MemoryDB();
         ProyectoService service = new ProyectoService(db);
+        db.AgregarUsuario(administradorP);
         CrearProyectoDto proyectoDto = new CrearProyectoDto
         {
             Nombre = nombre,
@@ -45,6 +46,7 @@ public class ProyectoServicesTest
             FechaInicio = fechaInicio,
             AdministradorEmail = administradorP.Email
         };
+        db.AgregarUsuario(administradorP);
         service.CrearProyecto(proyectoDto);
         Proyecto result = service.GetProyectoPorNombre(nombre);
         Assert.AreEqual(result.Nombre, nombre);
