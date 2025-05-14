@@ -21,10 +21,9 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
+        service.CrearUsuario(CrearUsuarioDto);
         Assert.IsTrue(db.ExisteUsuario(CrearUsuarioDto.Email));
     }
-    
-    []
     
     
     [TestMethod]
