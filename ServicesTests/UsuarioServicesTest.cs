@@ -23,7 +23,10 @@ public class UsuarioServicesTest
         };
         Assert.IsTrue(db.ExisteUsuario(CrearUsuarioDto.Email));
     }
-
+    
+    []
+    
+    
     [TestMethod]
     public void GetUsuarioPorNombreTest()
     {
@@ -100,7 +103,7 @@ public class UsuarioServicesTest
     }
 
     [TestMethod]
-    public void CerarSesionTest()
+    public void CerrarSesionTest()
     {
         MemoryDB db = new MemoryDB();
         UsuarioService service = new UsuarioService(db);
@@ -120,7 +123,7 @@ public class UsuarioServicesTest
             Contraseña = "Ab123456789!"
         };
         service.IniciarSesion(loginDto);
-        service.CerarSesion();
+        service.CerrarSesion();
         Assert.AreEqual(null, service.SesionActual);
         
     }

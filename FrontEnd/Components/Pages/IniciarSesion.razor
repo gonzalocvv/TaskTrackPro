@@ -20,13 +20,7 @@
     
     <div class="mb-3">
         <label class="form-label">Contraseña</label>
-        <InputText class="form-control"
-                   @bind-Value="user.Contraseña"
-                   type="password"
-                   required
-                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$"
-                   title="Mínimo 8 caracteres, al menos una mayúscula, una minúscula y un carácter especial." />
-        <ValidationMessage For="@(() => user.Contraseña)" />
+        <InputText class="form-control" @bind-Value="user.Contraseña" type="password" />
     </div>
 
     <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
@@ -69,6 +63,13 @@
         {
             showSuccessMessage = false;
             errorMessage = "El campo email no puede ser vacio";
+            return;
+        }
+        
+        if (string.IsNullOrWhiteSpace(user.Contraseña))
+        {
+            showSuccessMessage = false;
+            errorMessage = "Introduzca una contraseña\n";
             return;
         }
         

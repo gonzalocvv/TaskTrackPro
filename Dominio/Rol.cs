@@ -22,5 +22,19 @@ public class Rol
         }
         Nombre = nombre;
     }
+    
+    public override bool Equals(object obj)
+    {
+        if (obj is Rol otroRol)
+        {
+            return Nombre == otroRol.Nombre;
+        }
+        return false;
+    }
 
+    public override int GetHashCode()
+    {
+        return Nombre.GetHashCode();
+    }
 }
+

@@ -1,6 +1,7 @@
 ﻿using Dominio;
 using DataAccess;
 using Dtos;
+using BCrypt.Net;
 namespace Servicios;
 
 public class UsuarioService
@@ -18,6 +19,8 @@ public class UsuarioService
             new DateTime(1990, 1, 1),
             "Admin123@"
         );
+        Rol rolAdmin = new Rol("Administrador del Sistema");
+        adminUser.AgregarRol(rolAdmin);
         _db.AgregarUsuario(adminUser);
         _sesionActual = adminUser;
     }
@@ -78,7 +81,7 @@ public class UsuarioService
         }
     }
 
-    public void  CerarSesion()
+    public void  CerrarSesion()
     {
         _sesionActual = null;
     }

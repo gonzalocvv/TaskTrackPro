@@ -46,4 +46,35 @@ public class RolTest
         Rol rol = new Rol(nombreRol);
         Assert.AreEqual(nombreRol, rol.Nombre);
     }
+    
+    [TestMethod]
+    public void CrearRolValido()
+    {
+        String nombreRol = "Administrador del Proyecto";
+        Rol rol = new Rol(nombreRol);
+        Assert.AreEqual(nombreRol, rol.Nombre);
+    }
+    
+    [TestMethod]
+    public void CrearRolMiembroProyectoValido()
+    {
+        String nombreRol = "Miembro del Proyecto";
+        Rol rol = new Rol(nombreRol);
+        Assert.AreEqual(nombreRol, rol.Nombre);
+    }
+    [TestMethod]
+    public void CrearRolAdminSistemaValido()
+    {
+        String nombreRol = "Administrador del Sistema";
+        Rol rol = new Rol(nombreRol);
+        Assert.AreEqual(nombreRol, rol.Nombre);
+    }
+    [TestMethod]
+    public void CrearRolAdminProyectoValido()
+    {
+        String nombreRol = "Administrador del Proyecto";
+        Rol rol = new Rol(nombreRol);
+        Assert.AreEqual(nombreRol, rol.Nombre);
+    }
+
  }
