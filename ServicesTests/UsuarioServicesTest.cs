@@ -152,12 +152,11 @@ public class UsuarioServicesTest
     }
 
     [TestMethod]
-    public void ObtenerListaUsuariosRegistrados()
-    {
+    public void ObtenerListaUsuariosRegistrados(){
         MemoryDB db = new MemoryDB();
         UsuarioService service = new UsuarioService(db);
 
-        var CrearUsuarioDto = new CreateUsuarioDto
+        var usuario1 = new CreateUsuarioDto
         {
             Nombre = "Gonzalo",
             Apellido = "Cabrera",
@@ -165,7 +164,8 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        var CrearUsuarioDto2 = new CreateUsuarioDto
+
+        var usuario2 = new CreateUsuarioDto
         {
             Nombre = "Nicolas",
             Apellido = "Cabrera",
@@ -173,16 +173,18 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        service.CrearUsuario(CrearUsuarioDto);
-        service.CrearUsuario(CrearUsuarioDto2);
-        var result = db.GetListaUsuariosRegistrados();
+        
+        service.CrearUsuario(usuario1);
+        service.CrearUsuario(usuario2);
+        var result = service.GetListaUsuariosRegistrados();
+        
         Assert.AreEqual(3, result.Count);
-        Assert.AreEqual(result[1].Email, CrearUsuarioDto.Email);
-        Assert.AreEqual(result[2].Email, CrearUsuarioDto2.Email);
+        Assert.AreEqual(usuario1.Email, result[1].Email);
+        Assert.AreEqual(usuario2.Email, result[2].Email);
     }
     
     [TestMethod]
-    public void ValidarContraseña_ContraseñaIncorrecta_LanzaExcepcion()
+    public void ValidarContraseñaIncorrectaTest()
     {
         MemoryDB db = new MemoryDB();
         UsuarioService service = new UsuarioService(db);
