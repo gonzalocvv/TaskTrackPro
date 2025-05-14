@@ -180,4 +180,32 @@ public class UsuarioServicesTest
         Assert.AreEqual(result[1].Email, CrearUsuarioDto.Email);
         Assert.AreEqual(result[2].Email, CrearUsuarioDto2.Email);
     }
+    
+    [TestMethod]
+    public void ValidarContraseña_ContraseñaIncorrecta_LanzaExcepcion()
+    {
+        MemoryDB db = new MemoryDB();
+        UsuarioService service = new UsuarioService(db);
+        
+        
+        var CrearUsuarioDto = new CreateUsuarioDto
+        {
+            Nombre = "Gonzalo",
+            Apellido = "Cabrera",
+            Email = "gonzalo@gmail.com",
+            FechaNacimiento = new(2004, 7, 9),
+            Contraseña = "Ab123456789!"
+        };
+        service.CrearUsuario(CrearUsuarioDto);
+        
+        string email = "gonzalo@gmail.com";
+        string contraseñaIngresada = "Incorrecta456@";
+        Usuario usuario = service.GetUsuarioPorEmail(email);
+        
+        
+        var exception = Assert.ThrowsException<ArgumentException>(() =>  service.ValidarContraseña(contraseñaIngresada, usuario));
+        Assert.AreEqual("La contraseña es incorrecta", exception.Message);
+        
+    }
 }
+

@@ -76,7 +76,7 @@ public class UsuarioService
         return usuario;
     }
 
-    private static void ValidarContraseña(string contraseña, Usuario usuario)
+    public void ValidarContraseña(string contraseña, Usuario usuario)
     {
         if (usuario.Contraseña != contraseña)
         {
