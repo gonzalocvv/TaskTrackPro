@@ -6,8 +6,8 @@ public class GetProyectoDto
     public string Descripcion;
     public DateTime FechaInicio;
 
-    public string AdministradorEmail  { get; set; } = string.Empty;
-    public List<string> MiembroEmails { get; set; } = new();
+    public string AdministradorEmail;
+    public List<string> MiembroEmails;
 }
 public class CrearProyectoDto
 {
@@ -15,6 +15,6 @@ public class CrearProyectoDto
     public string Descripcion;
     public DateTime FechaInicio;
 
-    public string AdministradorEmail  { get; set; } = string.Empty;
-    public List<string> MiembroEmails { get; set; } = new();
+    public string AdministradorEmail;
+    public List<string> MiembroEmails;
 }
