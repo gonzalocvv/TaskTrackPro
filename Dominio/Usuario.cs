@@ -177,5 +177,16 @@ public class Usuario
         }
         _roles.Add(rol);
     }
-    
+
+    public void EliminarRol(Rol rol)
+    {
+        if (_roles.Any(r => r.Nombre == rol.Nombre))
+        {
+            _roles.Remove(rol);
+        }
+        else
+        {
+            throw new InvalidOperationException("El usuario no tiene este rol.");
+        }
+    }
 }

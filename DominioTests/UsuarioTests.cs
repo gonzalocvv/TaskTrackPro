@@ -177,4 +177,13 @@ public class UsuarioTests
         usuario.EliminarRol(rol);
         Assert.IsFalse(usuario.ObtenerRoles().Any(r => r.Nombre == rol.Nombre));
     }
+
+    [TestMethod] 
+    [ExpectedException(typeof(InvalidOperationException))]
+
+    public void UsuarioBorrarRolInvalidoTest()
+    {
+        var rol = new Rol("Administrador del Proyecto");
+        usuario.EliminarRol(rol);
+    }
 }
