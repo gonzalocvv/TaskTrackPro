@@ -12,7 +12,7 @@ public class UsuarioService
     {
         _db = db;
         
-        var adminUser = new Usuario(
+        Usuario adminUser = new Usuario(
             "admin",
             "User",
             "admin@admin.com",
@@ -22,6 +22,7 @@ public class UsuarioService
         Rol rolAdmin = new Rol("Administrador del Sistema");
         adminUser.AgregarRol(rolAdmin);
         _db.AgregarUsuario(adminUser);
+        _sesionActual = adminUser;
     }
     
     
@@ -29,14 +30,14 @@ public class UsuarioService
     public Usuario SesionActual => _sesionActual;
 
     
-    public Usuario CrearUsuario(CreateUsuarioDto UsuarioDto)
+    public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
         Usuario nuevoUsuario = new Usuario(UsuarioDto.Nombre, UsuarioDto.Apellido, UsuarioDto.Email,
             UsuarioDto.FechaNacimiento, UsuarioDto.Contraseña);
         if (_db.ExisteUsuario(nuevoUsuario.Email))
             throw new ArgumentException("El usuario ya existe");
         _db.AgregarUsuario(nuevoUsuario);
-        return nuevoUsuario;
+        
     }
 
 
@@ -62,10 +63,10 @@ public class UsuarioService
     }
     
     public Usuario IniciarSesion(LoginDto loginDto)
-    {
-        var email = loginDto.Email;
-        var contraseña = loginDto.Contraseña;
-        var usuario = GetUsuarioPorEmail(email);
+    { 
+        string email = loginDto.Email;
+        string contraseña = loginDto.Contraseña;
+        Usuario usuario = GetUsuarioPorEmail(email);
         UsuarioNullDevuelveExcepcion(usuario);
         ValidarContraseña(contraseña, usuario);
         _sesionActual = usuario;
@@ -83,5 +84,19 @@ public class UsuarioService
     public void  CerrarSesion()
     {
         _sesionActual = null;
+    }
+    public List<GetUsuarioDto> GetListaUsuariosRegistrados()
+    {
+        List<GetUsuarioDto> listaUsuarios = new List<GetUsuarioDto>();
+        foreach (var usuario in _db.GetListaUsuariosRegistrados())
+        {
+            listaUsuarios.Add(new GetUsuarioDto
+            {
+                Nombre = usuario.Nombre,
+                Apellido = usuario.Apellido,
+                Email = usuario.Email,
+            });
+        }
+        return listaUsuarios;
     }
 }  

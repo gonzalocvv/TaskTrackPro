@@ -1,6 +1,8 @@
 @page "/registrarProyecto"
-@using Dominio
 @using Dtos
+@using Servicios
+@inject UsuarioService UsuarioService
+@inject ProyectoService ProyectoService
 @attribute [StreamRendering]
 
 <PageTitle>Crear proyecto</PageTitle>
@@ -11,68 +13,99 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    
+    <!-- Nombre -->
     <div class="mb-3">
         <label class="form-label">Nombre</label>
         <InputText class="form-control" @bind-Value="nuevoProyecto.Nombre" />
     </div>
 
-    
+    <!-- Descripción -->
     <div class="mb-3">
-        <label class="form-label">Descripción (máx. 400 caracteres)</label>
-        <InputTextArea class="form-control" @bind-Value="nuevoProyecto.Descripcion"
-                       maxlength="400" rows="4" />
+        <label class="form-label">Descripción (máx. 400 caracteres)</label>
+        <InputTextArea class="form-control"
+                       rows="4" maxlength="400"
+                       @bind-Value="nuevoProyecto.Descripcion" />
     </div>
 
-    
+    <!-- Fecha de inicio -->
     <div class="mb-3">
         <label class="form-label">Fecha de inicio estimada</label>
         <InputDate class="form-control" @bind-Value="nuevoProyecto.FechaInicio" />
     </div>
 
-    <!-- Selección de miembros -->
+    <!-- Miembros -->
     <div class="mb-3">
         <label class="form-label">Miembros del proyecto</label>
-        <!-- multiselect con Bootstrap -->
-        <select multiple class="form-select" style="height: 200px;"
-                @bind="usuariosSeleccionados">
-            @foreach (var u in usuariosRegistrados)
+        <select multiple class="form-select" style="height:200px"
+                @bind="emailsSeleccionados">
+            @foreach (var usuario in usuariosRegistrados)
             {
-                <option value="@u.Email">@u.Nombre (@u.Email)</option>
+                <option value="@usuario.Email">@usuario.Nombre (@usuario.Email)</option>
             }
         </select>
-        <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
+        <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
     </div>
 
     <button type="submit" class="btn btn-success w-100">Crear proyecto</button>
 </EditForm>
 
-@code {
-    
-    private Proyecto nuevoProyecto = new();      
-    private List<Guid> usuariosSeleccionados = new();     
 
-    // --- Fuente de datos para el select ---
+@if (showSuccessMessage)
+{
+    <br/>
+    <div class="alert alert-success" role="alert">
+        Proyecto registrado con éxito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        @errorMessage 
+    </div>
+}
+
+@code {
+    private CrearProyectoDto nuevoProyecto = new();
     private List<GetUsuarioDto> usuariosRegistrados = new();
+    private string[] emailsSeleccionados = Array.Empty<string>();
+    private string errorMessage;
+    private bool showSuccessMessage = false;
 
     protected override async Task OnInitializedAsync()
     {
-        // Trae la lista de usuarios registrados para poblar el <select>
-        // usuariosRegistrados = await UsuarioSvc.GetAllAsync();
+        var adminEmail = UsuarioService.SesionActual?.Email;
+        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != adminEmail).ToList();;
+        
     }
 
     private async Task CrearProyectoDesdeFormulario()
     {
+        showSuccessMessage = false;
+        if (UsuarioService.SesionActual is null)
+        {
+            errorMessage = "Debe iniciar sesión para crear proyectos.";
+            return;
+        }
+        var administrador = UsuarioService.SesionActual;
+        nuevoProyecto.AdministradorEmail = administrador.Email;
+        
+        if (!nuevoProyecto.MiembroEmails.Contains(administrador.Email)) 
+            nuevoProyecto.MiembroEmails.Add(administrador.Email);
+        nuevoProyecto.MiembroEmails = emailsSeleccionados.ToList();
         try
-        {
-            // nuevoProyecto.MiembroIds = usuariosSeleccionados;  // asigna miembros
-          //  (nuevoProyecto);
-
-            
+        { 
+            ProyectoService.CrearProyecto(nuevoProyecto);
+            nuevoProyecto = new();
+            emailsSeleccionados = Array.Empty<string>();
+            showSuccessMessage = true;
+            errorMessage = null;
         }
-        catch (Exception ex)
+        catch(Exception excepcion)
         {
-            
+            errorMessage = $"{excepcion.Message}";
         }
+        
     }
 }

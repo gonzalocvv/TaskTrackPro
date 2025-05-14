@@ -21,11 +21,9 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        var result = service.CrearUsuario(CrearUsuarioDto);
-        Assert.AreEqual(result.Nombre, CrearUsuarioDto.Nombre);
+        service.CrearUsuario(CrearUsuarioDto);
+        Assert.IsTrue(db.ExisteUsuario(CrearUsuarioDto.Email));
     }
-    
-    []
     
     
     [TestMethod]
@@ -127,5 +125,35 @@ public class UsuarioServicesTest
         service.CerrarSesion();
         Assert.AreEqual(null, service.SesionActual);
         
+    }
+
+    [TestMethod]
+    public void ObtenerListaUsuariosRegistrados()
+    {
+        MemoryDB db = new MemoryDB();
+        UsuarioService service = new UsuarioService(db);
+
+        var CrearUsuarioDto = new CreateUsuarioDto
+        {
+            Nombre = "Gonzalo",
+            Apellido = "Cabrera",
+            Email = "gonzalo@gmail.com",
+            FechaNacimiento = new(2004, 7, 9),
+            Contraseña = "Ab123456789!"
+        };
+        var CrearUsuarioDto2 = new CreateUsuarioDto
+        {
+            Nombre = "Nicolas",
+            Apellido = "Cabrera",
+            Email = "nicolas@gmail.com",
+            FechaNacimiento = new(2004, 7, 9),
+            Contraseña = "Ab123456789!"
+        };
+        service.CrearUsuario(CrearUsuarioDto);
+        service.CrearUsuario(CrearUsuarioDto2);
+        var result = db.GetListaUsuariosRegistrados();
+        Assert.AreEqual(3, result.Count);
+        Assert.AreEqual(result[1].Email, CrearUsuarioDto.Email);
+        Assert.AreEqual(result[2].Email, CrearUsuarioDto2.Email);
     }
 }

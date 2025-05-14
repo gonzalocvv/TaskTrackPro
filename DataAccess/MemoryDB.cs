@@ -36,5 +36,25 @@ public class MemoryDB
     {
         return this._listUsuarios.Find(usuario => usuario.Email == email);
     }
-    
+    public List<Usuario> GetListaUsuariosRegistrados()
+    {
+        return _listUsuarios;
+    }
+    public List<Proyecto> GetListaProyectos()
+    {
+        return _listProyectos;
+    }
+    public void AgregarProyecto(Proyecto proyecto)
+    {
+        if (proyecto == null)
+        {
+            throw new ArgumentNullException(nameof(proyecto), "El proyecto no puede ser nulo.");
+        }
+
+        _listProyectos.Add(proyecto);
+    }
+    public Proyecto GetListaProyectosPorNombre(string nombre)
+    {
+        return _listProyectos.Find(proyecto => proyecto.Nombre == nombre);
+    }
 }

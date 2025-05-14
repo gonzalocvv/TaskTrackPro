@@ -68,7 +68,7 @@
 @code {
     CreateUsuarioDto user;
     private bool showSuccessMessage = false;
-    private string errorMessage;
+    private string? errorMessage;
 
     protected override void OnInitialized()
     {
@@ -115,7 +115,7 @@
                 FechaNacimiento = user.FechaNacimiento,
                 Contraseña = user.Contraseña
             };
-            var usuarioCreado = usuarioService.CrearUsuario(UsuarioDto);
+            usuarioService.CrearUsuario(UsuarioDto);
             showSuccessMessage = true;
             errorMessage = null;
 
