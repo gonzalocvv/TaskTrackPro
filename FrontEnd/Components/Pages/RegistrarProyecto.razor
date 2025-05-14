@@ -1,71 +1,55 @@
 @page "/registrarProyecto"
 @using Dtos
 @using Servicios
+@inject NavigationManager NavigationManager
 @inject UsuarioService UsuarioService
 @inject ProyectoService ProyectoService
 @attribute [StreamRendering]
 
 <PageTitle>Crear proyecto</PageTitle>
 
-<h1 class="mb-4">Crear proyecto</h1>
-
-<EditForm Model="@nuevoProyecto" OnValidSubmit="CrearProyectoDesdeFormulario">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <!-- Nombre -->
-    <div class="mb-3">
-        <label class="form-label">Nombre</label>
-        <InputText class="form-control" @bind-Value="nuevoProyecto.Nombre" />
-    </div>
-
-    <!-- Descripción -->
-    <div class="mb-3">
-        <label class="form-label">Descripción (máx. 400 caracteres)</label>
-        <InputTextArea class="form-control"
-                       rows="4" maxlength="400"
-                       @bind-Value="nuevoProyecto.Descripcion" />
-    </div>
-
-    <!-- Fecha de inicio -->
-    <div class="mb-3">
-        <label class="form-label">Fecha de inicio estimada</label>
-        <InputDate class="form-control" @bind-Value="nuevoProyecto.FechaInicio" />
-    </div>
-
-    <!-- Miembros -->
-    <div class="mb-3">
-        <label class="form-label">Miembros del proyecto</label>
-        <select multiple class="form-select" style="height:200px"
-                @bind="emailsSeleccionados">
-            @foreach (var usuario in usuariosRegistrados)
-            {
-                <option value="@usuario.Email">@usuario.Nombre (@usuario.Email)</option>
-            }
-        </select>
-        <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
-    </div>
-
-    <button type="submit" class="btn btn-success w-100">Crear proyecto</button>
-</EditForm>
-
-
-@if (showSuccessMessage)
+@if (UsuarioService.SesionActual != null)
 {
-    <br/>
-    <div class="alert alert-success" role="alert">
-        Proyecto registrado con éxito
-    </div>
-}
+    <h1 class="mb-4">Crear proyecto</h1>
 
-@if (!string.IsNullOrEmpty(errorMessage))
-{
-    <br/>
-    <div class="alert alert-danger" role="alert">
-        @errorMessage 
-    </div>
-}
+    <EditForm Model="@nuevoProyecto" OnValidSubmit="CrearProyectoDesdeFormulario">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <InputText class="form-control" @bind-Value="nuevoProyecto.Nombre" />
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Descripción (máx. 400 caracteres)</label>
+            <InputTextArea class="form-control"
+                           rows="4" maxlength="400"
+                           @bind-Value="nuevoProyecto.Descripcion" />
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Fecha de inicio estimada</label>
+            <InputDate class="form-control" @bind-Value="nuevoProyecto.FechaInicio" />
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label">Miembros del proyecto</label>
+            <select multiple class="form-select" style="height:200px"
+                    @bind="emailsSeleccionados">
+                @foreach (var usuario in usuariosRegistrados)
+                {
+                    <option value="@usuario.Email">
+                        @usuario.Nombre (@usuario.Email)
+                    </option>
+                }
+            </select>
+            <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
+        </div>
 
+        <button type="submit" class="btn btn-success w-100">Crear proyecto</button>
+    </EditForm>
+    
 @code {
     private CrearProyectoDto nuevoProyecto = new();
     private List<GetUsuarioDto> usuariosRegistrados = new();
@@ -75,37 +59,67 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var adminEmail = UsuarioService.SesionActual?.Email;
-        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != adminEmail).ToList();;
+        if (UsuarioService.SesionActual == null)
+        {
+            NavigationManager.NavigateTo("/iniciarSesion", true);
+            return; 
+        }
         
+        var adminEmail = UsuarioService.SesionActual.Email;
+        usuariosRegistrados = UsuarioService
+            .GetListaUsuariosRegistrados()
+            .Where(u => u.Email != adminEmail)
+            .ToList();
     }
 
     private async Task CrearProyectoDesdeFormulario()
     {
         showSuccessMessage = false;
+        errorMessage = null;
+        
         if (UsuarioService.SesionActual is null)
         {
-            errorMessage = "Debe iniciar sesión para crear proyectos.";
+            NavigationManager.NavigateTo("/iniciarSesion", true);
             return;
         }
+        
         var administrador = UsuarioService.SesionActual;
         nuevoProyecto.AdministradorEmail = administrador.Email;
         
-        if (!nuevoProyecto.MiembroEmails.Contains(administrador.Email)) 
-            nuevoProyecto.MiembroEmails.Add(administrador.Email);
-        nuevoProyecto.MiembroEmails = emailsSeleccionados.ToList();
+        var miembros = emailsSeleccionados.ToList();
+        if (!miembros.Contains(administrador.Email))
+            miembros.Add(administrador.Email);
+        nuevoProyecto.MiembroEmails = miembros;
+
         try
-        { 
+        {
             ProyectoService.CrearProyecto(nuevoProyecto);
+            
             nuevoProyecto = new();
             emailsSeleccionados = Array.Empty<string>();
             showSuccessMessage = true;
-            errorMessage = null;
         }
-        catch(Exception excepcion)
+        catch (Exception ex)
         {
-            errorMessage = $"{excepcion.Message}";
+            errorMessage = ex.Message;
         }
-        
+    }
+}
+
+
+
+
+    @if (showSuccessMessage)
+    {
+        <div class="alert alert-success mt-3" role="alert">
+            Proyecto registrado con éxito
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger mt-3" role="alert">
+            @errorMessage
+        </div>
     }
 }

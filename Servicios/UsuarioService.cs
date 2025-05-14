@@ -28,6 +28,8 @@ public class UsuarioService
     
     private Usuario _sesionActual;
     public Usuario SesionActual => _sesionActual;
+    
+    public event Action OnSesionCambiada;
 
     
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
@@ -70,6 +72,7 @@ public class UsuarioService
         UsuarioNullDevuelveExcepcion(usuario);
         ValidarContraseña(contraseña, usuario);
         _sesionActual = usuario;
+        OnSesionCambiada?.Invoke();
         return usuario;
     }
 
@@ -84,6 +87,7 @@ public class UsuarioService
     public void  CerrarSesion()
     {
         _sesionActual = null;
+        OnSesionCambiada?.Invoke();
     }
     public List<GetUsuarioDto> GetListaUsuariosRegistrados()
     {

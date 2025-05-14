@@ -1,8 +1,12 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using Servicios    
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject UsuarioService usuarioService
 
 <div class="nav-scrollable d-flex flex-column vh-100"
      onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column flex-grow-1">
+        
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
@@ -10,16 +14,20 @@
         </div>
         
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="iniciarSesion" >
+            <NavLink class="nav-link" href="iniciarSesion">
                 <span class="bi bi-box-arrow-in-right prueba" aria-hidden="true"></span> Iniciar Sesión
             </NavLink>
         </div>
+        
+        @if (usuarioService.SesionActual != null)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="registrarProyecto">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Registrar Proyecto
+                </NavLink>
+            </div>
+        }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="registrarProyecto">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Registrar Proyecto
-            </NavLink>
-        </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="registrarUsuario">
@@ -29,11 +37,14 @@
         
         <div class="flex-grow-1"></div>
         
-        <div class="text-center mb-3">
-            <button class="btn btn-light text-dark px-4" @onclick="ShowConfirm">
-                Cerrar sesión
-            </button>
-        </div>
+        @if (usuarioService.SesionActual != null)
+        {
+            <div class="text-center mb-3">
+                <button class="btn btn-light text-dark px-4" @onclick="ShowConfirm">
+                    Cerrar sesión
+                </button>
+            </div>
+        }
         
         @if (showConfirm)
         {
@@ -55,19 +66,39 @@
                 </div>
             </div>
         }
-
         
     </nav>
 </div>
 
 @code {
-            private bool showConfirm = false;
+    private bool showConfirm = false;
 
-            void ShowConfirm() => showConfirm = true;
-            void HideConfirm() => showConfirm = false;
+    protected override void OnInitialized()
+    {
+        usuarioService.OnSesionCambiada += OnSesionCambiadaHandler;
+    }
 
-            void ConfirmLogout()
-            {
-                NavigationManager.NavigateTo("/IniciarSesion", forceLoad: true);
-            }
-        }
+    private void OnSesionCambiadaHandler()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    void ShowConfirm() => showConfirm = true;
+    void HideConfirm() => showConfirm = false;
+
+    private void ConfirmLogout()
+    {
+
+        usuarioService.CerrarSesion();
+        
+        showConfirm = false;
+        StateHasChanged();
+        
+        NavigationManager.NavigateTo("/iniciarSesion");
+    }
+
+    public void Dispose()
+    {
+        usuarioService.OnSesionCambiada -= OnSesionCambiadaHandler;
+    }
+}
