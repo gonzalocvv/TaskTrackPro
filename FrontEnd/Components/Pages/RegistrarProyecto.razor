@@ -1,6 +1,8 @@
 @page "/registrarProyecto"
-@using Dominio
 @using Dtos
+@using Servicios
+@inject UsuarioService UsuarioService
+@inject ProyectoService ProyectoService
 @attribute [StreamRendering]
 
 <PageTitle>Crear proyecto</PageTitle>
@@ -11,67 +13,71 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    
+    <!-- Nombre -->
     <div class="mb-3">
         <label class="form-label">Nombre</label>
         <InputText class="form-control" @bind-Value="nuevoProyecto.Nombre" />
     </div>
 
-    
+    <!-- Descripción -->
     <div class="mb-3">
-        <label class="form-label">Descripción (máx. 400 caracteres)</label>
-        <InputTextArea class="form-control" @bind-Value="nuevoProyecto.Descripcion"
-                       maxlength="400" rows="4" />
+        <label class="form-label">Descripción (máx. 400 caracteres)</label>
+        <InputTextArea class="form-control"
+                       rows="4" maxlength="400"
+                       @bind-Value="nuevoProyecto.Descripcion" />
     </div>
 
-    
+    <!-- Fecha de inicio -->
     <div class="mb-3">
         <label class="form-label">Fecha de inicio estimada</label>
         <InputDate class="form-control" @bind-Value="nuevoProyecto.FechaInicio" />
     </div>
 
-    <!-- Selección de miembros -->
+    <!-- Miembros -->
     <div class="mb-3">
         <label class="form-label">Miembros del proyecto</label>
-        <!-- multiselect con Bootstrap -->
-        <select multiple class="form-select" style="height: 200px;"
+        <select multiple class="form-select" style="height:200px"
                 @bind="usuariosSeleccionados">
             @foreach (var u in usuariosRegistrados)
             {
                 <option value="@u.Email">@u.Nombre (@u.Email)</option>
             }
         </select>
-        <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
+        <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
     </div>
 
     <button type="submit" class="btn btn-success w-100">Crear proyecto</button>
 </EditForm>
 
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <br />
+    <div class="alert alert-success">@mensaje</div>
+}
+
 @code {
-
-    private Proyecto nuevoProyecto;     
+    private CrearProyectoDto nuevoProyecto;
     private List<string> usuariosSeleccionados = new();
-
-    // --- Fuente de datos para el select ---
     private List<GetUsuarioDto> usuariosRegistrados = new();
+    private string mensaje;
 
     protected override async Task OnInitializedAsync()
     {
-        // Trae la lista de usuarios registrados para poblar el <select>
-        // usuariosRegistrados = await UsuarioSvc.GetAllAsync();
+        usuariosRegistrados = await UsuarioService.GetUsuariosRegistrados();
     }
 
     private async Task CrearProyectoDesdeFormulario()
     {
-        try
-        {
-          
+        var administrador = UsuarioService.SesionActual;
+        var miembros = usuariosSeleccionados.Select(mail => UsuarioService.GetUsuarioPorEmail(mail)).ToList();
+        if (!miembros.Contains(administrador)) 
+            miembros.Add(administrador);
+        
+        miembros.ForEach(nuevoProyecto.AgregarMiembro);
 
-            
-        }
-        catch (Exception ex)
-        {
-            
-        }
+        await ProyectoService.CrearProyecto(nuevoProyecto);
+        mensaje = "Proyecto creado con éxito.";
+        nuevoProyecto = new();          // limpia formulario
+        usuariosSeleccionados.Clear();  // limpia selección
     }
 }

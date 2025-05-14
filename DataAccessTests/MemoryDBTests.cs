@@ -69,4 +69,18 @@ public class MemoryDBTests
         var usuarioObtenido = db.GetUsuarioPorEmail(usuario.Email);
         Assert.AreEqual(usuario, usuarioObtenido);
     }
+    
+    [TestMethod]
+    public void ObtenerListaUsuariosTest()
+    {
+        MemoryDB db = new MemoryDB();
+        Usuario usuario = new Usuario("Gonzalo", "Cabrera", "gonzalo@gmail.com", new DateTime(2004, 07, 09),
+            "Ab123456789!");
+        Usuario usuario2 = new Usuario("Eduardo", "Monzon", "eduardo@gmail.com", new DateTime(2004, 07, 09),
+            "Ab123456789!");
+        db.AgregarUsuario(usuario);
+        db.AgregarUsuario(usuario2);
+        var listaUsuarios = db.GetListaUsuarios();
+        Assert.AreEqual(2, listaUsuarios.Count);
+    
 }
