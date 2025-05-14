@@ -1,5 +1,4 @@
 @page "/registrarProyecto"
-@using System.Linq.Expressions
 @using Dtos
 @using Servicios
 @inject UsuarioService UsuarioService
@@ -76,12 +75,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados();
+        var adminEmail = UsuarioService.SesionActual?.Email;
+        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != adminEmail).ToList();;
         
     }
 
     private async Task CrearProyectoDesdeFormulario()
     {
+        showSuccessMessage = false;
         if (UsuarioService.SesionActual is null)
         {
             errorMessage = "Debe iniciar sesión para crear proyectos.";
@@ -96,10 +97,10 @@
         try
         { 
             ProyectoService.CrearProyecto(nuevoProyecto);
-            errorMessage = "Proyecto creado con éxito.";
             nuevoProyecto = new();
             emailsSeleccionados = Array.Empty<string>();
             showSuccessMessage = true;
+            errorMessage = null;
         }
         catch(Exception excepcion)
         {

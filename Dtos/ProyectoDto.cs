@@ -7,7 +7,7 @@ public class GetProyectoDto
     public DateTime FechaInicio;
 
     public string AdministradorEmail;
-    public List<string> MiembroEmails;
+    public List<string> MiembroEmails = new List<string>();
 }
 public class CrearProyectoDto
 {
@@ -16,5 +16,5 @@ public class CrearProyectoDto
     public DateTime FechaInicio;
 
     public string AdministradorEmail;
-    public List<string> MiembroEmails;
+    public List<string> MiembroEmails = new();
 }
