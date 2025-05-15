@@ -5,10 +5,11 @@ namespace DominioTests;
 [TestClass]
 public class TareaTests
 {
-    Proyecto proyecto = new("Proyecto1", "Descripcion", new DateTime(2025, 8, 9), pepe);
+    static Usuario pepe = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
+    static Proyecto proyecto = new("Proyecto1", "Descripcion", new DateTime(2025, 8, 9), pepe);
     DateTime ejFechaInicio = new DateTime(2025, 8, 9);
-    Usuario pepe = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
-    Usuario ana = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
+    
+    static Usuario ana = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
     public void TareaTituloVacioExceptionTest()
@@ -234,10 +235,10 @@ public class TareaTests
     [TestMethod]
     public void TareaCompletarDosVecesNoFalla()
     {
-        var t = new Tarea("T", "D", ejFechaInicio, 2, proyecto.Nombre);
-        t.AsignarUsuario(pepe);
-        t.CompletarTarea(pepe);
-        t.CompletarTarea(pepe);
-        Assert.AreEqual(EstadoTarea.Completada, t.Estado);
+        var tarea = new Tarea("T", "D", ejFechaInicio, 2, proyecto.Nombre);
+        tarea.AsignarUsuario(pepe);
+        tarea.CompletarTarea(pepe);
+        tarea.CompletarTarea(pepe);
+        Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
     }
 }

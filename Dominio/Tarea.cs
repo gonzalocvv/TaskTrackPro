@@ -185,6 +185,8 @@ public class Tarea
     }
     public void CompletarTarea(Usuario usuario)
     {
+        if (Estado == EstadoTarea.Completada)
+            return;
         if (!TareaEstaPendiente())
             throw new InvalidOperationException("No se puede completar una tarea que no está pendiente.");
         if (!UsuarioEstaAsignado(usuario))
