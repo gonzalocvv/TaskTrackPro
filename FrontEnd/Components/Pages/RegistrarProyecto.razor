@@ -78,9 +78,9 @@
             NavigationManager.NavigateTo("/iniciarSesion", true);
             return; 
         }
-        
-        string adminEmail = admin@admin
-        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados().Where(uuario => usuario.Email != adminEmail).ToList();
+
+        string adminEmail = "admin@admin.com";
+        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != adminEmail).ToList();
     }
 
     private async Task CrearProyectoDesdeFormulario()
