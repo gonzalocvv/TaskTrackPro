@@ -15,6 +15,7 @@ public class LoginDto
     public string Contraseña;
 }
 
+
 public class GetUsuarioDto
 {
     public string Nombre;
