@@ -94,7 +94,7 @@
 {
     <br/>
     <div class="alert alert-success" role="alert">
-        Proyecto registrado con éxito
+        Tarea registrado con éxito
     </div>
 }
 
@@ -128,13 +128,14 @@
                 .Where(tarea => tarea.Estado != "Completada")
             .ToList();
             
+            tareaForm.TareasQueYoDependoTitulos ??= new List<string>();
         tareaForm.TareasQueYoDependoTitulos.Clear();
     }
     protected override void OnInitialized()
     {
         proyectos = ProyectoService.GetListaProyectos();
         var UserActualEmail = UsuarioService.SesionActual?.Email;
-        usuarios = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != UserActualEmail).ToList();;
+        usuarios = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != "admin@admin.com").ToList();;
         
     }
 
@@ -145,6 +146,15 @@
             errorMessage = "Debe iniciar sesión para crear proyectos.";
             return;
         }
+        if (string.IsNullOrWhiteSpace(tareaForm.ProyectoNombre))
+        {
+            errorMessage = "Debe seleccionar un proyecto.";
+            return;
+        }
+        var actual = UsuarioService.SesionActual.Email;
+        if (!emailsSeleccionados.Contains(actual))
+            emailsSeleccionados = emailsSeleccionados.Append(actual).ToArray();
+        
         tareaForm.UsuariosAsignadosEmails = emailsSeleccionados.ToList();
         try
         {
