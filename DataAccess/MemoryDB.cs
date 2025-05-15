@@ -1,11 +1,14 @@
-﻿using Dominio;
+﻿using System.Collections;
+using Dominio;
 
 namespace DataAccess;
 
 public class MemoryDB
 {
-    private List<Usuario> _listUsuarios = new List<Usuario>();
-    private List<Proyecto> _listProyectos = new List<Proyecto>();
+    private List<Usuario> _listUsuarios = new ();
+    private List<Proyecto> _listProyectos = new ();
+    private List<Tarea> _listTareas = new ();
+    
 
     public void AgregarUsuario(Usuario usuario)
     {
@@ -56,5 +59,34 @@ public class MemoryDB
     public Proyecto GetListaProyectosPorNombre(string nombre)
     {
         return _listProyectos.Find(proyecto => proyecto.Nombre == nombre);
+    }
+
+    public void AgregarTarea(Tarea tarea)
+    {
+        if (tarea == null)
+        {
+            throw new ArgumentNullException(nameof(tarea), "La tarea no puede ser nula.");
+        }
+        _listTareas.Add(tarea);
+    }
+
+    public List<Tarea> GetListaTareasPorUsuario(string email)
+    {
+        Usuario usuario = GetUsuarioPorEmail(email);
+        if (usuario == null)
+        {
+            throw new ArgumentNullException(nameof(usuario), "El usuario no puede ser nulo.");
+        }
+        return _listTareas.Where(t => t.UsuariosAsignados.Contains(usuario)).ToList();
+        
+    }
+    public Tarea GetTareaPorProyectoYTitulo(string nombreProyecto, string titulo)
+    {
+        Proyecto proyecto = GetListaProyectosPorNombre(nombreProyecto);
+        if (proyecto == null)
+        {
+            throw new ArgumentNullException(nameof(proyecto), "El proyecto no puede ser nulo.");
+        }
+        return proyecto.Tareas.Find(tarea => tarea.Titulo == titulo);
     }
 }
