@@ -83,7 +83,7 @@ public class ProyectoService
                 Descripcion = tarea.Descripcion,
                 FechaInicio = tarea.FechaDeInicio,
                 Duracion = tarea.Duracion,
-                Estado = tarea.Estado
+                Estado = tarea.Estado.ToString()
                 
             };
             listaTareas.Add(tareaDto);

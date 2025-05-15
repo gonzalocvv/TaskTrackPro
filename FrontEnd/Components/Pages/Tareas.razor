@@ -23,9 +23,9 @@ else
     {
         <h3 class="mt-4">
             @(grupo.Key switch
-            { EstadoTarea.Pendiente => "Pendientes",
-                EstadoTarea.Bloqueada => "Bloqueadas",
-                EstadoTarea.Completada => "Completadas" })
+            { "Pendientes" => "Pendientes",
+                "Bloqueadas" => "Bloqueadas",
+                "Completadas" => "Completadas" })
         </h3>
 
         <ul class="list-group">
@@ -43,28 +43,21 @@ else
                             <small class="text-muted">Inicio: @tarea.FechaInicio:dd/MM/yyyy</small>
                         }
 
-                        @if (tarea.Estado == EstadoTarea.Completada && tarea.FechaInicio.HasValue)
+                        @if (tarea.Estado == "Completada" && tarea.FechaInicio.HasValue)
                         {
                             <br />
                             <small class="text-muted">Completada: @tarea.FechaInicio:dd/MM/yyyy</small>
                         }
                     </div>
-
-                    @if (tarea.Estado == EstadoTarea.Pendiente)
-                    {
-                        <button class="btn btn-sm btn-success"
-                                @onclick="() => TareaService.CompletarTarea(tarea.ProyectoNombre, tarea.Titulo,UsuarioService.SesionActual!.Email)">
-                            Completar
-                        </button>
-                    }
-                    @if (tarea.Estado == EstadoTarea.Pendiente)
+                    
+                    @if (tarea.Estado == "Pendiente")
                     {
                         <button class="btn btn-sm btn-success"
                                 @onclick="() => Completar(tarea.ProyectoNombre, tarea.Titulo)">
                             Completar
                         </button>
                     }
-                    else if (tarea.Estado == EstadoTarea.Bloqueada)
+                    else if (tarea.Estado == "Bloqueada")
                     {
                         <span class="badge bg-warning text-dark">Bloqueada</span>
                     }
@@ -113,7 +106,7 @@ else
         tareas = TareaService
             .GetListaTareasPorUsuario(mail)
             .OrderBy(t => t.Estado switch
-            { EstadoTarea.Pendiente => 0, EstadoTarea.Bloqueada => 1, EstadoTarea.Completada => 2 })
+            { "Pendiente" => 0, "Bloqueada" => 1, "Completada" => 2 })
             .ThenBy(t => t.FechaInicio ?? DateTime.MaxValue)
             .ToList();
     }

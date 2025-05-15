@@ -34,7 +34,7 @@ public class TareaService
                 UsuariosAsignadosEmails = tarea.UsuariosAsignados.Select(u => u.Email).ToList(),
                 TareasQueYoDependoTitulos = tarea.TareasQueYoDependo.Select(t => t.Titulo).ToList(),
                 TareasQueDependenDeMiTitulos = tarea.TareasQueDependenDeMi.Select(t => t.Titulo).ToList(),
-                Estado = tarea.Estado
+                Estado = tarea.Estado.ToString()
             };
             listaTareas.Add(tareaDto);
         }
