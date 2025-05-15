@@ -16,7 +16,7 @@
 
     <div class="mb-3">
         <label class="form-label">Seleccione un proyecto</label>
-        <select class="form-select" @bind="tareaForm.ProyectoNombre" @bing:after="ProyectoCambio">
+        <select class="form-select" @bind="tareaForm.ProyectoNombre" @bind:after="ProyectoCambio">
             @foreach (var proyecto in proyectos)
             {
                 if (proyecto.MiembroEmails.Contains(UsuarioService.SesionActual?.Email))
@@ -116,7 +116,7 @@
     private string errorMessage;
     private bool showSuccessMessage = false;
     
-    private void ProyectoCambio(ChangeEventArgs _)
+    private void ProyectoCambio()
     {
         if (string.IsNullOrWhiteSpace(tareaForm.ProyectoNombre))
         {
