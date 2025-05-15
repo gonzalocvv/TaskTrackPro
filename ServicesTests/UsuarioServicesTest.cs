@@ -103,6 +103,12 @@ public class UsuarioServicesTest
         Assert.AreEqual(result.Email, UsuarioDto.Email);
     }
 
+    [TestMethod]
+    public void EsAdminProyectoTest()
+    {
+        service.IniciarSesion(loginDtoAdmin);
+        Assert.IsTrue(service.EsAdminProyecto());
+    }
 
     [TestMethod]
     public void IniciarSesionTest()
@@ -127,22 +133,27 @@ public class UsuarioServicesTest
         Assert.AreEqual(result.Email, loginDtoAdmin.Email);
         Assert.AreEqual(service.SesionActual, result);
     }
-
     [TestMethod]
     public void AdminSistemaResetContrasenaUsuarioMenorRango()
     {
-        var admin = service.GetUsuarioPorEmail("admin@admin.com"); 
-        Usuario usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
+        var resetDto = new ResetearContrasenaDto
+        {
+            Email = UsuarioDto.Email,
+            NuevaContrasena = "Valida123@"
+        };
+
         service.IniciarSesion(loginDtoAdmin);
-        service.ResetearContrasenaDefecto(usuario);
+        service.ResetearContrasenaDefecto(resetDto);
+
+        var usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
         Assert.IsTrue(BCrypt.Net.BCrypt.Verify("Valida123@", usuario.Contraseña));
     }
     
     [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
     public void AdminSistemaNoPuedeResetearContrasenaDeOtroAdminSistema()
     {
         service.IniciarSesion(loginDtoAdmin);
+
         var UsuarioDto = new CreateUsuarioDto {
             Nombre = "Gonzalo",
             Apellido = "Cabrera",
@@ -150,10 +161,22 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
+
         service.CrearUsuario(UsuarioDto);
-        Usuario usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
+
+        var usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
         usuario.AgregarRol(new Rol("Administrador del Sistema"));
-        service.ResetearContrasenaDefecto(usuario);
+
+        var dto = new ResetearContrasenaDto
+        {
+            Email = usuario.Email,
+            NuevaContrasena = "Ab123456789!" // o una contraseña por defecto, según tu implementación
+        };
+
+        Assert.ThrowsException<InvalidOperationException>(() =>
+        {
+            service.ResetearContrasenaDefecto(dto);
+        });
     }
     
  
@@ -231,8 +254,7 @@ public class UsuarioServicesTest
     Assert.IsTrue(listaUsuarios.Any(u => u.Email == usuarioDto2.Email));
     Assert.IsTrue(listaUsuarios.Any(u => u.Email == "admin@admin.com"));
     
-    }
-    [TestMethod]
+    }[TestMethod]
     public void ResetearContraseñaSinSesionDebeLanzarExcepcionTest()
     {
         var usuarioDto = new CreateUsuarioDto
@@ -243,12 +265,18 @@ public class UsuarioServicesTest
             FechaNacimiento = new DateTime(1990, 1, 1),
             Contraseña = "Pedro123@"
         };
+
         service.CrearUsuario(usuarioDto);
-        var usuario = service.GetUsuarioPorEmail(usuarioDto.Email);
-        
-        var ex = Assert.ThrowsException<InvalidOperationException>(() =>
-            service.ResetearContrasenaDefecto(usuario));
     
+        var resetDto = new ResetearContrasenaDto
+        {
+            Email = usuarioDto.Email,
+            NuevaContrasena = "NuevaContraseña123!" // puede ser la contraseña por defecto también
+        };
+
+        var ex = Assert.ThrowsException<InvalidOperationException>(() =>
+            service.ResetearContrasenaDefecto(resetDto));
+
         Assert.AreEqual("Debe ser administrador del sistema para resetear contraseñas.", ex.Message);
     }
 
