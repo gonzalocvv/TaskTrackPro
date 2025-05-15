@@ -8,8 +8,15 @@ namespace ServicesTests;
 [TestClass]
 public class TareaServiceTest
 {
-    static Usuario responsable = new Usuario("Gonzalo", "Cabrera", "gonzalo@gmail.com", new DateTime(2004, 9, 7), "Gonzalo9@");
-    static Proyecto proyecto = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", new DateTime(2025, 10, 1), responsable);
+    static CreateUsuarioDto responsableDto = new CreateUsuarioDto
+    {
+        Nombre = "Gonzalo",
+        Apellido = "Cabrera",
+        Email = "gonzalo@gmail.com",
+        FechaNacimiento = new DateTime(2004, 9, 7),
+        Contraseña = "Gonzalo9@"
+    };
+    static Usuario responsable = new Usuario(responsableDto);    static Proyecto proyecto = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", new DateTime(2025, 10, 1), responsable);
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]

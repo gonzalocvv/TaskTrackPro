@@ -1,15 +1,33 @@
 using Dominio;
+using Dtos;
 
 namespace DominioTests;
 
 [TestClass]
 public class TareaTests
 {
-    static Usuario pepe = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
+    static CreateUsuarioDto pepeDto = new CreateUsuarioDto
+    {
+        Nombre = "Pepe",
+        Apellido = "López",
+        Email = "pepe@x.com",
+        FechaNacimiento = new DateTime(2000, 1, 1),
+        Contraseña = "Pepe123@"
+    };
+    static Usuario pepe = new Usuario(pepeDto);    
+
     static Proyecto proyecto = new("Proyecto1", "Descripcion", new DateTime(2025, 8, 9), pepe);
     DateTime ejFechaInicio = new DateTime(2025, 8, 9);
     
-    static Usuario ana = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
+    static CreateUsuarioDto anaDto = new CreateUsuarioDto
+    {
+        Nombre = "Ana",
+        Apellido = "Diaz",
+        Email = "ana@x.com",
+        FechaNacimiento = new DateTime(1995, 5, 2),
+        Contraseña = "Ana1234@"
+    };
+    static Usuario ana = new Usuario(anaDto);    
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
     public void TareaTituloVacioExceptionTest()
