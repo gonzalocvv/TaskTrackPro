@@ -1,0 +1,120 @@
+@page "/tareas"
+@using Dtos
+@using Dominio
+@using Servicios
+@inject UsuarioService UsuarioService
+@inject TareaService   TareaService
+
+<PageTitle>Mis tareas</PageTitle>
+
+<h1 class="mb-4">Mis tareas asignadas</h1>
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+else if (tareas.Count == 0)
+{
+    <p>No tienes tareas asignadas.</p>
+}
+else
+{
+    @foreach (var grupo in tareas.GroupBy(t => t.Estado))
+    {
+        <h3 class="mt-4">
+            @(grupo.Key switch
+            { "Pendientes" => "Pendientes",
+                "Bloqueadas" => "Bloqueadas",
+                "Completadas" => "Completadas" })
+        </h3>
+
+        <ul class="list-group">
+            @foreach (var tarea in grupo)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>@tarea.Titulo</strong>
+                        <br />
+                        <small class="text-muted">@tarea.ProyectoNombre</small>
+
+                        @if (tarea.FechaInicio.HasValue)
+                        {
+                            <br />
+                            <small class="text-muted">Inicio: @tarea.FechaInicio:dd/MM/yyyy</small>
+                        }
+
+                        @if (tarea.Estado == "Completada" && tarea.FechaInicio.HasValue)
+                        {
+                            <br />
+                            <small class="text-muted">Completada: @tarea.FechaInicio:dd/MM/yyyy</small>
+                        }
+                    </div>
+
+                    @if (tarea.Estado == "Pendiente")
+                    {
+                        <button class="btn btn-sm btn-success"
+                                @onclick="() => TareaService.CompletarTarea(tarea.ProyectoNombre, tarea.Titulo,UsuarioService.SesionActual!.Email)">
+                            Completar
+                        </button>
+                    }
+                    @if (tarea.Estado == "Pendiente")
+                    {
+                        <button class="btn btn-sm btn-success"
+                                @onclick="() => Completar(tarea.ProyectoNombre, tarea.Titulo)">
+                            Completar
+                        </button>
+                    }
+                    else if (tarea.Estado == "Bloqueada")
+                    {
+                        <span class="badge bg-warning text-dark">Bloqueada</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Hecha</span>
+                    }
+                </li>
+            }
+        </ul>
+    }
+}
+
+@code {
+    private List<GetTareaDto> tareas = new();
+    private string error = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (UsuarioService.SesionActual is null)
+        {
+            error = "Debe iniciar sesión para ver sus tareas.";
+            return;
+        }
+
+        CargarTareas();
+    }
+    
+    private void Completar(string proyecto, string titulo)
+    {
+        try
+        {
+            TareaService.CompletarTarea(proyecto, titulo, UsuarioService.SesionActual!.Email);
+            CargarTareas();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+
+    
+    private void CargarTareas()
+    {
+        var mail = UsuarioService.SesionActual!.Email;
+        tareas = TareaService
+            .GetListaTareasPorUsuario(mail)
+            .OrderBy(t => t.Estado switch
+                { "Pendiente" => 0, "Bloqueada" => 1, "Completada" => 2 })      
+            .ThenBy(t => t.FechaInicio ?? DateTime.MaxValue)
+            .ToList();
+    }
+}

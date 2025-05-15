@@ -1,55 +1,68 @@
 @page "/registrarProyecto"
 @using Dtos
 @using Servicios
-@inject NavigationManager NavigationManager
 @inject UsuarioService UsuarioService
 @inject ProyectoService ProyectoService
+@inject NavigationManager NavigationManager
 @attribute [StreamRendering]
 
 <PageTitle>Crear proyecto</PageTitle>
 
-@if (UsuarioService.SesionActual != null)
-{
-    <h1 class="mb-4">Crear proyecto</h1>
+<h1 class="mb-4">Crear proyecto</h1>
 
-    <EditForm Model="@nuevoProyecto" OnValidSubmit="CrearProyectoDesdeFormulario">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        
-        <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <InputText class="form-control" @bind-Value="nuevoProyecto.Nombre" />
-        </div>
-        
-        <div class="mb-3">
-            <label class="form-label">Descripción (máx. 400 caracteres)</label>
-            <InputTextArea class="form-control"
-                           rows="4" maxlength="400"
-                           @bind-Value="nuevoProyecto.Descripcion" />
-        </div>
-        
-        <div class="mb-3">
-            <label class="form-label">Fecha de inicio estimada</label>
-            <InputDate class="form-control" @bind-Value="nuevoProyecto.FechaInicio" />
-        </div>
-        
-        <div class="mb-3">
-            <label class="form-label">Miembros del proyecto</label>
-            <select multiple class="form-select" style="height:200px"
-                    @bind="emailsSeleccionados">
-                @foreach (var usuario in usuariosRegistrados)
-                {
-                    <option value="@usuario.Email">
-                        @usuario.Nombre (@usuario.Email)
-                    </option>
-                }
-            </select>
-            <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
-        </div>
-
-        <button type="submit" class="btn btn-success w-100">Crear proyecto</button>
-    </EditForm>
+<EditForm Model="@nuevoProyecto" OnValidSubmit="CrearProyectoDesdeFormulario">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
     
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <InputText class="form-control" @bind-Value="nuevoProyecto.Nombre" />
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Descripción (máx. 400 caracteres)</label>
+        <InputTextArea class="form-control"
+                       rows="4" maxlength="400"
+                       @bind-Value="nuevoProyecto.Descripcion" />
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Fecha de inicio estimada</label>
+        <InputDate class="form-control" @bind-Value="nuevoProyecto.FechaInicio" />
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Miembros del proyecto</label>
+        <select multiple class="form-select" style="height:200px"
+                @bind="emailsSeleccionados">
+            @foreach (var usuario in usuariosRegistrados)
+            {
+                <option value="@usuario.Email">@usuario.Nombre (@usuario.Email)</option>
+            }
+        </select>
+        <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Crear proyecto</button>
+</EditForm>
+
+
+@if (showSuccessMessage)
+{
+    <br/>
+    <div class="alert alert-success" role="alert">
+        Proyecto registrado con éxito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        @errorMessage 
+    </div>
+}
+
 @code {
     private CrearProyectoDto nuevoProyecto = new();
     private List<GetUsuarioDto> usuariosRegistrados = new();
@@ -59,17 +72,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        nuevoProyecto.FechaInicio = DateTime.Now;
         if (UsuarioService.SesionActual == null)
         {
             NavigationManager.NavigateTo("/iniciarSesion", true);
             return; 
         }
-        
-        var adminEmail = UsuarioService.SesionActual.Email;
-        usuariosRegistrados = UsuarioService
-            .GetListaUsuariosRegistrados()
-            .Where(u => u.Email != adminEmail)
-            .ToList();
+
+        string adminEmail = "admin@admin.com";
+        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != adminEmail).ToList();
     }
 
     private async Task CrearProyectoDesdeFormulario()
@@ -106,20 +117,3 @@
     }
 }
 
-
-
-
-    @if (showSuccessMessage)
-    {
-        <div class="alert alert-success mt-3" role="alert">
-            Proyecto registrado con éxito
-        </div>
-    }
-
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger mt-3" role="alert">
-            @errorMessage
-        </div>
-    }
-}

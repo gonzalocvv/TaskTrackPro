@@ -1,0 +1,162 @@
+@page "/crearTarea"
+@using Dominio
+@using Dtos
+@using Servicios
+@inject ProyectoService ProyectoService
+@inject UsuarioService UsuarioService
+@inject TareaService   TareaService
+
+<PageTitle>Crear tarea</PageTitle>
+
+<h1 class="mb-4">Crear tarea</h1>
+
+<EditForm Model="@tareaForm" OnValidSubmit="GuardarTarea">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Seleccione un proyecto</label>
+        <select class="form-select" @bind="tareaForm.ProyectoNombre" @bind:after="ProyectoCambio">
+            @foreach (var proyecto in proyectos)
+            {
+                if (proyecto.MiembroEmails.Contains(UsuarioService.SesionActual?.Email))
+                {
+                    <option value="@proyecto.Nombre">@proyecto.Nombre</option>
+                }
+            }
+        </select>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Título</label>
+        <InputText class="form-control" @bind-Value="tareaForm.Titulo" />
+    </div>
+
+    
+    <div class="mb-3">
+        <label class="form-label">Descripción</label>
+        <InputTextArea class="form-control" rows="3"
+                       @bind-Value="tareaForm.Descripcion" />
+    </div>
+
+    
+    <div class="mb-3">
+        <label class="form-label">Fecha de inicio (opcional)</label>
+        <InputDate class="form-control" @bind-Value="tareaForm.FechaInicio" />
+    </div>
+
+    
+    <div class="mb-3">
+        <label class="form-label">Duración (horas)</label>
+        <InputNumber class="form-control" @bind-Value="tareaForm.Duracion" />
+    </div>
+
+    
+    <div class="mb-3">
+        <label class="form-label">Usuarios asignados</label>
+        <select multiple class="form-select" style="height:200px"
+                @bind="emailsSeleccionados">
+            @foreach (var u in usuarios)
+            {
+                <option value="@u.Email">@u.Nombre (@u.Email)</option>
+            }
+        </select>
+        <div class="form-text">Ctrl / ⌘ para seleccionar varios.</div>
+    </div>
+    @if (tareasDelProyecto.Any())
+    {
+        <div class="mb-3">
+            <label class="form-label">Depende de</label>
+            <select multiple class="form-select" style="height:180px"
+                    @bind="tareaForm.TareasQueYoDependoTitulos">
+                @foreach (var tarea in tareasDelProyecto)
+                {
+                    if (tarea.Estado.ToString() != "Completada")
+                    {
+                        <option value="@tarea.Titulo">@tarea.Titulo (@tarea.Estado)</option>
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                
+                    <option value="@tarea.Titulo">@tarea.Titulo (@tarea.Estado)</option>
+                }
+            </select>
+            <div class="form-text">Ctrl/⌘ para seleccionar varias.</div>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary w-100">Crear tarea</button>
+</EditForm>
+
+@if (showSuccessMessage)
+{
+    <br/>
+    <div class="alert alert-success" role="alert">
+        Proyecto registrado con éxito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        @errorMessage 
+    </div>
+}
+
+@code {
+    private CrearTareaDto tareaForm = new();
+    private List<GetProyectoDto> proyectos = new();
+    private List<GetTareaDto>    tareasDelProyecto = new(); 
+    private List<GetUsuarioDto> usuarios  = new();
+    private string[] emailsSeleccionados  = Array.Empty<string>();
+
+    private string errorMessage;
+    private bool showSuccessMessage = false;
+    
+    private void ProyectoCambio()
+    {
+        if (string.IsNullOrWhiteSpace(tareaForm.ProyectoNombre))
+        {
+            tareasDelProyecto = new();
+            return;
+        }
+
+            tareasDelProyecto = ProyectoService.GetTareasPorNombreProyecto(tareaForm.ProyectoNombre)
+                .Where(tarea => tarea.Estado != "Completada")
+            .ToList();
+            
+        tareaForm.TareasQueYoDependoTitulos.Clear();
+    }
+    protected override void OnInitialized()
+    {
+        proyectos = ProyectoService.GetListaProyectos();
+        var UserActualEmail = UsuarioService.SesionActual?.Email;
+        usuarios = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != UserActualEmail).ToList();;
+        
+    }
+
+    private void GuardarTarea()
+    {
+        if (UsuarioService.SesionActual is null)
+        {
+            errorMessage = "Debe iniciar sesión para crear proyectos.";
+            return;
+        }
+        tareaForm.UsuariosAsignadosEmails = emailsSeleccionados.ToList();
+        try
+        {
+            TareaService.CrearTarea(tareaForm);
+            showSuccessMessage = true;
+            
+            tareaForm = new();
+            emailsSeleccionados = Array.Empty<string>();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}

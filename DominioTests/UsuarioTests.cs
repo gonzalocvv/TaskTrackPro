@@ -1,5 +1,8 @@
+using DataAccess;
 using Dominio;
+using Dtos;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Servicios;
 
 namespace DominioTests;
 
@@ -18,7 +21,13 @@ public class UsuarioTests
         var fechaNacimiento = new DateTime(2004, 9, 7);
         var contraseña = "Gonzalo9@";
         fechaNacCorrecta = new DateTime(2004, 9, 7);
-        usuario= new Usuario(nombre, apellido, email, fechaNacimiento, contraseña);
+        CreateUsuarioDto dtoUser = new CreateUsuarioDto();
+        dtoUser.Nombre = nombre;
+        dtoUser.Apellido = apellido;
+        dtoUser.Email = email;
+        dtoUser.FechaNacimiento = fechaNacimiento;
+        dtoUser.Contraseña = contraseña;
+        usuario= new Usuario(dtoUser);
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
@@ -161,4 +170,5 @@ public class UsuarioTests
         var rol = new Rol("Administrador del Proyecto");
         usuario.EliminarRol(rol);
     }
+
 }

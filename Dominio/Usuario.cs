@@ -1,4 +1,6 @@
-﻿namespace Dominio;
+﻿using Dtos;
+using BCrypt.Net; 
+namespace Dominio;
 
 public class Usuario
 {
@@ -62,21 +64,21 @@ public class Usuario
         }
     }
     
-    public Usuario(string nombre, string apellido, string email, DateTime fechaNacimiento, string contraseña)
+    public Usuario(CreateUsuarioDto userDto)
     {
-        ValidarCamposString(nombre, "El nombre");
-        ValidarCamposString(apellido, "El apellido");
-        ValidarCamposString(email, "El email");
-        ValidarCamposString(fechaNacimiento.ToString(), "La fecha de nacimiento");
-        ValidarFormatoEmail(email);
-        ValidarFecha(fechaNacimiento);
-        ValidarContraeña(contraseña);
+        ValidarCamposString(userDto.Nombre, "El nombre");
+        ValidarCamposString(userDto.Apellido, "El apellido");
+        ValidarCamposString(userDto.Email, "El email");
+        ValidarCamposString(userDto.FechaNacimiento.ToString(), "La fecha de nacimiento");
+        ValidarFormatoEmail(userDto.Email);
+        ValidarFecha(userDto.FechaNacimiento);
+        ValidarContraeña(userDto.Contraseña);
         
-        _nombre = nombre;
-        _apellido = apellido;
-        _email = email;
-        _fechaNacimiento = fechaNacimiento;
-        _contraseña = contraseña;
+        _nombre = userDto.Nombre;
+        _apellido = userDto.Apellido;
+        _email = userDto.Email.ToLower();
+        _fechaNacimiento = userDto.FechaNacimiento;
+        _contraseña = BCrypt.Net.BCrypt.HashPassword(userDto.Contraseña);;
         _roles.Add(new Rol(Rol.MiembroProyecto));
     }
 
@@ -139,7 +141,6 @@ public class Usuario
         ValidarFechaNoVacia(fechaNacimiento);
         ValidarFechaAnterioraActual(fechaNacimiento);
         ValidarRangoEdadValido(fechaNacimiento);
-
     }
 
     private static void ValidarFechaAnterioraActual(DateTime fechaNacimiento)
