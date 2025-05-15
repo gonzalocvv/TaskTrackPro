@@ -34,7 +34,11 @@ public class UsuarioService
     
     public event Action OnSesionCambiada;
 
-    
+    public bool EsAdminSistema()
+    {
+        return _sesionActual != null && 
+               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema");
+    }
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
         Usuario nuevoUsuario = new Usuario(UsuarioDto);
