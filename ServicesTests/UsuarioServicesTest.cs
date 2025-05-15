@@ -148,10 +148,10 @@ public class UsuarioServicesTest
     [ExpectedException(typeof(InvalidOperationException))]
     public void AdminSistemaNoPuedeResetearContrasenaDeOtroAdminSistema()
     {
-        Usuario admin = service.GetUsuarioPorEmail("admin@admin.com"); 
-        var admin2 = new Usuario("Admin2", "Sistema", "admin2@sistema.com", new DateTime(1985, 1, 1), "Admin456@");
+        service.IniciarSesion(loginDtoAdmin);
+        Usuario admin2 = new Usuario("Admin2", "Sistema", "admin2@sistema.com", new DateTime(1985, 1, 1), "Admin456@");
         admin2.AgregarRol(new Rol("Administrador del Sistema"));
-        admin.ResetearContrasenaDefecto(admin2);
+        service.ResetearContrasenaDefecto(admin2);
     }
     
     

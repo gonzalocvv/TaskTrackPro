@@ -8,7 +8,7 @@ public class UsuarioTests
 {
     private Usuario usuario;
     private DateTime fechaNacCorrecta ;
-
+    private Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
     [TestInitialize]
     public void SetUp()
     {
@@ -22,14 +22,14 @@ public class UsuarioTests
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioNombreVacioExcepcionTest()
+    public void UsuarioNombreVacioExceptionTest()
     {
         usuario.Nombre = "";
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioDebeSerMayorDe18Anios()
+    public void UsuarioDebeSerMayorDe18AniosExceptionTest()
     {
         var fechaNacimientoInvalida = DateTime.Now.AddYears(-17);
         usuario.FechaNacimiento = fechaNacimientoInvalida;
@@ -37,89 +37,73 @@ public class UsuarioTests
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioDebeSerMenorDe100Anios()
+    public void UsuarioDebeSerMenorDe100AniosExceptionTest()
     {
         var fechaNacimientoInvalida = DateTime.Now.AddYears(-101);
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacimientoInvalida, "Gonzalo9@");
-
+        usuario.FechaNacimiento = fechaNacimientoInvalida;
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioApellidoVacioExcepcionTest()
+    public void UsuarioApellidoVacioExceptionTest()
     {
-        var usuario = new Usuario("Gonzalo","", "gonzalo@ejemplo.com", fechaNacCorrecta, "Gonzalo9@");
+        usuario.Apellido = "";
     }
+    
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioEmailVacioExcepcionTest()
+    public void UsuarioEmailVacioExceptionTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "", fechaNacCorrecta, "Gonzalo9@");
+        usuario.Email = "";        
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioEmailFormatoErroneoExcepcionTest()
+    public void UsuarioEmailFormatoErroneoExceptionTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera", fechaNacCorrecta, "Gonzalo9@");
+        usuario.Email = "invalid";    
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioFechaNacFuturaExcepcionTest()
+    public void UsuarioFechaNacFuturaExceptionTest()
     {
         DateTime fechaFutura = new DateTime(2025, 9, 7);
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaFutura, "Gonzalo9@");
+        usuario.FechaNacimiento = fechaFutura;
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioFechaNacimientoMinValue_LanzaExcepcionTest()
+    public void UsuarioContraseñaCortaExceptionTest()
     {
-        var usuario = new Usuario(
-            "Gonzalo",
-            "Cabrera",
-            "gonzalo@ejemplo.com",
-            DateTime.MinValue,
-            "Gonzalo9@"
-        );
+        String contraInvalida = "Gon9@";
+        usuario.Contraseña=contraInvalida;
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioContraseñaSinMayusculaExceptionTest()
+    {
+        String contraInvalida = "gonzalo9@";
+        usuario.Contraseña=contraInvalida;
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaCortaExcepcionTest()
+    public void UsuarioContraseñaSinMinusculaExceptionTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gon9@");
+        String contraInvalida = "GONZALO9@";
+        usuario.Contraseña=contraInvalida;    
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaSinMayusculaExcepcionTest()
+    public void UsuarioContraseñaSinNumeroExceptionTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "gonzalo9@");
+        String contraInvalida = "Gonzalos@";
+        usuario.Contraseña=contraInvalida; 
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaSinMinusculaExcepcionTest()
+    public void UsuarioContraseñaSinCaracterEspecialExceptionTest()
     {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "GONZALO9@");
-    }
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaSinNumeroExcepcionTest()
-    {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gonzalo@");
-    }
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void UsuarioContraseñaSinCaracterEspecialExcepcionTest()
-    {
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacCorrecta, "Gonzalo9");
-    }
-   /* [TestMethod]
-   public void UsuarioCreacionValidaTest()
-    {
-        Assert.IsNotNull(usuario);
-        Assert.AreEqual(usuario.nombre, usuario.Nombre);
-        Assert.AreEqual(apellido, usuario.Apellido);
-        Assert.AreEqual(email, usuario.Email);
-        Assert.AreEqual(fechaNacimiento, usuario.FechaNacimiento);
-    }
-    */
+        String contraInvalida = "GONZALOsss9";
+        usuario.Contraseña=contraInvalida;     }
+
     [TestMethod]
     public void UsuarioTieneRolMiembroProyectoPorDefectoTest()
     {
@@ -128,7 +112,7 @@ public class UsuarioTests
     
     [TestMethod]   
     [ExpectedException(typeof(InvalidOperationException))]
-    public void UsuarioNoTieneRol()
+    public void UsuarioNoTieneRolExceptionTest()
     {
         if (!usuario.ObtenerRoles().Any(rol => rol.Nombre == "Administrador del Proyecto"))
         {
@@ -137,11 +121,9 @@ public class UsuarioTests
     }
 
     [TestMethod]
-    public void agregarRolValido( )
+    public void agregarRolValidoTest( )
     {
-        String nombreRol = "Administrador del Proyecto";
-        Rol rol = new Rol (nombreRol);
-        usuario.AgregarRol(rol);
+        usuario.AgregarRol(rolAdminProyecto);
         Assert.IsTrue(usuario.ObtenerRoles().Any(rol => rol.Nombre == "Administrador del Proyecto"));
     }
     [TestMethod]
@@ -156,11 +138,10 @@ public class UsuarioTests
     
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
-    public void UsuarioAgregarRolDuplicado_LanzaExcepcionTest()
+    public void UsuarioAgregarRolDuplicadoExceptionTest()
     {
-        var rol = new Rol("Administrador del Proyecto");
-        usuario.AgregarRol(rol);
-        usuario.AgregarRol(rol);
+        usuario.AgregarRol(rolAdminProyecto);
+        usuario.AgregarRol(rolAdminProyecto);
     }
 
     [TestMethod]
