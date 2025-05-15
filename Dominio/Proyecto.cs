@@ -87,7 +87,7 @@ public class Proyecto
         _miembrosProyecto.Remove(usuario);
     }
 
-    private void ValidarAdministrador()
+    public void ValidarAdministrador()
     {
         if (_administradorP == null || !_miembrosProyecto.Contains(_administradorP))
         {

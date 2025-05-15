@@ -81,4 +81,47 @@ public class MemoryDBTests
         var listaUsuarios = db.GetListaUsuariosRegistrados();
         Assert.AreEqual(2, listaUsuarios.Count);
     }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void AgregarProyectoNullExcepcionTest()
+    {
+        db.AgregarProyecto(null);
+    }
+
+    [TestMethod]
+    public void AgregarProyectoTest()
+    {
+        var proyecto = new Proyecto(
+            "Proyecto Test",
+            "Descripción de prueba",
+            DateTime.Now.AddDays(1),
+            usuario);
+
+        db.AgregarProyecto(proyecto);
+
+        var listaProyectos = db.GetListaProyectos();
+        Assert.IsTrue(listaProyectos.Contains(proyecto));
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void AgregarTareaNullExcepcionTest()
+    {
+        db.AgregarTarea(null);
+    }
+    
+
+    [TestMethod]
+    public void AgregarTareaTest()
+    {
+        var tarea = new Tarea("Titulo", "Descripción", DateTime.Now.AddDays(1), 1, "Categoria");
+
+        db.AgregarTarea(tarea);
+
+        var listaTareas = db.GetListaTareasRegistradas(); 
+        Assert.IsTrue(listaTareas.Contains(tarea));
+    }
+
+
 }

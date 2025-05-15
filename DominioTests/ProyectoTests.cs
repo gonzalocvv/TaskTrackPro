@@ -84,4 +84,74 @@ public class ProyectoTests
     {
         Assert.IsTrue(_proyecto.MiembrosProyecto.Contains(_admin));
     }
+    
+    [TestMethod]
+    public void ProyectoRemoverTareaTest()
+    {
+        var tarea = new Tarea("Tarea 1", "Descripción de tarea", _fechaInicioCorrecta.AddDays(5),5, "Limpieza");
+        _proyecto.AgregarTarea(tarea);
+        Assert.IsTrue(_proyecto.Tareas.Contains(tarea)); 
+        
+        _proyecto.RemoverTarea(tarea);
+        
+        Assert.IsFalse(_proyecto.Tareas.Contains(tarea));
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void ProyectoRemoverTarea_Null_ArgumentNullException()
+    {
+        _proyecto.RemoverTarea(null);
+    }
+    
+    [TestMethod]
+    public void ValidarAdministradorConAdminValidoTest()
+    {
+        _proyecto.ValidarAdministrador(); 
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void ValidarAdministradorConAdminNoMiembroLanzaExcepcionTest()
+    {
+        _proyecto.MiembrosProyecto.Remove(_admin);
+
+        _proyecto.ValidarAdministrador(); 
+    }
+    
+    [TestMethod]
+    public void ProyectoRemoverMiembroQueNoEsAdministradorTest()
+    {
+        var usuario = new Usuario(new CreateUsuarioDto
+        {
+            Nombre = "Juan",
+            Apellido = "Pérez",
+            Email = "juan@ejemplo.com",
+            FechaNacimiento = _fechaNac,
+            Contraseña = "Juan1234@"
+        });
+        
+        _proyecto.AgregarMiembro(usuario);
+
+        Assert.IsTrue(_proyecto.MiembrosProyecto.Contains(usuario));
+
+        _proyecto.RemoverMiembro(usuario);
+
+        Assert.IsFalse(_proyecto.MiembrosProyecto.Contains(usuario));
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void ProyectoAgregarTarea_TituloDuplicado_LanzaExcepcion()
+    {
+        var tarea1 = new Tarea("TareaDuplicada", "Descripción 1", _fechaInicioCorrecta.AddDays(1), 3, "Limpieza");
+        var tarea2 = new Tarea("TareaDuplicada", "Descripción 2", _fechaInicioCorrecta.AddDays(2), 5, "Reparación");
+        
+        _proyecto.AgregarTarea(tarea1);
+        
+        _proyecto.AgregarTarea(tarea2);
+    }
+
+
+
 }
