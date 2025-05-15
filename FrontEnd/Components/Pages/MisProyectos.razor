@@ -1,12 +1,21 @@
 ﻿@page "/MisProyectos"
+@using Servicios
+@inject ProyectoService ProyectoServicio
+<h3>Mis proyectos</h3>
 
-<h3>My Syncfusion Gantt Chart</h3>
 
-<SfGantt DataSource="@TaskCollection" Height="215px" Width="914px">
+@if(true) 
+{ 
+    <SfGantt DataSource="@TaskCollection" Height="215px" Width="914px" TreeColumnIndex="1">
     <GanttTaskFields Id="TaskId" Name="TaskName" StartDate="StartDate" EndDate="EndDate" Duration="Duration" Progress="Progress" ParentID="ParentId" Dependency="Predecessor">
     </GanttTaskFields>
-</SfGantt>
+    <GanttColumns>
+        <GanttColumn Field="TaskId" HeaderText="ID" Width="100"></GanttColumn>
+        <GanttColumn Field="TaskName" HeaderText="Nombre de la Tarea" Width="250"></GanttColumn>
+    </GanttColumns>
 
+    </SfGantt>
+}
 @code{
     private List<TaskData> TaskCollection { get; set; }
     protected override void OnInitialized()
