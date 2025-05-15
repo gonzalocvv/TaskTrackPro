@@ -6,7 +6,7 @@ namespace Servicios;
 
 public class TareaService
 {
-    private MemoryDB _db = new MemoryDB();
+    private MemoryDB _db = new ();
     public TareaService(MemoryDB db)
     {
         _db = db;
@@ -14,9 +14,23 @@ public class TareaService
     public void CrearTarea(CrearTareaDto crearTareaDto)
     {
         Proyecto proyecto = _db.GetListaProyectosPorNombre(crearTareaDto.ProyectoNombre);
+        ValidarProyecto(proyecto);
         Tarea nuevaTarea = new Tarea(crearTareaDto.Titulo, crearTareaDto.Descripcion, crearTareaDto.FechaInicio, crearTareaDto.Duracion, proyecto.Nombre);
+        foreach (var mail in crearTareaDto.UsuariosAsignadosEmails.Distinct())
+        {
+            var usuario = _db.GetUsuarioPorEmail(mail)
+                          ?? throw new ArgumentException($"Usuario {mail} no existe");
+
+            nuevaTarea.AsignarUsuario(usuario);
+        }
         proyecto.AgregarTarea(nuevaTarea);
         _db.AgregarTarea(nuevaTarea);
+    }
+
+    private static void ValidarProyecto(Proyecto proyecto)
+    {
+        if (proyecto is null)
+            throw new ArgumentException("El proyecto no existe");
     }
 
     public List<GetTareaDto> GetListaTareasPorUsuario(string email)
