@@ -79,7 +79,7 @@ public class UsuarioService
         return usuario;
     }
 
-    private static void ValidarContraseña(string contraseña, Usuario usuario)
+    public void ValidarContraseña(string contraseña, Usuario usuario)
     {
         if (!BCrypt.Net.BCrypt.Verify(contraseña, usuario.Contraseña))
         {
