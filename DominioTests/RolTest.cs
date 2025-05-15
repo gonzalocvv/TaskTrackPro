@@ -1,5 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Dominio;
+using TaskTrackPro.Backend.Dominio;
+
 namespace DominioTests;
 
 [TestClass]

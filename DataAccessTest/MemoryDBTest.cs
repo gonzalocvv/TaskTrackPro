@@ -1,8 +1,9 @@
 using DataAccess;
 using Dominio;
-using Servicios;
 using Dtos;
-namespace MemoryDBTests;
+using TaskTrackPro.Backend.Dominio;
+
+namespace DataAccessTest;
 
 [TestClass]
 public class MemoryDBTests

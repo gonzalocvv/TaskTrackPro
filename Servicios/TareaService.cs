@@ -1,6 +1,7 @@
 using DataAccess;
 using Dominio;
 using Dtos;
+using TaskTrackPro.Backend.Dominio;
 
 namespace Servicios;
 
