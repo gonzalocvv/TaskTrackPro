@@ -1,6 +1,9 @@
 using FrontEnd.Components;
 using Servicios;
 using DataAccess;
+using Syncfusion.Licensing;
+using Syncfusion.Blazor;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,6 +12,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddSingleton<MemoryDB>();
 builder.Services.AddSingleton<UsuarioService>();
 builder.Services.AddSingleton<ProyectoService>();
+builder.Services.AddSyncfusionBlazor();
+SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF1cWWhPYVJyWmFZfVtgdV9GYlZUQmYuP1ZhSXxWdkBiXH9fcXVWQGdVUEV9XUs=");
+
 builder.Services.AddSingleton<TareaService>();
 
 

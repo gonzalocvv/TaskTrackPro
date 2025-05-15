@@ -63,5 +63,4 @@ public class TareaService
         Usuario usuarioParaCompletar = _db.GetUsuarioPorEmail(usuario);
         tarea.CompletarTarea(usuarioParaCompletar);
     }
-   
 }

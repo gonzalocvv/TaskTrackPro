@@ -47,6 +47,12 @@ public class MemoryDB
     {
         return _listProyectos;
     }
+    
+    public List<Tarea> GetListaTareasRegistradas()
+    {
+        return _listTareas;
+    }
+    
     public void AgregarProyecto(Proyecto proyecto)
     {
         if (proyecto == null)

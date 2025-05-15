@@ -176,9 +176,12 @@ public class UsuarioServicesTest
     }
 
 
-[TestMethod]
-public void ValidarContraseñaIncorrectaTest()
-{
+
+    [TestMethod]
+
+    public void ValidarContraseñaIncorrectaTest()
+
+    {
     MemoryDB db = new MemoryDB();
     UsuarioService service = new UsuarioService(db);
         
@@ -201,6 +204,52 @@ public void ValidarContraseñaIncorrectaTest()
     var exception = Assert.ThrowsException<ArgumentException>(() =>  service.ValidarContraseña(contraseñaIngresada, usuario));
     Assert.AreEqual("La contraseña es incorrecta", exception.Message);
         
-}
+    
+    }
+
+    [TestMethod]
+
+    public void GetListaUsuariosRegistradosTest()
+
+    {
+    
+    var usuarioDto2 = new CreateUsuarioDto
+    {
+        Nombre = "Lucía",
+        Apellido = "Fernández",
+        Email = "lucia@gmail.com",
+        FechaNacimiento = new DateTime(2000, 5, 12),
+        Contraseña = "LuciaPass123!"
+    };
+    service.CrearUsuario(usuarioDto2);
+    
+    var listaUsuarios = service.GetListaUsuariosRegistrados();
+    
+    Assert.AreEqual(3, listaUsuarios.Count); 
+    Assert.IsTrue(listaUsuarios.Any(u => u.Email == UsuarioDto.Email));
+    Assert.IsTrue(listaUsuarios.Any(u => u.Email == usuarioDto2.Email));
+    Assert.IsTrue(listaUsuarios.Any(u => u.Email == "admin@admin.com"));
+    
+    }
+    [TestMethod]
+    public void ResetearContraseñaSinSesionDebeLanzarExcepcionTest()
+    {
+        var usuarioDto = new CreateUsuarioDto
+        {
+            Nombre = "Pedro",
+            Apellido = "Gómez",
+            Email = "pedro@gmail.com",
+            FechaNacimiento = new DateTime(1990, 1, 1),
+            Contraseña = "Pedro123@"
+        };
+        service.CrearUsuario(usuarioDto);
+        var usuario = service.GetUsuarioPorEmail(usuarioDto.Email);
+        
+        var ex = Assert.ThrowsException<InvalidOperationException>(() =>
+            service.ResetearContrasenaDefecto(usuario));
+    
+        Assert.AreEqual("Debe ser administrador del sistema para resetear contraseñas.", ex.Message);
+    }
+
 
 }

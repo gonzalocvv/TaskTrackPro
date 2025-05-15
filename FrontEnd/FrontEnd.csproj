@@ -10,6 +10,8 @@
       <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
       <ProjectReference Include="..\Dtos\Dtos.csproj" />
       <ProjectReference Include="..\Servicios\Servicios.csproj" />
+        <PackageReference Include="Syncfusion.Blazor.Gantt" Version="29.1.33" />
+        <PackageReference Include="Syncfusion.Blazor.Themes" Version="29.1.33" />  
     </ItemGroup>
 
     <ItemGroup>
