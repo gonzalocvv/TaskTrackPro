@@ -5,6 +5,7 @@ namespace DominioTests;
 [TestClass]
 public class TareaTests
 {
+    Proyecto proyecto = new("Proyecto1", "Descripcion", new DateTime(2025, 8, 9), pepe)
     DateTime ejFechaInicio = new DateTime(2025, 8, 9);
     Usuario pepe   = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
     Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");

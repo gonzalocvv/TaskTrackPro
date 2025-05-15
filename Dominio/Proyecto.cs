@@ -118,7 +118,12 @@ public class Proyecto
     public void AgregarTarea(Tarea tarea)
     {
         ValidarTareaNoNull(tarea);
-        _tareas.Add(tarea);
+        if (Tareas.Any(tareas => tareas.Titulo == tarea.Titulo))
+        {
+            throw new InvalidOperationException("Ya existe una tarea con ese nombre");
+        }
+        Tareas.Add(tarea); 
+        
     }
     public void RemoverTarea(Tarea tarea)
     {

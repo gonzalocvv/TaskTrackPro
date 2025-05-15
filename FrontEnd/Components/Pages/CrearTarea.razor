@@ -1,4 +1,5 @@
 @page "/crearTarea"
+@using Dominio
 @using Dtos
 @using Servicios
 @inject ProyectoService ProyectoService
@@ -15,10 +16,13 @@
 
     <div class="mb-3">
         <label class="form-label">Seleccione un proyecto</label>
-        <select class="form-select" @bind="tareaForm.ProyectoNombre">
+        <select class="form-select" @bind="tareaForm.ProyectoNombre" @bing:after="ProyectoCambio">
             @foreach (var proyecto in proyectos)
             {
-                <option value="@proyecto.Nombre">@proyecto.Nombre</option>
+                if (proyecto.MiembroEmails.Contains(UsuarioService.SesionActual?.Email))
+                {
+                    <option value="@proyecto.Nombre">@proyecto.Nombre</option>
+                }
             }
         </select>
     </div>
@@ -59,6 +63,29 @@
         </select>
         <div class="form-text">Ctrl / ⌘ para seleccionar varios.</div>
     </div>
+    @if (tareasDelProyecto.Any())
+    {
+        <div class="mb-3">
+            <label class="form-label">Depende de</label>
+            <select multiple class="form-select" style="height:180px"
+                    @bind="tareaForm.TareasQueYoDependoTitulos">
+                @foreach (var tarea in tareasDelProyecto)
+                {
+                    if (tarea.Estado.ToString() != "Completada")
+                    {
+                        <option value="@tarea.Titulo">@tarea.Titulo (@tarea.Estado)</option>
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                
+                    <option value="@tarea.Titulo">@tarea.Titulo (@tarea.Estado)</option>
+                }
+            </select>
+            <div class="form-text">Ctrl/⌘ para seleccionar varias.</div>
+        </div>
+    }
 
     <button type="submit" class="btn btn-primary w-100">Crear tarea</button>
 </EditForm>
@@ -82,18 +109,33 @@
 @code {
     private CrearTareaDto tareaForm = new();
     private List<GetProyectoDto> proyectos = new();
+    private List<GetTareaDto>    tareasDelProyecto = new(); 
     private List<GetUsuarioDto> usuarios  = new();
     private string[] emailsSeleccionados  = Array.Empty<string>();
 
     private string errorMessage;
     private bool showSuccessMessage = false;
     
+    private void ProyectoCambio(ChangeEventArgs _)
+    {
+        if (string.IsNullOrWhiteSpace(tareaForm.ProyectoNombre))
+        {
+            tareasDelProyecto = new();
+            return;
+        }
 
+            tareasDelProyecto = ProyectoService.GetTareasPorNombreProyecto(tareaForm.ProyectoNombre)
+                .Where(t => t.Estado != EstadoTarea.Completada)
+            .ToList();
+            
+        tareaForm.TareasQueYoDependoTitulos.Clear();
+    }
     protected override void OnInitialized()
     {
         proyectos = ProyectoService.GetListaProyectos();
         var UserActualEmail = UsuarioService.SesionActual?.Email;
         usuarios = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != UserActualEmail).ToList();;
+        
     }
 
     private void GuardarTarea()

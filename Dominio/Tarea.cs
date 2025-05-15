@@ -13,6 +13,7 @@ public class Tarea
     private string _descripcion;
     private DateTime? _fechaDeInicio;
     private int _duracion;
+    private string _TituloProyecto;
     public EstadoTarea Estado { get; private set; }
 
     private List<Tarea> _TareasYoDependo { get; set; } = new List<Tarea>();
@@ -62,14 +63,27 @@ public class Tarea
             _duracion = value;
         } 
     }
+    public string ProyectoNombre
+    {
+        get => _TituloProyecto;
+        set
+        {
+            ValidarCamposString(value, "El nombre del proyecto");
+            _TituloProyecto = value;
+        }
+    }
     
 
-    public Tarea(string titulo, string descripcion, DateTime? fechaDeInicio, int duracion)
+    public Tarea(string titulo, string descripcion, DateTime? fechaDeInicio, int duracion, string tituloProyecto)
     {
         ValidarCamposString(titulo, "El título");
         ValidarCamposString(descripcion, "La descripción");
+        ValidarCamposString(tituloProyecto, "EL proyecto");
+        ValidarDuracion(duracion);
+        
         FechaInicioTieneValor(fechaDeInicio);
         ValidarDuracion(duracion);
+        _TituloProyecto = tituloProyecto;
         _titulo = titulo;
         _descripcion = descripcion;
         _fechaDeInicio = fechaDeInicio;
@@ -86,18 +100,33 @@ public class Tarea
     public void AgregarDependencia(Tarea tarea)
     {
         ValidarTareaNull(tarea);
-        if (_TareasYoDependo.Contains(tarea))
-            throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
-        if (tarea == this)
-            throw new ArgumentException("No se puede agregar una tarea como dependencia de sí misma.");
-        if (tarea.TieneDependenciaRecursiva(this))
-            throw new InvalidOperationException("Dependencia cíclica detectada.");
+        DependenciasYaContieneTarea(tarea);
+        ValidarAutoDependencia(tarea);
+        ValidarRecursividadTareas(tarea);
 
         _TareasYoDependo.Add(tarea);
         tarea._TareasDependenDeMi.Add(this);
 
         if (Estado == EstadoTarea.Pendiente)
             Estado = EstadoTarea.Bloqueada;
+    }
+
+    private void ValidarRecursividadTareas(Tarea tarea)
+    {
+        if (tarea.TieneDependenciaRecursiva(this))
+            throw new InvalidOperationException("Dependencia cíclica detectada.");
+    }
+
+    private void ValidarAutoDependencia(Tarea tarea)
+    {
+        if (tarea == this)
+            throw new ArgumentException("No se puede agregar una tarea como dependencia de sí misma.");
+    }
+
+    private void DependenciasYaContieneTarea(Tarea tarea)
+    {
+        if (_TareasYoDependo.Contains(tarea))
+            throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
     }
 
     private bool TieneDependenciaRecursiva(Tarea objetivo)
@@ -156,8 +185,6 @@ public class Tarea
     }
     public void CompletarTarea(Usuario usuario)
     {
-        if (Estado == EstadoTarea.Completada)
-            return;
         if (!TareaEstaPendiente())
             throw new InvalidOperationException("No se puede completar una tarea que no está pendiente.");
         if (!UsuarioEstaAsignado(usuario))
