@@ -1,7 +1,42 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<h3>My Syncfusion Gantt Chart</h3>
 
-<h1>Hello, world!</h1>
+<SfGantt DataSource="@TaskCollection"
+         Height="450px" Width="700px">
+    <GanttTaskFields
+        Id="TaskId"
+        Name="TaskName"
+        StartDate="StartDate"
+        Duration="Duration"
+        Progress="Progress"
+        ParentID="ParentId">
+    </GanttTaskFields>
+    <GanttColumns>
+        <GanttColumn Field="TaskId" HeaderText="ID" Width="60"></GanttColumn>
+        <GanttColumn Field="TaskName" HeaderText="Task Name" Width="200"></GanttColumn>
+        <GanttColumn Field="StartDate" HeaderText="Start Date" Format="d" Width="120"></GanttColumn>
+        <GanttColumn Field="Duration" HeaderText="Duration (days)" Width="120"></GanttColumn>
+        <GanttColumn Field="Progress" HeaderText="Progress (%)" Width="120"></GanttColumn>
+    </GanttColumns>
+</SfGantt>
 
-Welcome to your new app.
+@code {
+    private List<TaskData> TaskCollection = new()
+    {
+        new() { TaskId = 1, TaskName = "Planning",      StartDate = DateTime.Today,          Duration = "5",  Progress = 40 },
+        new() { TaskId = 2, TaskName = "Development",   StartDate = DateTime.Today.AddDays(5), Duration = "10", Progress = 20, ParentId = 1 },
+        new() { TaskId = 3, TaskName = "Testing",       StartDate = DateTime.Today.AddDays(15), Duration = "5",  Progress = 0,  ParentId = 2 },
+        new() { TaskId = 4, TaskName = "Deployment",    StartDate = DateTime.Today.AddDays(20), Duration = "2",  Progress = 0,  ParentId = 3 }
+    };
+
+    class TaskData
+    {
+        public int TaskId { get; set; }
+        public string TaskName { get; set; } = default!;
+        public DateTime StartDate { get; set; }
+        public string Duration { get; set; } = default!;
+        public int Progress { get; set; }
+        public int? ParentId { get; set; }
+    }
+}
