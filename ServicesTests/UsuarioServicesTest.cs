@@ -43,9 +43,6 @@ public class UsuarioServicesTest
     [TestMethod]
     public void AgregarUsuarioQueYaExisteTest()
     {
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
-
         var CrearUsuarioDto = new CreateUsuarioDto
         {
             Nombre = "Gonzalo",
@@ -88,9 +85,6 @@ public class UsuarioServicesTest
     [ExpectedException(typeof(ArgumentNullException))]
     public void GetUsuarioPorNombreQueNoExisteExcepctionTest()
     {
-        
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
         string nombre = "Nicolas";
         Usuario result = service.GetUsuarioPorNombre(nombre);
 
@@ -149,17 +143,23 @@ public class UsuarioServicesTest
     public void AdminSistemaNoPuedeResetearContrasenaDeOtroAdminSistema()
     {
         service.IniciarSesion(loginDtoAdmin);
-        Usuario admin2 = new Usuario("Admin2", "Sistema", "admin2@sistema.com", new DateTime(1985, 1, 1), "Admin456@");
-        admin2.AgregarRol(new Rol("Administrador del Sistema"));
-        service.ResetearContrasenaDefecto(admin2);
+        var UsuarioDto = new CreateUsuarioDto {
+            Nombre = "Gonzalo",
+            Apellido = "Cabrera",
+            Email = "gonzalo1@gmail.com",
+            FechaNacimiento = new(2004, 7, 9),
+            Contraseña = "Ab123456789!"
+        };
+        service.CrearUsuario(UsuarioDto);
+        Usuario usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
+        usuario.AgregarRol(new Rol("Administrador del Sistema"));
+        service.ResetearContrasenaDefecto(usuario);
     }
     
     
 [TestMethod]
 public void ObtenerListaUsuariosRegistrados()
 {
-    MemoryDB db = new MemoryDB();
-    UsuarioService service = new UsuarioService(db);
 
     var CrearUsuarioDto = new CreateUsuarioDto
     {

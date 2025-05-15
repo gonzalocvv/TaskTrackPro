@@ -1,14 +1,37 @@
+using System.Transactions;
 using Dominio;
-
+using Dtos;
 namespace DominioTests;
 
 [TestClass]
 public class TareaTests
 {
     DateTime ejFechaInicio = new DateTime(2025, 8, 9);
-    Usuario pepe   = new("Pepe","López","pepe@x.com", new(2000,1,1),"Pepe123@");
-    Usuario ana    = new("Ana","Diaz","ana@x.com",  new(1995,5,2),"Ana1234@");
-    [TestMethod]
+    private Usuario ana;
+    private Usuario pepe;
+    [TestInitialize]
+    public void SetUp()
+    {
+        CreateUsuarioDto dtoPepe = new CreateUsuarioDto
+        {
+            Nombre = "Pepe",
+            Apellido = "López",
+            Email = "pepe@x.com",
+            FechaNacimiento = new DateTime(2000, 1, 1),
+            Contraseña = "Pepe123@"
+        };
+        pepe = new Usuario(dtoPepe);
+        CreateUsuarioDto dtoAna = new CreateUsuarioDto
+        {
+            Nombre = "Ana",
+            Apellido = "Diaz",
+            Email = "ana@x.com",
+            FechaNacimiento = new DateTime(1995, 5, 2),
+            Contraseña = "Ana1234@"
+        };
+         ana = new Usuario(dtoAna);
+    }
+[TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaTituloVacioExceptionTest()
     {
