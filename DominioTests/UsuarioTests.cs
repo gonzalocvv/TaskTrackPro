@@ -6,28 +6,6 @@ namespace DominioTests;
 [TestClass]
 public class UsuarioTests
 {
-    /*
-     * Crear usuario con nombre vacío -
-     * Crear usuario con apellido vacío -
-     * Crear usuario con email vacío -
-     * Crear usuario con formato de email inválido -
-     * Crear usuario con fecha de nacimiento futura -
-     Se hizo test para ValidarCampoString, que no sean vacios, se usa para todos los campos
-     
-     * Crear usuario con contraseña corta (menos de 8 caracteres) -
-     * Crear usuario con contraseña sin mayúsculas -
-     * Crear usuario con contraseña sin minúsculas -
-     * Crear usuario con contraseña sin números -
-     * Crear usuario con contraseña sin caracteres especiales -
-     * Crear usuario con contraseña válida (cumple todos los requisitos) -
-     * 
-     * Usuario cambia su contraseña correctamente (estando logueado) -
-     * Usuario intenta cambiar contraseña sin estar logueado -
-     * Contraseña debe persistirse cifrada, no en texto plano -
-     * Crear usuario con todos los campos válidos -
-     * Crear usuario sin contraseña (cuando lo crea un administrador) -
-     * Administrador reinicia contraseña correctamente -
-     */
     private Usuario usuario;
     private DateTime fechaNacCorrecta ;
 
@@ -46,8 +24,24 @@ public class UsuarioTests
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioNombreVacioExcepcionTest()
     {
-        
-        Usuario usuario = new Usuario("","Cabrera", "gonzalo@ejemplo.com", fechaNacCorrecta, "Gonzalo9@");
+        usuario.Nombre = "";
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioDebeSerMayorDe18Anios()
+    {
+        var fechaNacimientoInvalida = DateTime.Now.AddYears(-17);
+        usuario.FechaNacimiento = fechaNacimientoInvalida;
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void UsuarioDebeSerMenorDe100Anios()
+    {
+        var fechaNacimientoInvalida = DateTime.Now.AddYears(-101);
+        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacimientoInvalida, "Gonzalo9@");
+
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
