@@ -1,5 +1,8 @@
+using DataAccess;
 using Dominio;
+using Dtos;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Servicios;
 
 namespace DominioTests;
 
@@ -160,5 +163,25 @@ public class UsuarioTests
     {
         var rol = new Rol("Administrador del Proyecto");
         usuario.EliminarRol(rol);
+    }
+    [TestMethod]
+    public void AgregarUsuarioQueYaExisteTest()
+    {
+        MemoryDB db = new MemoryDB();
+        UsuarioService service = new UsuarioService(db);
+
+        var CrearUsuarioDto = new CreateUsuarioDto
+        {
+            Nombre = "Gonzalo",
+            Apellido = "Cabrera",
+            Email = "gonzalo@gmail.com",
+            FechaNacimiento = new DateTime(2004, 7, 9),
+            Contraseña = "Ab123456789!"
+        };
+        
+        service.CrearUsuario(CrearUsuarioDto);
+        
+        var exception = Assert.ThrowsException<ArgumentException>(() => service.CrearUsuario(CrearUsuarioDto));
+        Assert.AreEqual("El usuario ya existe", exception.Message);
     }
 }
