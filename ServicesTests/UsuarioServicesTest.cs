@@ -58,7 +58,7 @@ public class UsuarioServicesTest
         service.CrearUsuario(CrearUsuarioDto);
         
         var exception = Assert.ThrowsException<ArgumentException>(() => service.CrearUsuario(CrearUsuarioDto));
-        Assert.AreEqual("El usuario ya existe", exception.Message);
+        Assert.AreEqual("Ya existe un usuario con ese Email", exception.Message);
     }
     
     [TestMethod]

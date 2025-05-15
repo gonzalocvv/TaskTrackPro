@@ -40,7 +40,7 @@ public class UsuarioService
         Usuario nuevoUsuario = new Usuario(UsuarioDto);
         if (_db.ExisteUsuario(nuevoUsuario.Email))
         {
-            throw new ArgumentException("Ya existe un usario con ese Email");
+            throw new ArgumentException("Ya existe un usuario con ese Email");
         }
         _db.AgregarUsuario(nuevoUsuario);
     }
