@@ -12,15 +12,17 @@ public class UsuarioService
     public UsuarioService(MemoryDB db)
     {
         _db = db;
-        
-        Usuario adminUser = new Usuario(
-            "admin",
-            "User",
-            "admin@admin.com",
-            new DateTime(1990, 1, 1),
-            BCrypt.Net.BCrypt.HashPassword("Admin123@")
-            
-        );
+        CreateUsuarioDto AdminDto = new CreateUsuarioDto();
+        AdminDto.Nombre = "Admin";
+        AdminDto.Apellido = "User";
+        AdminDto.Email = "admin@admin.com";
+        AdminDto.FechaNacimiento = new DateTime(1990, 1, 1);
+        AdminDto.Contraseña = BCrypt.Net.BCrypt.HashPassword("Admin123@");
+        Usuario adminUser = new Usuario(AdminDto);
+        if (_db.ExisteUsuario(adminUser.Email))
+        {
+            throw new ArgumentException("El usuario ya existe");
+        }
         Rol rolAdmin = new Rol("Administrador del Sistema");
         adminUser.AgregarRol(rolAdmin);
         _db.AgregarUsuario(adminUser);
@@ -35,13 +37,11 @@ public class UsuarioService
     
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
-        Usuario nuevoUsuario = new Usuario(UsuarioDto.Nombre, UsuarioDto.Apellido, UsuarioDto.Email,
-            UsuarioDto.FechaNacimiento, UsuarioDto.Contraseña);
+        Usuario nuevoUsuario = new Usuario(UsuarioDto);
         if (_db.ExisteUsuario(nuevoUsuario.Email))
         {
-            throw new ArgumentException("El usuario ya existe");
+            throw new ArgumentException("Ya existe un usario con ese Email");
         }
-        nuevoUsuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(nuevoUsuario.Contraseña);
         _db.AgregarUsuario(nuevoUsuario);
     }
 
@@ -113,7 +113,7 @@ public class UsuarioService
         String contraDefecto = ContraseñaPorDefecto;
         if (_sesionActual == null || !_sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema"))
         {
-            throw new InvalidOperationException("Debe estar conectado un administrador del sistema para resetear contraseñas.");
+            throw new InvalidOperationException("Debe ser administrador del sistema para resetear contraseñas.");
         }
 
         if (usuario.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema"))
@@ -123,4 +123,6 @@ public class UsuarioService
 
         usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(ContraseñaPorDefecto);
     }
+    
+    
 }  
