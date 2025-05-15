@@ -17,7 +17,7 @@ public class UsuarioService
         AdminDto.Apellido = "User";
         AdminDto.Email = "admin@admin.com";
         AdminDto.FechaNacimiento = new DateTime(1990, 1, 1);
-        AdminDto.Contraseña = BCrypt.Net.BCrypt.HashPassword("Admin123@");
+        AdminDto.Contraseña = "Admin123@";
         Usuario adminUser = new Usuario(AdminDto);
         if (_db.ExisteUsuario(adminUser.Email))
         {
@@ -40,8 +40,7 @@ public class UsuarioService
         Usuario nuevoUsuario = new Usuario(UsuarioDto);
         if (_db.ExisteUsuario(nuevoUsuario.Email))
         {
-            throw new ArgumentException("Ya existe un usuario con ese Email");
-        }
+            throw new ArgumentException("Ya existe un usuario con ese Email");        }
         _db.AgregarUsuario(nuevoUsuario);
     }
 

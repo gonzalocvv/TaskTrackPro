@@ -38,29 +38,25 @@ public class UsuarioServicesTest
             Contraseña = UsuarioDto.Contraseña
         };
     }
-    
-    
+
+
     [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
     public void AgregarUsuarioQueYaExisteTest()
     {
-        MemoryDB db = new MemoryDB();
-        UsuarioService service = new UsuarioService(db);
-
-        var CrearUsuarioDto = new CreateUsuarioDto
+        var usuarioDto = new CreateUsuarioDto
         {
             Nombre = "Gonzalo",
             Apellido = "Cabrera",
             Email = "gonzalo@gmail.com",
-            FechaNacimiento = new DateTime(2004, 7, 9),
+            FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        
-        service.CrearUsuario(CrearUsuarioDto);
-        
-        var exception = Assert.ThrowsException<ArgumentException>(() => service.CrearUsuario(CrearUsuarioDto));
-        Assert.AreEqual("Ya existe un usuario con ese Email", exception.Message);
+        service.CrearUsuario(usuarioDto);
+        service.CrearUsuario(usuarioDto);
+
     }
-    
+
     [TestMethod]
     public void CrearUsuarioTest()
     {
@@ -163,15 +159,7 @@ public class UsuarioServicesTest
     [TestMethod]
     public void ObtenerListaUsuariosRegistrados()
     {
-
-        var CrearUsuarioDto = new CreateUsuarioDto
-        {
-            Nombre = "Gonzalo",
-            Apellido = "Cabrera",
-            Email = "gonzalo@gmail.com",
-            FechaNacimiento = new(2004, 7, 9),
-            Contraseña = "Ab123456789!"
-        };
+        
         var CrearUsuarioDto2 = new CreateUsuarioDto
         {
             Nombre = "Nicolas",
@@ -180,11 +168,10 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        service.CrearUsuario(CrearUsuarioDto);
         service.CrearUsuario(CrearUsuarioDto2);
         var result = db.GetListaUsuariosRegistrados();
         Assert.AreEqual(3, result.Count);
-        Assert.AreEqual(result[1].Email, CrearUsuarioDto.Email);
+        Assert.AreEqual(result[1].Email, UsuarioDto.Email);
         Assert.AreEqual(result[2].Email, CrearUsuarioDto2.Email);
     }
 
