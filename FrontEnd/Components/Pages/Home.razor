@@ -2,41 +2,37 @@
 
 <h3>My Syncfusion Gantt Chart</h3>
 
-<SfGantt DataSource="@TaskCollection"
-         Height="450px" Width="700px">
-    <GanttTaskFields
-        Id="TaskId"
-        Name="TaskName"
-        StartDate="StartDate"
-        Duration="Duration"
-        Progress="Progress"
-        ParentID="ParentId">
+<SfGantt DataSource="@TaskCollection" Height="215px" Width="914px">
+    <GanttTaskFields Id="TaskId" Name="TaskName" StartDate="StartDate" EndDate="EndDate" Duration="Duration" Progress="Progress" ParentID="ParentId" Dependency="Predecessor">
     </GanttTaskFields>
-    <GanttColumns>
-        <GanttColumn Field="TaskId" HeaderText="ID" Width="60"></GanttColumn>
-        <GanttColumn Field="TaskName" HeaderText="Task Name" Width="200"></GanttColumn>
-        <GanttColumn Field="StartDate" HeaderText="Start Date" Format="d" Width="120"></GanttColumn>
-        <GanttColumn Field="Duration" HeaderText="Duration (days)" Width="120"></GanttColumn>
-        <GanttColumn Field="Progress" HeaderText="Progress (%)" Width="120"></GanttColumn>
-    </GanttColumns>
 </SfGantt>
 
-@code {
-    private List<TaskData> TaskCollection = new()
+@code{
+    private List<TaskData> TaskCollection { get; set; }
+    protected override void OnInitialized()
     {
-        new() { TaskId = 1, TaskName = "Planning",      StartDate = DateTime.Today,          Duration = "5",  Progress = 40 },
-        new() { TaskId = 2, TaskName = "Development",   StartDate = DateTime.Today.AddDays(5), Duration = "10", Progress = 20, ParentId = 1 },
-        new() { TaskId = 3, TaskName = "Testing",       StartDate = DateTime.Today.AddDays(15), Duration = "5",  Progress = 0,  ParentId = 2 },
-        new() { TaskId = 4, TaskName = "Deployment",    StartDate = DateTime.Today.AddDays(20), Duration = "2",  Progress = 0,  ParentId = 3 }
-    };
+        this.TaskCollection = GetTaskCollection();
+    }
 
-    class TaskData
+    public class TaskData
     {
         public int TaskId { get; set; }
-        public string TaskName { get; set; } = default!;
+        public string TaskName { get; set; }
         public DateTime StartDate { get; set; }
-        public string Duration { get; set; } = default!;
+        public DateTime EndDate { get; set; }
+        public string Duration { get; set; }
         public int Progress { get; set; }
+        public string Predecessor { get; set; }
         public int? ParentId { get; set; }
+    }
+
+    public static List<TaskData> GetTaskCollection()
+    {
+        List<TaskData> Tasks = new List<TaskData>() {
+            new TaskData() { TaskId = 1, TaskName = "Project initiation", StartDate = new DateTime(2022, 04, 01), EndDate = new DateTime(2022, 04, 21), },
+            new TaskData() { TaskId = 2, TaskName = "Identify Site location", StartDate = new DateTime(2022, 04, 05), Duration = "4", Progress = 50, ParentId = 1 },
+            new TaskData() { TaskId = 3, TaskName = "Perform soil test", StartDate = new DateTime(2022, 04, 15), Duration = "4", Progress = 50, ParentId = 1}
+        };
+        return Tasks;
     }
 }
