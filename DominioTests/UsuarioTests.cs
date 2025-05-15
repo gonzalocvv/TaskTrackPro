@@ -24,17 +24,15 @@ public class UsuarioTests
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioNombreVacioExcepcionTest()
     {
-        
-        Usuario usuario = new Usuario("","Cabrera", "gonzalo@ejemplo.com", fechaNacCorrecta, "Gonzalo9@");
+        usuario.Nombre = "";
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void UsuarioDebeSerMayorDe18Anios()
     {
-        var fechaNacimientoInvalida = DateTime.Now.AddYears(-17); // Menor de 18 años
-        var usuario = new Usuario("Gonzalo","Cabrera", "gonzalocabrera@gmail.com", fechaNacimientoInvalida, "Gonzalo9@");
-
+        var fechaNacimientoInvalida = DateTime.Now.AddYears(-17);
+        usuario.FechaNacimiento = fechaNacimientoInvalida;
     }
     
     [TestMethod]
