@@ -2,6 +2,8 @@
 using DataAccess;
 using Dtos;
 using BCrypt.Net;
+using TaskTrackPro.Backend.Dominio;
+
 namespace Servicios;
 
 public class UsuarioService

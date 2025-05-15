@@ -1,4 +1,6 @@
-namespace Dominio;
+using Dominio;
+
+namespace TaskTrackPro.Backend.Dominio;
 
 public class Proyecto
 {

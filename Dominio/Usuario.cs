@@ -1,5 +1,7 @@
 ﻿using Dtos;
-using BCrypt.Net; 
+using BCrypt.Net;
+using TaskTrackPro.Backend.Dominio;
+
 namespace Dominio;
 
 public class Usuario
