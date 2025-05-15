@@ -1,6 +1,8 @@
 using FrontEnd.Components;
 using Servicios;
 using DataAccess;
+using Syncfusion.Blazor;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,6 +11,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddSingleton<MemoryDB>();
 builder.Services.AddSingleton<UsuarioService>();
 builder.Services.AddSingleton<ProyectoService>();
+builder.Services.AddSyncfusionBlazor();
+
 
 
 var app = builder.Build();
