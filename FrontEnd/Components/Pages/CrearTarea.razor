@@ -125,7 +125,7 @@
         }
 
             tareasDelProyecto = ProyectoService.GetTareasPorNombreProyecto(tareaForm.ProyectoNombre)
-                .Where(t => t.Estado != EstadoTarea.Completada)
+                .Where(tarea => tarea.Estado != "Completada")
             .ToList();
             
         tareaForm.TareasQueYoDependoTitulos.Clear();
