@@ -11,6 +11,15 @@
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
+        
+        if (usuarioService.EsRolNullOAdmin())
+        {
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="registrarUsuario">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Registrar Usuario
+            </NavLink>
+        </div>
+        }
         @if (usuarioService.SesionActual == null)
         {
             <div class="nav-item px-3">
@@ -23,16 +32,19 @@
                 </NavLink>
             </div>
         }
+        
 
-
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="registrarUsuario">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Registrar Usuario
-            </NavLink>
-        </div>
 
         @if (usuarioService.SesionActual != null)
+        {
+
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/tareas">
+                    <span class="bi bi-list-check" aria-hidden="true"></span> Mis Tareas
+                </NavLink>
+            </div>
+        }
+        @if (usuarioService.EsAdminProyecto())
         {
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="registrarProyecto">
@@ -44,12 +56,6 @@
                     <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Crear Tarea
                 </NavLink>
             </div>
-
-            <div class="nav-item px-3">
-                <NavLink class="nav-link" href="/tareas">
-                    <span class="bi bi-list-check" aria-hidden="true"></span> Mis Tareas
-                </NavLink>
-            </div>
         }
         @if (usuarioService.EsAdminSistema())
         {
@@ -59,7 +65,6 @@
                 </NavLink>
             </div>
         }
-        <div class="flex-grow-1"></div>
         @if (usuarioService.SesionActual != null)
         {
             <div class="text-center mb-3">
