@@ -1,0 +1,56 @@
+﻿@page "/MisProyectos"
+@using Dtos
+@using Servicios
+@inject ProyectoService ProyectoServicio
+<h3>Mis proyectos</h3>
+
+@if (listaProyectos == null)
+{
+    <p><em>No tienes ningún proyecto.</em></p>
+
+}
+else
+{
+    
+    <SfGantt DataSource="@TaskCollection" Height="215px" Width="914px" TreeColumnIndex="1">
+        <GanttTaskFields Id="TaskId" Name="TaskName" StartDate="StartDate" EndDate="EndDate" Duration="Duration" Progress="Progress" ParentID="ParentId" Dependency="Predecessor">
+        </GanttTaskFields>
+        <GanttColumns>
+            <GanttColumn Field="TaskId" HeaderText="ID" Width="100"></GanttColumn>
+            <GanttColumn Field="TaskName" HeaderText="Nombre de la Tarea" Width="250"></GanttColumn>
+        </GanttColumns>
+
+    </SfGantt>
+}
+
+    
+@code{
+    private List<GetProyectoDto> listaProyectos;
+    private List<TaskData> TaskCollection { get; set; }
+    protected override void OnInitialized()
+    {
+        this.TaskCollection = GetTaskCollection();
+    }
+
+    public class TaskData
+    {
+        public int TaskId { get; set; }
+        public string TaskName { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public string Duration { get; set; }
+        public int Progress { get; set; }
+        public string Predecessor { get; set; }
+        public int? ParentId { get; set; }
+    }
+
+    public static List<TaskData> GetTaskCollection()
+    {
+        List<TaskData> Tasks = new List<TaskData>() {
+            new TaskData() { TaskId = 1, TaskName = "Project initiation", StartDate = new DateTime(2022, 04, 01), EndDate = new DateTime(2022, 04, 21), },
+            new TaskData() { TaskId = 2, TaskName = "Identify Site location", StartDate = new DateTime(2022, 04, 05), Duration = "4", Progress = 50, ParentId = 1 },
+            new TaskData() { TaskId = 3, TaskName = "Perform soil test", StartDate = new DateTime(2022, 04, 15), Duration = "4", Progress = 50, ParentId = 1}
+        };
+        return Tasks;
+    }
+}

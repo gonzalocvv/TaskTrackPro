@@ -1,0 +1,157 @@
+﻿@using Servicios    
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject UsuarioService usuarioService
+
+<div class="nav-scrollable d-flex flex-column vh-100"
+     onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column flex-grow-1">
+        
+        
+
+
+       @if (usuarioService.SesionActual == null)
+       {
+           <div class="nav-item px-3">
+               <NavLink class="nav-link d-flex align-items-center" href="/">
+                   <span
+                       class="bi bi-box-arrow-in-right me-2.75 fs-4 align-middle"
+                       style="line-height: 1;"
+                       aria-hidden="true"
+                   ></span>
+                   Iniciar Sesión
+               </NavLink>
+           </div>
+       }
+
+
+        @if (usuarioService.EsRolNullOAdmin())
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="registrarUsuario">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Registrar Usuario
+                </NavLink>
+            </div>
+        }
+        @if (usuarioService.SesionActual != null)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/MisTareas">
+                    <span
+                        class="bi bi-list-task e-2.75 fs-4 align-middle"
+                        style="line-height: 1;"
+                        aria-hidden="true"
+                    ></span>Mis Tareas
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/MisProyectos" Match="NavLinkMatch.All">
+                    <span
+                        class="bi bi-list-task e-2.75 fs-4 align-middle"
+                        style="line-height: 1;"
+                        aria-hidden="true"
+                    ></span>
+                    Mis Proyectos
+                </NavLink>
+            </div>
+        }
+        @if (usuarioService.EsAdminSistema())
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/admin/gestion-usuario" Match="NavLinkMatch.All">
+                    <span
+                        class="bi bi-list-task e-2.75 fs-4 align-middle"
+                        style="line-height: 1;"
+                        aria-hidden="true"
+                    ></span>
+                    Gestionar Usuarios
+                </NavLink>
+            </div>
+        }
+        @if (usuarioService.EsAdminProyecto())
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="/MisProyectos" Match="NavLinkMatch.All">
+                    <span
+                        class="bi bi-list-task e-2.75 fs-4 align-middle"
+                        style="line-height: 1;"
+                        aria-hidden="true"
+                    ></span>
+                    Mis Proyectos
+                </NavLink>
+            </div>
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="registrarProyecto">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Registrar Proyecto
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="crearTarea">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Crear Tarea
+                </NavLink>
+            </div>
+            
+        }
+        <div class="flex-grow-1"></div>
+        @if (usuarioService.SesionActual != null)
+        {
+            <div class="text-center mb-3">
+                <button class="btn btn-light text-dark px-4" @onclick="ShowConfirm">
+                    Cerrar sesión
+                </button>
+            </div>
+        }
+        @if (showConfirm)
+        {
+            <div class="modal fade show d-block" style="background-color: rgba(0, 0, 0, 0.5);" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">TaskTrackPro</h5>
+                            <button type="button" class="btn-close" aria-label="Close" @onclick="HideConfirm"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>¿Está seguro de que desea cerrar sesión?</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" @onclick="HideConfirm">No</button>
+                            <button class="btn btn-primary" @onclick="ConfirmLogout">Sí</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        
+    </nav>
+</div>
+
+@code {
+    private bool showConfirm = false;
+
+    protected override void OnInitialized()
+    {
+        usuarioService.OnSesionCambiada += OnSesionCambiadaHandler;
+    }
+    private void OnSesionCambiadaHandler()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    void ShowConfirm() => showConfirm = true;
+    void HideConfirm() => showConfirm = false;
+
+    private  async Task ConfirmLogout()
+    {
+        usuarioService.CerrarSesion();
+        showConfirm = false;
+        await InvokeAsync(StateHasChanged);        
+        NavigationManager.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        usuarioService.OnSesionCambiada -= OnSesionCambiadaHandler;
+    }
+}

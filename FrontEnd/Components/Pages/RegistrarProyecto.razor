@@ -1,0 +1,120 @@
+@page "/registrarProyecto"
+@using Dtos
+@using Servicios
+@inject UsuarioService UsuarioService
+@inject ProyectoService ProyectoService
+@inject NavigationManager NavigationManager
+@attribute [StreamRendering]
+
+<PageTitle>Crear proyecto</PageTitle>
+
+<h1 class="mb-4">Crear proyecto</h1>
+
+<EditForm Model="@nuevoProyecto" OnValidSubmit="CrearProyectoDesdeFormulario">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <InputText class="form-control" @bind-Value="nuevoProyecto.Nombre" />
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Descripción (máx. 400 caracteres)</label>
+        <InputTextArea class="form-control"
+                       rows="4" maxlength="400"
+                       @bind-Value="nuevoProyecto.Descripcion" />
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Fecha de inicio estimada</label>
+        <InputDate class="form-control" @bind-Value="nuevoProyecto.FechaInicio" />
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Miembros del proyecto</label>
+        <select multiple class="form-select" style="height:200px"
+                @bind="emailsSeleccionados">
+            @foreach (var usuario in usuariosRegistrados)
+            {
+                <option value="@usuario.Email">@usuario.Nombre (@usuario.Email)</option>
+            }
+        </select>
+        <div class="form-text">Mantén Ctrl / ⌘ para seleccionar varios.</div>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Crear proyecto</button>
+</EditForm>
+
+
+@if (showSuccessMessage)
+{
+    <br/>
+    <div class="alert alert-success" role="alert">
+        Proyecto registrado con éxito
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <br/>
+    <div class="alert alert-danger" role="alert">
+        @errorMessage 
+    </div>
+}
+
+@code {
+    private CrearProyectoDto nuevoProyecto = new();
+    private List<GetUsuarioDto> usuariosRegistrados = new();
+    private string[] emailsSeleccionados = Array.Empty<string>();
+    private string errorMessage;
+    private bool showSuccessMessage = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        nuevoProyecto.FechaInicio = DateTime.Now;
+        if (UsuarioService.SesionActual == null)
+        {
+            NavigationManager.NavigateTo("/iniciarSesion", true);
+            return; 
+        }
+
+        string adminEmail = "admin@admin.com";
+        var UserActualEmail = UsuarioService.SesionActual?.Email;
+        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != adminEmail && usuario.Email != UserActualEmail).ToList();
+    }
+
+    private async Task CrearProyectoDesdeFormulario()
+    {
+        showSuccessMessage = false;
+        errorMessage = null;
+        
+        if (UsuarioService.SesionActual is null)
+        {
+            NavigationManager.NavigateTo("/iniciarSesion", true);
+            return;
+        }
+        
+        var administrador = UsuarioService.SesionActual;
+        nuevoProyecto.AdministradorEmail = administrador.Email;
+        
+        var miembros = emailsSeleccionados.ToList();
+        if (!miembros.Contains(administrador.Email))
+            miembros.Add(administrador.Email);
+        nuevoProyecto.MiembroEmails = miembros;
+
+        try
+        {
+            ProyectoService.CrearProyecto(nuevoProyecto);
+            
+            nuevoProyecto = new();
+            emailsSeleccionados = Array.Empty<string>();
+            showSuccessMessage = true;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}
+

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+      <ProjectReference Include="..\Dtos\Dtos.csproj" />
+      <ProjectReference Include="..\Servicios\Servicios.csproj" />
+        <PackageReference Include="Syncfusion.Blazor.Gantt" Version="29.1.33" />
+        <PackageReference Include="Syncfusion.Blazor.Themes" Version="29.1.33" />  
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Components\App.css">
+        <DependentUpon>App.razor</DependentUpon>
+      </None>
+    </ItemGroup>
+
+</Project>
