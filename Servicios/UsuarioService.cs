@@ -125,19 +125,18 @@ public class UsuarioService
     
     public void ResetearContrasenaDefecto(Usuario usuario)
     {
-        String contraDefecto = ContraseñaPorDefecto;
-        if (_sesionActual == null || !_sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema"))
+        if (usuario == null)
+        {
+            throw new ArgumentException("El usuario no puede ser nulo.");
+        }
+
+        if (SesionActual == null || !EsAdminSistema())
         {
             throw new InvalidOperationException("Debe ser administrador del sistema para resetear contraseñas.");
         }
 
-        if (usuario.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema"))
-        {
-            throw new InvalidOperationException("No se puede resetear la contraseña de otro administrador del sistema.");
-        }
-
         usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(ContraseñaPorDefecto);
     }
-    
+
     
 }  
