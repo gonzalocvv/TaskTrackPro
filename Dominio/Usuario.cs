@@ -139,7 +139,6 @@ public class Usuario
         ValidarFechaNoVacia(fechaNacimiento);
         ValidarFechaAnterioraActual(fechaNacimiento);
         ValidarRangoEdadValido(fechaNacimiento);
-
     }
 
     private static void ValidarFechaAnterioraActual(DateTime fechaNacimiento)
