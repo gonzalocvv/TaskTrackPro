@@ -102,6 +102,12 @@ public class UsuarioServicesTest
         Assert.AreEqual(result.Email, UsuarioDto.Email);
     }
 
+    [TestMethod]
+    public void EsAdminProyectoTest()
+    {
+        service.IniciarSesion(loginDtoAdmin);
+        Assert.IsTrue(service.EsAdminProyecto());
+    }
 
     [TestMethod]
     public void IniciarSesionTest()
@@ -130,7 +136,6 @@ public class UsuarioServicesTest
     [TestMethod]
     public void AdminSistemaResetContrasenaUsuarioMenorRango()
     {
-        var admin = service.GetUsuarioPorEmail("admin@admin.com"); 
         Usuario usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
         service.IniciarSesion(loginDtoAdmin);
         service.ResetearContrasenaDefecto(usuario);

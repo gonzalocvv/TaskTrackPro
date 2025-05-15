@@ -24,6 +24,8 @@ public class UsuarioService
             throw new ArgumentException("El usuario ya existe");
         }
         Rol rolAdmin = new Rol("Administrador del Sistema");
+        Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
+        adminUser.AgregarRol(rolAdminProyecto);
         adminUser.AgregarRol(rolAdmin);
         _db.AgregarUsuario(adminUser);
     }
@@ -34,7 +36,11 @@ public class UsuarioService
     
     public event Action OnSesionCambiada;
 
-    
+    public bool EsAdminSistema()
+    {
+        return _sesionActual != null && 
+               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema");
+    }
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
         Usuario nuevoUsuario = new Usuario(UsuarioDto);
@@ -44,7 +50,17 @@ public class UsuarioService
         _db.AgregarUsuario(nuevoUsuario);
     }
 
+    public bool EsAdminProyecto()
+    {
+        return _sesionActual != null && 
+               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Proyecto");
+    }
 
+    public bool EsRolNullOAdmin()
+    {
+        return _sesionActual == null || 
+               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema");
+    }
     public Usuario GetUsuarioPorNombre(string nombre)
     {
        var usuarioParaDevolver = _db.GetUsuarioPorNombre(nombre);
