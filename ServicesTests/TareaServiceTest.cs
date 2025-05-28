@@ -40,7 +40,7 @@ public class TareaServiceTest
         _db.AgregarProyecto(proyecto);
     }
 
-    static CreateUsuarioDto responsableDto = new CreateUsuarioDto
+        static CreateUsuarioDto responsableDto = new CreateUsuarioDto
     {
         Nombre = "Gonzalo",
         Apellido = "Cabrera",
