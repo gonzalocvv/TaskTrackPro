@@ -21,3 +21,8 @@ public class GetUsuarioDto
     public string Apellido;
     public string Email;
 }
+public class ResetearContrasenaDto
+{
+    public string Email { get; set; }
+    public string NuevaContrasena { get; set; }
+}

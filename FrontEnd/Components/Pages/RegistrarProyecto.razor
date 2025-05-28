@@ -80,7 +80,8 @@
         }
 
         string adminEmail = "admin@admin.com";
-        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != adminEmail).ToList();
+        var UserActualEmail = UsuarioService.SesionActual?.Email;
+        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados().Where(usuario => usuario.Email != adminEmail && usuario.Email != UserActualEmail).ToList();
     }
 
     private async Task CrearProyectoDesdeFormulario()

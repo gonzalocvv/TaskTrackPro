@@ -3,6 +3,7 @@ using Dominio;
 using Dtos;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Servicios;
+using TaskTrackPro.Backend.Dominio;
 
 namespace DominioTests;
 

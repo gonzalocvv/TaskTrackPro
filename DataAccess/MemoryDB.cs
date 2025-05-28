@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Dominio;
+using TaskTrackPro.Backend.Dominio;
 
 namespace DataAccess;
 

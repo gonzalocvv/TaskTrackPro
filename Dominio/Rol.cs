@@ -1,4 +1,4 @@
-namespace Dominio;
+namespace TaskTrackPro.Backend.Dominio;
 
 public class Rol
 {
