@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Dominio;
 
 namespace TaskTrackPro.Backend.Dominio;
@@ -5,6 +6,7 @@ namespace TaskTrackPro.Backend.Dominio;
 public class Proyecto
 {
     private const int MaximoLargoDescripcion = 400;
+    
     private string _nombre;
     private string _descripcion;
     private DateTime _fechaInicio;
@@ -12,6 +14,10 @@ public class Proyecto
     private List<Usuario> _miembrosProyecto = new();
     private List<Tarea> _tareas = new();
 
+    public Proyecto()
+    {
+    }
+    [Key]
     public string Nombre
     {
         get => _nombre;
