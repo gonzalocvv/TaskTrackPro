@@ -1,6 +1,7 @@
 using FrontEnd.Components;
 using Servicios;
 using DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Syncfusion.Licensing;
 using Syncfusion.Blazor;
 
@@ -9,7 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
 builder.Services.AddSingleton<MemoryDB>();
+
+builder.Services.AddDbContextFactory<SqlContext>(
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        providerOptions => providerOptions.EnableRetryOnFailure())
+);
 builder.Services.AddSingleton<UsuarioService>();
 builder.Services.AddSingleton<ProyectoService>();
 builder.Services.AddSyncfusionBlazor();

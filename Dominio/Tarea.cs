@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Dominio;
 
 namespace TaskTrackPro.Backend.Dominio;
@@ -26,6 +27,11 @@ public class Tarea
     public List<Tarea> TareasQueDependenDeMi => _TareasDependenDeMi;
     
     public List<Usuario> UsuariosAsignados => _usuariosAsignados;
+
+    public Tarea()
+    {
+    }
+    [Key]
     public string Titulo
     {
         get => _titulo;

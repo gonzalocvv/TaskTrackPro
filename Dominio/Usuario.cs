@@ -1,4 +1,5 @@
-﻿using Dtos;
+﻿using System.ComponentModel.DataAnnotations;
+using Dtos;
 using BCrypt.Net;
 using TaskTrackPro.Backend.Dominio;
 
@@ -16,6 +17,10 @@ public class Usuario
     private string _contraseña;
     private List <Rol> _roles = new List<Rol>();
 
+    public Usuario()
+    {
+        
+    }
     public string Nombre
     {
         get => _nombre;
@@ -34,7 +39,7 @@ public class Usuario
             _apellido = value;
         }
     }
-
+    [Key]
     public string Email
     {
         get => _email;
