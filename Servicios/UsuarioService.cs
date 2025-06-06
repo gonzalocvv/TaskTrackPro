@@ -135,7 +135,7 @@ public class UsuarioService
         if (usuario.ObtenerRoles().Any(r => r.Nombre == Rol.AdministradorSistema))
             throw new InvalidOperationException("No se puede resetear la contraseña de otro administrador del sistema.");
 
-        usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(dto.NuevaContrasena ?? ContraseñaPorDefecto);
+        usuario.Contraseña = dto.NuevaContrasena ?? ContraseñaPorDefecto;
     }
 
     
