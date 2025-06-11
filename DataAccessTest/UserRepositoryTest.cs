@@ -26,7 +26,6 @@ public class UserRepositoryTest
         };
     }
     [TestMethod]
-    // get usuario por email
     public void GetUsuarioPorEmailTest()
     {
         _usuario = new Usuario(dto);
@@ -34,7 +33,15 @@ public class UserRepositoryTest
         var usuarioObtenido = _userRepository.GetUsuarioPorEmail(_usuario.Email);
         Assert.AreEqual(_usuario, usuarioObtenido);
     }
-    
-    
-    
+    [TestMethod]
+    public void AgregarUsuarioTest()
+    {
+        _usuario = new Usuario(dto);
+        _userRepository.AgregarUsuario(_usuario);
+        var usuarioObtenido = _userRepository.GetUsuarioPorEmail(_usuario.Email);
+        Assert.IsNotNull(usuarioObtenido);
+        Assert.AreEqual(_usuario.Email, usuarioObtenido.Email);
+    }
 }
+    
+    
