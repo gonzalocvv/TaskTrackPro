@@ -75,7 +75,7 @@ public class UsuarioService
     }
     public Usuario GetUsuarioPorEmail(string email)
     {
-        var usuarioParaDevolver =_db.GetUsuarioPorEmail(email);
+        var usuarioParaDevolver =_usuarioRepository.GetUsuarioPorEmail(email);
         UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
         return usuarioParaDevolver;
     }

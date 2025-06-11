@@ -77,7 +77,7 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        _memor.CrearUsuario(CrearUsuarioDto1);
+        service.CrearUsuario(CrearUsuarioDto1);
         Assert.IsTrue(service.GetUsuarioPorEmail(CrearUsuarioDto1.Email) != null);
     }
     

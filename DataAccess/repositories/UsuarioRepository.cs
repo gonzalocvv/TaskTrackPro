@@ -12,12 +12,10 @@ public class UsuarioRepository
     }
     public void AgregarUsuario(Usuario usuario)
     {
-        if (usuario == null)
-        {
-            throw new ArgumentNullException(nameof(usuario), "El usuario no puede ser nulo.");
-        }
-
         _sqlContext.Usuarios.Add(usuario);
         _sqlContext.SaveChanges();
     }
+    
+    
+    
 }
