@@ -51,7 +51,7 @@ public class UsuarioServicesTest
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void AgregarUsuarioQueYaExisteTest()
+    public void AgregarUsuarioQueYaExisteTestDevuelveExcepcion()
     {
         var usuarioDto = new CreateUsuarioDto
         {
