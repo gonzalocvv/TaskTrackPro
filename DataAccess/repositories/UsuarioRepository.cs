@@ -17,11 +17,6 @@ public class UsuarioRepository
             throw new ArgumentNullException(nameof(usuario), "El usuario no puede ser nulo.");
         }
 
-        if (ExisteUsuario(usuario.Email))
-        {
-            throw new ArgumentException("El usuario ya existe.");
-        }
-
         _sqlContext.Usuarios.Add(usuario);
         _sqlContext.SaveChanges();
     }

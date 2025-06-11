@@ -1,6 +1,7 @@
 using FrontEnd.Components;
 using Servicios;
 using DataAccess;
+using DataAccess.repositories;
 using Microsoft.EntityFrameworkCore;
 using Syncfusion.Licensing;
 using Syncfusion.Blazor;

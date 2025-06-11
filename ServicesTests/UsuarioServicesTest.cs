@@ -17,13 +17,14 @@ public class UsuarioServicesTest
     private CreateUsuarioDto UsuarioDto;
     private LoginDto loginDtoAdmin;
     private LoginDto loginDtoUser;
+    private SqlContext _context;
     [TestInitialize]
     public void setUp()
     {
         db = new MemoryDB();
         contextFactory = new MemoryAppContextFactory();
-        var context = contextFactory.CreateDbContext();
-        usuarioRepository = new UsuarioRepository(context);
+        _context = contextFactory.CreateDbContext();
+        usuarioRepository = new UsuarioRepository(_context);
         
         service = new UsuarioService(db, usuarioRepository);
         UsuarioDto = new CreateUsuarioDto
@@ -213,10 +214,6 @@ public class UsuarioServicesTest
     public void ValidarContraseñaIncorrectaTest()
 
     {
-    MemoryDB db = new MemoryDB();
-    UsuarioService service = new UsuarioService(db);
-        
-        
     var CrearUsuarioDto = new CreateUsuarioDto
     {
         Nombre = "Gonzalo",
