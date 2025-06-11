@@ -11,11 +11,14 @@ public class UserRepositoryTest
     private UsuarioRepository _userRepository;
     private Usuario _usuario;
     private CreateUsuarioDto dto;
+    private SqlContext _context;
+    
     [TestInitialize]
     public void SetUp()
     {
         var dbContextFactory = new MemoryAppContextFactory();
-        _userRepository = new UsuarioRepository(dbContextFactory.CreateDbContext());
+        _context = dbContextFactory.CreateDbContext();
+        _userRepository = new UsuarioRepository(_context);
         dto = new CreateUsuarioDto
         {
             Nombre = "Gonzalo",
@@ -42,6 +45,7 @@ public class UserRepositoryTest
         Assert.IsNotNull(usuarioObtenido);
         Assert.AreEqual(_usuario.Email, usuarioObtenido.Email);
     }
+    
 }
     
     

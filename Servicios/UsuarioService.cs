@@ -50,9 +50,12 @@ public class UsuarioService
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
         Usuario nuevoUsuario = new Usuario(UsuarioDto);
-        if (GetUsuarioPorEmail(nuevoUsuario.Email) != null)
+        var usuarioParaDevolver =_usuarioRepository.GetUsuarioPorEmail(nuevoUsuario.Email);
+        if (usuarioParaDevolver != null)
         {
-            throw new ArgumentException("Ya existe un usuario con ese Email");        }
+            throw new ArgumentException("Ya existe un usuario con ese Email");
+            
+        }
         _usuarioRepository.AgregarUsuario(nuevoUsuario);
     }
 
