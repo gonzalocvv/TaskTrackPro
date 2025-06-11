@@ -23,6 +23,10 @@ public class UsuarioRepository
     {
         return _sqlContext.Usuarios.FirstOrDefault(u => u.Nombre == nombre);
     }
+    public List<Usuario> GetListaUsuarios()
+    {
+        return _sqlContext.Usuarios.ToList();
+    }
     
     
 }
