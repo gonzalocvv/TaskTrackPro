@@ -32,13 +32,13 @@ public class MemoryDB
 
     public Usuario GetUsuarioPorNombre(string nombre)
     {
-        return this._listUsuarios.Find(usuario => usuario.Nombre == nombre);
+        return _listUsuarios.Find(usuario => usuario.Nombre == nombre);
     }
     
 
     public Usuario GetUsuarioPorEmail(string email)
     {
-        return this._listUsuarios.Find(usuario => usuario.Email == email);
+        return _listUsuarios.Find(usuario => usuario.Email == email);
     }
     public List<Usuario> GetListaUsuariosRegistrados()
     {

@@ -50,7 +50,7 @@ public class UsuarioService
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
         Usuario nuevoUsuario = new Usuario(UsuarioDto);
-        if (_db.ExisteUsuario(nuevoUsuario.Email))
+        if (GetUsuarioPorEmail(nuevoUsuario.Email) != null)
         {
             throw new ArgumentException("Ya existe un usuario con ese Email");        }
         _usuarioRepository.AgregarUsuario(nuevoUsuario);

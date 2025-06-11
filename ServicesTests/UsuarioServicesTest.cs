@@ -18,6 +18,7 @@ public class UsuarioServicesTest
     private LoginDto loginDtoAdmin;
     private LoginDto loginDtoUser;
     private SqlContext _context;
+    
     [TestInitialize]
     public void setUp()
     {
@@ -76,8 +77,8 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        service.CrearUsuario(CrearUsuarioDto1);
-        Assert.IsTrue(db.ExisteUsuario(CrearUsuarioDto1.Email));
+        _memor.CrearUsuario(CrearUsuarioDto1);
+        Assert.IsTrue(service.GetUsuarioPorEmail(CrearUsuarioDto1.Email) != null);
     }
     
     
