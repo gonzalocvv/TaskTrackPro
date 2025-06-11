@@ -72,7 +72,7 @@ public class UsuarioService
     }
     public Usuario GetUsuarioPorNombre(string nombre)
     {
-       var usuarioParaDevolver = _db.GetUsuarioPorNombre(nombre);
+       var usuarioParaDevolver = _usuarioRepository.GetUsuarioPorNombre(nombre);
        UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
        return usuarioParaDevolver;
     }

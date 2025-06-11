@@ -45,7 +45,22 @@ public class UserRepositoryTest
         Assert.IsNotNull(usuarioObtenido);
         Assert.AreEqual(_usuario.Email, usuarioObtenido.Email);
     }
-    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentException))]
+    public void AgregarUsuarioYaExistenteTest()
+    {
+        _usuario = new Usuario(dto);
+        _userRepository.AgregarUsuario(_usuario);
+        _userRepository.AgregarUsuario(_usuario); 
+    }
+    [TestMethod]
+    public void GetUsuarioPorNombreTest()
+    {
+        _usuario = new Usuario(dto);
+        _userRepository.AgregarUsuario(_usuario);
+        var usuarioObtenido = _userRepository.GetUsuarioPorNombre(_usuario.Nombre);
+        Assert.AreEqual(_usuario, usuarioObtenido);
+    }
 }
     
     

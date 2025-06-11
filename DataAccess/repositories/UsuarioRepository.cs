@@ -19,6 +19,10 @@ public class UsuarioRepository
     {
         return _sqlContext.Usuarios.FirstOrDefault(u => u.Email == email);
     }
+    public Usuario GetUsuarioPorNombre(string nombre)
+    {
+        return _sqlContext.Usuarios.FirstOrDefault(u => u.Nombre == nombre);
+    }
     
     
 }
