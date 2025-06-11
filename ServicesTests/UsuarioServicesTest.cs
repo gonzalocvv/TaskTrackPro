@@ -238,9 +238,7 @@ public class UsuarioServicesTest
     [TestMethod]
 
     public void GetListaUsuariosRegistradosTest()
-
     {
-    
     var usuarioDto2 = new CreateUsuarioDto
     {
         Nombre = "Lucía",

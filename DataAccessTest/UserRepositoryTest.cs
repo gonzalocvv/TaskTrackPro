@@ -61,6 +61,14 @@ public class UserRepositoryTest
         var usuarioObtenido = _userRepository.GetUsuarioPorNombre(_usuario.Nombre);
         Assert.AreEqual(_usuario, usuarioObtenido);
     }
+    [TestMethod]
+    public void GetListaUsuariosRegistradosTest()
+    {
+        _usuario = new Usuario(dto);
+        _userRepository.AgregarUsuario(_usuario);
+        var listaUsuarios = _userRepository.GetListaUsuarios();
+        Assert.IsTrue(listaUsuarios.Any(u => u.Email == _usuario.Email));
+    }
 }
     
     
