@@ -1,3 +1,4 @@
+using DataAccess;
 using DataAccess.repositories;
 using Dominio;
 using Dtos;
@@ -13,7 +14,9 @@ public class UserRepositoryTest
     [TestInitialize]
     public void SetUp()
     {
-        var dto = new CreateUsuarioDto
+        var dbContextFactory = new MemoryAppContextFactory();
+        _userRepository = new UsuarioRepository(dbContextFactory.CreateDbContext());
+        dto = new CreateUsuarioDto
         {
             Nombre = "Gonzalo",
             Apellido = "Cabrera",
@@ -31,6 +34,7 @@ public class UserRepositoryTest
         var usuarioObtenido = _userRepository.GetUsuarioPorEmail(_usuario.Email);
         Assert.AreEqual(_usuario, usuarioObtenido);
     }
+    
     
     
 }

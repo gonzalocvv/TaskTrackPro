@@ -14,5 +14,5 @@ public class SqlContext : DbContext{
            Database.Migrate();    
        }
        
-    }
+   }
 }

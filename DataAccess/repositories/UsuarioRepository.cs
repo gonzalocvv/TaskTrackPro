@@ -15,7 +15,10 @@ public class UsuarioRepository
         _sqlContext.Usuarios.Add(usuario);
         _sqlContext.SaveChanges();
     }
-    
+    public Usuario GetUsuarioPorEmail(string email)
+    {
+        return _sqlContext.Usuarios.FirstOrDefault(u => u.Email == email);
+    }
     
     
 }
