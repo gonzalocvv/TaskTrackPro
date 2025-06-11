@@ -18,6 +18,7 @@ builder.Services.AddDbContextFactory<SqlContext>(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         providerOptions => providerOptions.EnableRetryOnFailure())
 );
+builder.Services.AddSingleton<UsuarioRepository>();
 builder.Services.AddSingleton<UsuarioService>();
 builder.Services.AddSingleton<ProyectoService>();
 builder.Services.AddSyncfusionBlazor();

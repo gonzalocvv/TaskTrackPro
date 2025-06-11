@@ -2,6 +2,7 @@
 using DataAccess;
 using Dtos;
 using BCrypt.Net;
+using DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
 
 namespace Servicios;
@@ -9,11 +10,14 @@ namespace Servicios;
 public class UsuarioService
 {
     private MemoryDB _db;
+    private readonly UsuarioRepository _usuarioRepository;
     const string ContraseñaPorDefecto = "Valida123@";
 
-    public UsuarioService(MemoryDB db)
+    public UsuarioService(MemoryDB db, UsuarioRepository usuarioRepository)
     {
         _db = db;
+        _usuarioRepository = usuarioRepository;
+        
         CreateUsuarioDto AdminDto = new CreateUsuarioDto();
         AdminDto.Nombre = "Admin";
         AdminDto.Apellido = "User";
@@ -49,7 +53,7 @@ public class UsuarioService
         if (_db.ExisteUsuario(nuevoUsuario.Email))
         {
             throw new ArgumentException("Ya existe un usuario con ese Email");        }
-        _db.AgregarUsuario(nuevoUsuario);
+        _usuarioRepository.AgregarUsuario(nuevoUsuario);
     }
 
     public bool EsAdminProyecto()

@@ -9,6 +9,6 @@ public class SqlContext : DbContext{
    public DbSet<Tarea> Tareas { get; set; }
 
    public SqlContext(DbContextOptions<SqlContext> options) : base(options){
-       this.Database.Migrate(); //Ejecutara las migracione al crear la BD
+       Database.Migrate();
     }
 }
