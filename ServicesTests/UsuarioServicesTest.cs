@@ -85,9 +85,9 @@ public class UsuarioServicesTest
     [TestMethod]
     public void GetUsuarioPorNombreTest()
     {
+        service.CrearUsuario(UsuarioDto);
         Usuario result = service.GetUsuarioPorNombre(UsuarioDto.Nombre);
         Assert.AreEqual(result.Nombre, UsuarioDto.Nombre);
-
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
