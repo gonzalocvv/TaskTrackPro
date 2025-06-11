@@ -1,4 +1,5 @@
 using DataAccess;
+using DataAccess.repositories;
 using Dominio;
 using Dtos;
 using Servicios;
@@ -10,6 +11,8 @@ namespace ServicesTests;
 public class UsuarioServicesTest
 {
     private MemoryDB db;
+    private MemoryAppContextFactory contextFactory;
+    private UsuarioRepository usuarioRepository;
     private UsuarioService service;
     private CreateUsuarioDto UsuarioDto;
     private LoginDto loginDtoAdmin;
@@ -18,7 +21,11 @@ public class UsuarioServicesTest
     public void setUp()
     {
         db = new MemoryDB();
-        service = new UsuarioService(db);
+        contextFactory = new MemoryAppContextFactory();
+        var context = contextFactory.CreateDbContext();
+        usuarioRepository = new UsuarioRepository(context);
+        
+        service = new UsuarioService(db, usuarioRepository);
         UsuarioDto = new CreateUsuarioDto
         {
             Nombre = "Gonzalo",
