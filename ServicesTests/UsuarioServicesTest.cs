@@ -197,7 +197,7 @@ public class UsuarioServicesTest
         service.CrearUsuario(UsuarioDto);
         service.CrearUsuario(CrearUsuarioDto2);
         var result = service.GetListaUsuariosRegistrados();
-        Assert.AreEqual(3, result.Count);
+        Assert.AreEqual(2, result.Count);
         Assert.AreEqual(result[1].Email, UsuarioDto.Email);
         Assert.AreEqual(result[2].Email, CrearUsuarioDto2.Email);
     }

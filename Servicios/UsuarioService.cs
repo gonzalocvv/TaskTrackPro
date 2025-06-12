@@ -120,7 +120,7 @@ public class UsuarioService
     public List<GetUsuarioDto> GetListaUsuariosRegistrados()
     {
         List<GetUsuarioDto> listaUsuarios = new List<GetUsuarioDto>();
-        foreach (var usuario in _db.GetListaUsuariosRegistrados())
+        foreach (var usuario in _usuarioRepository.GetListaUsuariosRegistrados())
         {
             listaUsuarios.Add(new GetUsuarioDto
             {
