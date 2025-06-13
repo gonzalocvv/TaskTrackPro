@@ -18,6 +18,10 @@ public class UserRepositoryTest
     {
         var dbContextFactory = new MemoryAppContextFactory();
         _context = dbContextFactory.CreateDbContext();
+        
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
+        
         _userRepository = new UsuarioRepository(_context);
         dto = new CreateUsuarioDto
         {
