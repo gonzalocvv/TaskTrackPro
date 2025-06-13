@@ -25,7 +25,7 @@ public class UsuarioService
         AdminDto.FechaNacimiento = new DateTime(1990, 1, 1);
         AdminDto.Contraseña = "Admin123@";
         Usuario adminUser = new Usuario(AdminDto);
-        if (_db.ExisteUsuario(adminUser.Email))
+        if (_usuarioRepository.ExisteUsuario(adminUser.Email))
         {
             throw new ArgumentException("El usuario ya existe");
         }
@@ -33,7 +33,7 @@ public class UsuarioService
         Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
         adminUser.AgregarRol(rolAdminProyecto);
         adminUser.AgregarRol(rolAdmin);
-        _db.AgregarUsuario(adminUser);
+        _usuarioRepository.AgregarUsuario(adminUser);
     }
     
     
@@ -120,7 +120,7 @@ public class UsuarioService
     public List<GetUsuarioDto> GetListaUsuariosRegistrados()
     {
         List<GetUsuarioDto> listaUsuarios = new List<GetUsuarioDto>();
-        foreach (var usuario in _usuarioRepository.GetListaUsuariosRegistrados())
+        foreach (var usuario in _usuarioRepository.GetListaUsuarios())
         {
             listaUsuarios.Add(new GetUsuarioDto
             {
