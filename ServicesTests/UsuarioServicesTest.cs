@@ -28,6 +28,9 @@ public class UsuarioServicesTest
         _context = contextFactory.CreateDbContext();
         usuarioRepository = new UsuarioRepository(_context);
         
+        _context.Usuarios.RemoveRange(_context.Usuarios);
+        _context.SaveChanges();
+        
         service = new UsuarioService(db, usuarioRepository);
         UsuarioDto = new CreateUsuarioDto
         {
@@ -55,9 +58,6 @@ public class UsuarioServicesTest
             Email = UsuarioDto.Email,
             Contraseña = UsuarioDto.Contraseña
         };
-        service.CrearUsuario(adminUsuario);
-        var adminUser = service.GetUsuarioPorEmail(adminUsuario.Email);
-        adminUser.AgregarRol(new Rol("Administrador del Sistema"));
         service.IniciarSesion(loginDtoAdmin);
     }
 
@@ -166,6 +166,7 @@ public class UsuarioServicesTest
         };
 
         service.IniciarSesion(loginDtoAdmin);
+        service.CrearUsuario(UsuarioDto);
         service.ResetearContrasenaDefecto(resetDto);
 
         var usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
@@ -212,8 +213,9 @@ public class UsuarioServicesTest
         service.CrearUsuario(crearUsuarioDto2);
         var result = service.GetListaUsuariosRegistrados();
         Assert.AreEqual(3, result.Count);
-        Assert.AreEqual(result[1].Email, UsuarioDto.Email);
-        Assert.AreEqual(result[2].Email, crearUsuarioDto2.Email);
+        Assert.IsTrue(result.Any(u => u.Email == "admin@admin.com"));
+        Assert.IsTrue(result.Any(u => u.Email == UsuarioDto.Email));
+        Assert.IsTrue(result.Any(u => u.Email == crearUsuarioDto2.Email));
     }
 
 
