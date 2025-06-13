@@ -27,6 +27,9 @@ public class UsuarioRepository
     {
         return _sqlContext.Usuarios.ToList();
     }
-    
+    public bool ExisteUsuario(string email)
+    {
+        return _sqlContext.Usuarios.Any(u => u.Email == email);
+    }
     
 }
