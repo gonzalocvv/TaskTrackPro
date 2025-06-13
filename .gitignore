@@ -494,3 +494,4 @@ fabric.properties
 !.github/workflows/
 
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,rider,csharp
+.idea/
