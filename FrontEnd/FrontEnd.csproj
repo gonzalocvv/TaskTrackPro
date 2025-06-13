@@ -7,20 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-      <ProjectReference Include="..\Dtos\Dtos.csproj" />
-      <ProjectReference Include="..\Servicios\Servicios.csproj" />
+      <ProjectReference Include="../DataAccess/DataAccess.csproj" />
+      <ProjectReference Include="../Dtos/Dtos.csproj" />
+      <ProjectReference Include="../Servicios/Servicios.csproj" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.16" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.16">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.16" />
         <PackageReference Include="Syncfusion.Blazor.Gantt" Version="29.1.33" />
         <PackageReference Include="Syncfusion.Blazor.Themes" Version="29.1.33" />  
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Components\App.css">
+      <None Update="Components/App.css">
         <DependentUpon>App.razor</DependentUpon>
       </None>
     </ItemGroup>

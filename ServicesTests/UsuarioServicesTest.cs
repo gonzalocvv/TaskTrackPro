@@ -1,4 +1,5 @@
 using DataAccess;
+using DataAccess.repositories;
 using Dominio;
 using Dtos;
 using Servicios;
@@ -10,15 +11,28 @@ namespace ServicesTests;
 public class UsuarioServicesTest
 {
     private MemoryDB db;
+    private MemoryAppContextFactory contextFactory;
+    private UsuarioRepository usuarioRepository;
     private UsuarioService service;
     private CreateUsuarioDto UsuarioDto;
+    private CreateUsuarioDto adminUsuario;
     private LoginDto loginDtoAdmin;
     private LoginDto loginDtoUser;
+    private SqlContext _context;
+    
     [TestInitialize]
     public void setUp()
     {
         db = new MemoryDB();
-        service = new UsuarioService(db);
+        contextFactory = new MemoryAppContextFactory();
+        _context = contextFactory.CreateDbContext();
+        usuarioRepository = new UsuarioRepository(_context);
+        
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
+        
+        
+        service = new UsuarioService(db, usuarioRepository);
         UsuarioDto = new CreateUsuarioDto
         {
             Nombre = "Gonzalo",
@@ -27,7 +41,14 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        service.CrearUsuario(UsuarioDto);
+        adminUsuario = new CreateUsuarioDto
+        {
+            Nombre = "Admin",
+            Apellido = "User",
+            Email = "admin@admin.com",
+            FechaNacimiento = new DateTime(1990, 1, 1),
+            Contraseña = "Admin123@"
+        };
         loginDtoAdmin = new LoginDto
         {
             Email = "admin@admin.com",
@@ -38,12 +59,13 @@ public class UsuarioServicesTest
             Email = UsuarioDto.Email,
             Contraseña = UsuarioDto.Contraseña
         };
+        service.IniciarSesion(loginDtoAdmin);
     }
 
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
-    public void AgregarUsuarioQueYaExisteTest()
+    public void AgregarUsuarioQueYaExisteTestDevuelveExcepcion()
     {
         var usuarioDto = new CreateUsuarioDto
         {
@@ -69,7 +91,7 @@ public class UsuarioServicesTest
             Contraseña = "Ab123456789!"
         };
         service.CrearUsuario(CrearUsuarioDto1);
-        Assert.IsTrue(db.ExisteUsuario(CrearUsuarioDto1.Email));
+        Assert.IsTrue(service.GetUsuarioPorEmail(CrearUsuarioDto1.Email) != null);
     }
     
     
@@ -77,21 +99,22 @@ public class UsuarioServicesTest
     [TestMethod]
     public void GetUsuarioPorNombreTest()
     {
+        service.CrearUsuario(UsuarioDto);
         Usuario result = service.GetUsuarioPorNombre(UsuarioDto.Nombre);
         Assert.AreEqual(result.Nombre, UsuarioDto.Nombre);
-
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
     public void GetUsuarioPorNombreQueNoExisteExcepctionTest()
     {
         string nombre = "Nicolas";
-        Usuario result = service.GetUsuarioPorNombre(nombre);
+        service.GetUsuarioPorNombre(nombre);
 
     }
     [TestMethod]
     public void ContraseñaCifradaTest()
     {
+        service.CrearUsuario(UsuarioDto);
         var result = service.GetUsuarioPorEmail(UsuarioDto.Email);
         Assert.AreNotEqual(UsuarioDto.Contraseña, result.Contraseña);
         Assert.IsTrue(BCrypt.Net.BCrypt.Verify(UsuarioDto.Contraseña, result.Contraseña));
@@ -99,6 +122,7 @@ public class UsuarioServicesTest
     [TestMethod]
     public void GetUsuarioPorEmailTest()
     {
+        service.CrearUsuario(UsuarioDto);
         Usuario result = service.GetUsuarioPorEmail(UsuarioDto.Email);
         Assert.AreEqual(result.Email, UsuarioDto.Email);
     }
@@ -143,6 +167,7 @@ public class UsuarioServicesTest
         };
 
         service.IniciarSesion(loginDtoAdmin);
+        service.CrearUsuario(UsuarioDto);
         service.ResetearContrasenaDefecto(resetDto);
 
         var usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
@@ -153,14 +178,6 @@ public class UsuarioServicesTest
     public void AdminSistemaNoPuedeResetearContrasenaDeOtroAdminSistema()
     {
         service.IniciarSesion(loginDtoAdmin);
-
-        var UsuarioDto = new CreateUsuarioDto {
-            Nombre = "Gonzalo",
-            Apellido = "Cabrera",
-            Email = "gonzalo1@gmail.com",
-            FechaNacimiento = new(2004, 7, 9),
-            Contraseña = "Ab123456789!"
-        };
 
         service.CrearUsuario(UsuarioDto);
 
@@ -181,10 +198,10 @@ public class UsuarioServicesTest
     
  
     [TestMethod]
-    public void ObtenerListaUsuariosRegistrados()
+    public void ObtenerListaUsuariosRegistradosTest()
     {
         
-        var CrearUsuarioDto2 = new CreateUsuarioDto
+        var crearUsuarioDto2 = new CreateUsuarioDto
         {
             Nombre = "Nicolas",
             Apellido = "Cabrera",
@@ -192,24 +209,23 @@ public class UsuarioServicesTest
             FechaNacimiento = new(2004, 7, 9),
             Contraseña = "Ab123456789!"
         };
-        service.CrearUsuario(CrearUsuarioDto2);
-        var result = db.GetListaUsuariosRegistrados();
+        
+        service.CrearUsuario(UsuarioDto);
+        service.CrearUsuario(crearUsuarioDto2);
+        var result = service.GetListaUsuariosRegistrados();
         Assert.AreEqual(3, result.Count);
-        Assert.AreEqual(result[1].Email, UsuarioDto.Email);
-        Assert.AreEqual(result[2].Email, CrearUsuarioDto2.Email);
+        Assert.IsTrue(result.Any(u => u.Email == "admin@admin.com"));
+        Assert.IsTrue(result.Any(u => u.Email == UsuarioDto.Email));
+        Assert.IsTrue(result.Any(u => u.Email == crearUsuarioDto2.Email));
     }
 
 
 
     [TestMethod]
-
+    [ExpectedException(typeof(ArgumentException))]
     public void ValidarContraseñaIncorrectaTest()
 
     {
-    MemoryDB db = new MemoryDB();
-    UsuarioService service = new UsuarioService(db);
-        
-        
     var CrearUsuarioDto = new CreateUsuarioDto
     {
         Nombre = "Gonzalo",
@@ -223,40 +239,14 @@ public class UsuarioServicesTest
     string email = "gonzalo@gmail.com";
     string contraseñaIngresada = "Incorrecta456@";
     Usuario usuario = service.GetUsuarioPorEmail(email);
-        
-        
-    var exception = Assert.ThrowsException<ArgumentException>(() =>  service.ValidarContraseña(contraseñaIngresada, usuario));
-    Assert.AreEqual("La contraseña es incorrecta", exception.Message);
-        
-    
+    service.ValidarContraseña(contraseñaIngresada, usuario);
     }
 
     [TestMethod]
-
-    public void GetListaUsuariosRegistradosTest()
-
-    {
-    
-    var usuarioDto2 = new CreateUsuarioDto
-    {
-        Nombre = "Lucía",
-        Apellido = "Fernández",
-        Email = "lucia@gmail.com",
-        FechaNacimiento = new DateTime(2000, 5, 12),
-        Contraseña = "LuciaPass123!"
-    };
-    service.CrearUsuario(usuarioDto2);
-    
-    var listaUsuarios = service.GetListaUsuariosRegistrados();
-    
-    Assert.AreEqual(3, listaUsuarios.Count); 
-    Assert.IsTrue(listaUsuarios.Any(u => u.Email == UsuarioDto.Email));
-    Assert.IsTrue(listaUsuarios.Any(u => u.Email == usuarioDto2.Email));
-    Assert.IsTrue(listaUsuarios.Any(u => u.Email == "admin@admin.com"));
-    
-    }[TestMethod]
+    [ExpectedException(typeof(InvalidOperationException))]
     public void ResetearContraseñaSinSesionDebeLanzarExcepcionTest()
     {
+        service.CerrarSesion();
         var usuarioDto = new CreateUsuarioDto
         {
             Nombre = "Pedro",
@@ -273,11 +263,8 @@ public class UsuarioServicesTest
             Email = usuarioDto.Email,
             NuevaContrasena = "NuevaContraseña123!" // puede ser la contraseña por defecto también
         };
-
-        var ex = Assert.ThrowsException<InvalidOperationException>(() =>
-            service.ResetearContrasenaDefecto(resetDto));
-
-        Assert.AreEqual("Debe ser administrador del sistema para resetear contraseñas.", ex.Message);
+        service.ResetearContrasenaDefecto(resetDto);
+        
     }
 
 

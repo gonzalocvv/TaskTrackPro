@@ -23,8 +23,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Dtos\Dtos.csproj" />
-      <ProjectReference Include="..\Servicios\Servicios.csproj" />
+      <ProjectReference Include="../Dtos/Dtos.csproj" />
+      <ProjectReference Include="../Servicios/Servicios.csproj" />
     </ItemGroup>
 
 </Project>
