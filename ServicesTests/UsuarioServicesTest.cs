@@ -245,6 +245,7 @@ public class UsuarioServicesTest
     [ExpectedException(typeof(InvalidOperationException))]
     public void ResetearContraseñaSinSesionDebeLanzarExcepcionTest()
     {
+        service.CerrarSesion();
         var usuarioDto = new CreateUsuarioDto
         {
             Nombre = "Pedro",
