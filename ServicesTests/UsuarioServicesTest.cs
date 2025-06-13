@@ -28,8 +28,9 @@ public class UsuarioServicesTest
         _context = contextFactory.CreateDbContext();
         usuarioRepository = new UsuarioRepository(_context);
         
-        _context.Usuarios.RemoveRange(_context.Usuarios);
-        _context.SaveChanges();
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
+        
         
         service = new UsuarioService(db, usuarioRepository);
         UsuarioDto = new CreateUsuarioDto
