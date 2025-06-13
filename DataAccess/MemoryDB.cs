@@ -13,7 +13,10 @@ public class MemoryDB
 
     public void AgregarUsuario(Usuario usuario)
     {
-
+        if (usuario == null)
+        {
+            throw new ArgumentNullException(nameof(usuario), "El usuario no puede ser null");
+        }
         if (ExisteUsuario(usuario.Email))
         {
             throw new ArgumentException("El usuario ya existe.");
