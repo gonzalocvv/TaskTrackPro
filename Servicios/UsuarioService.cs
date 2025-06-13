@@ -25,15 +25,15 @@ public class UsuarioService
         AdminDto.FechaNacimiento = new DateTime(1990, 1, 1);
         AdminDto.Contraseña = "Admin123@";
         Usuario adminUser = new Usuario(AdminDto);
-        if (_usuarioRepository.ExisteUsuario(adminUser.Email))
+        if (!_usuarioRepository.ExisteUsuario(adminUser.Email))
         {
-            throw new ArgumentException("El usuario ya existe");
+            Rol rolAdmin = new Rol("Administrador del Sistema");
+            Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
+            adminUser.AgregarRol(rolAdminProyecto);
+            adminUser.AgregarRol(rolAdmin);
+            _usuarioRepository.AgregarUsuario(adminUser);
         }
-        Rol rolAdmin = new Rol("Administrador del Sistema");
-        Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
-        adminUser.AgregarRol(rolAdminProyecto);
-        adminUser.AgregarRol(rolAdmin);
-        _usuarioRepository.AgregarUsuario(adminUser);
+        
     }
     
     
@@ -87,7 +87,7 @@ public class UsuarioService
     {
         if (usuarioParaDevolver == null)
         {
-            throw new ArgumentNullException(nameof(usuarioParaDevolver.Email), "El email no puede estar vacío y debe estar registrado.");
+            throw new ArgumentNullException("usuario", "El usuario no existe o el email no está registrado.");
         }
     }
     
