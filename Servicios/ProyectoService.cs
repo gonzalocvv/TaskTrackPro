@@ -19,14 +19,14 @@ public class ProyectoService
     
     public Proyecto CrearProyecto(CrearProyectoDto ProyectoDto )
     {
-        Usuario admin = _db.GetUsuarioPorEmail(ProyectoDto.AdministradorEmail);
+        Usuario admin = _proyectoRepository.GetUsuarioPorEmail(ProyectoDto.AdministradorEmail);
         Proyecto nuevoProyecto = new Proyecto(ProyectoDto.Nombre, ProyectoDto.Descripcion, ProyectoDto.FechaInicio, admin);
         foreach (var email in ProyectoDto.MiembroEmails)
         {
-            Usuario user = _db.GetUsuarioPorEmail(email);
+            Usuario user = _proyectoRepository.GetUsuarioPorEmail(email);
             nuevoProyecto.AgregarMiembro(user);
         }
-        _db.AgregarProyecto(nuevoProyecto);
+        _proyectoRepository.AgregarProyecto(nuevoProyecto);
         return nuevoProyecto;
     }
 

@@ -15,7 +15,6 @@ public class ProyectoServicesTest
     private UsuarioService _serviceUser;
     private Usuario _administradorP;
     private CrearProyectoDto _proyectoDto;
-    private UsuarioRepository _usuarioRepository;
     private ProyectoRepository _proyectoRepository;
     private MemoryAppContextFactory contextFactory;
     private SqlContext _context;
@@ -26,13 +25,11 @@ public class ProyectoServicesTest
         contextFactory = new MemoryAppContextFactory();
         _context = contextFactory.CreateDbContext();
         _proyectoRepository = new ProyectoRepository(_context);
-        _usuarioRepository = new UsuarioRepository(_context);
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
         
         
         _serviceProj = new ProyectoService(_db, _proyectoRepository);
-        _serviceUser = new UsuarioService(_db, _usuarioRepository);
         var adminDto = new CreateUsuarioDto
         {
             Nombre = "Admin",

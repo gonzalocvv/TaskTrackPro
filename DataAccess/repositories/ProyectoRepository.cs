@@ -1,3 +1,6 @@
+using Dominio;
+using TaskTrackPro.Backend.Dominio;
+
 namespace DataAccess.repositories;
 
 public class ProyectoRepository
@@ -7,5 +10,13 @@ public class ProyectoRepository
     {
         _sqlContext = sqlContext;
     }
-    
+    public void AgregarProyecto(Proyecto proyecto)
+    {
+        _sqlContext.Proyectos.Add(proyecto);
+        _sqlContext.SaveChanges();
+    }
+    public Usuario GetUsuarioPorEmail(string email)
+    {
+        return _sqlContext.Usuarios.FirstOrDefault(u => u.Email == email);
+    }
 }
