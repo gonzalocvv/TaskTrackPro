@@ -145,7 +145,7 @@ public class TareaTests
     {
 
         tareaDto.AgregarDependencia(tareaDto2);
-        tareaDto.AgregarDependencia(tareaDto);
+        tareaDto.AgregarDependencia(tareaDto2);
     }
     
     [TestMethod]
@@ -208,7 +208,7 @@ public class TareaTests
     [TestMethod]
     public void QuitarDependenciaDesbloqueaPendienteTest()
     {
-        tareaDto.AgregarDependencia(tareaDto);
+        tareaDto.AgregarDependencia(tareaDto2);
         tareaDto.QuitarDependencia(tareaDto2);
         Assert.AreEqual(EstadoTarea.Pendiente, tareaDto.Estado);
     }
