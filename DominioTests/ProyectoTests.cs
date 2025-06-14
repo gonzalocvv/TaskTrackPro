@@ -11,6 +11,8 @@ public class ProyectoTests
     private DateTime _fechaNac;
     private Usuario _admin;
     private Proyecto _proyecto;
+    private CrearTareaDto dto;
+    private CrearTareaDto dto2;
 
     [TestInitialize]
     public void SetUp()
@@ -26,6 +28,18 @@ public class ProyectoTests
             Contraseña = "Administrador@123"
         });
         _proyecto = new Proyecto("Limpieza", "Descripción válida", _fechaInicioCorrecta, _admin);
+        
+        dto = new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba",
+            Descripcion = "Descripción de la tarea de prueba",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente",
+        };
     }
 
     [TestMethod]
@@ -89,7 +103,7 @@ public class ProyectoTests
     [TestMethod]
     public void ProyectoRemoverTareaTest()
     {
-        var tarea = new Tarea("Tarea 1", "Descripción de tarea", _fechaInicioCorrecta.AddDays(5),5, "Limpieza");
+        var tarea = new Tarea(dto);
         _proyecto.AgregarTarea(tarea);
         Assert.IsTrue(_proyecto.Tareas.Contains(tarea)); 
         
@@ -145,8 +159,20 @@ public class ProyectoTests
     [ExpectedException(typeof(InvalidOperationException))]
     public void ProyectoAgregarTarea_TituloDuplicado_LanzaExcepcion()
     {
-        var tarea1 = new Tarea("TareaDuplicada", "Descripción 1", _fechaInicioCorrecta.AddDays(1), 3, "Limpieza");
-        var tarea2 = new Tarea("TareaDuplicada", "Descripción 2", _fechaInicioCorrecta.AddDays(2), 5, "Reparación");
+        
+        var tarea1 = new Tarea(dto);
+        dto2 = new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba",
+            Descripcion = "Descripción de la tarea de prueba",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente",
+        };
+        var tarea2 = new Tarea(dto2);
         
         _proyecto.AgregarTarea(tarea1);
         

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Dominio;
+using Dtos;
 
 namespace TaskTrackPro.Backend.Dominio
 {
@@ -16,6 +17,7 @@ namespace TaskTrackPro.Backend.Dominio
 
         private string _titulo;
         private string _descripcion;
+        private string _proyectoNombre;
         private DateTime? _fechaDeInicio;
         private int _duracion;
         private string _tituloProyecto;
@@ -34,14 +36,19 @@ namespace TaskTrackPro.Backend.Dominio
             Estado = EstadoTarea.Pendiente;
         }
 
-        public Tarea(string titulo, string descripcion, DateTime? fechaDeInicio, int duracion, string tituloProyecto)
+        public Tarea(CrearTareaDto dto)
         {
-            Titulo = titulo;
-            Descripcion = descripcion;
-            ProyectoNombre = tituloProyecto;
-            Duracion = duracion;
-            FechaDeInicio = fechaDeInicio;
-            Estado = EstadoTarea.Pendiente;
+            Titulo = dto.Titulo;
+            Descripcion = dto.Descripcion;
+            ProyectoNombre = dto.ProyectoNombre;
+            Duracion = dto.Duracion;
+            FechaDeInicio = dto.FechaInicio;
+            Estado = dto.Estado switch
+            {
+                "Pendiente" => EstadoTarea.Pendiente,
+                "Bloqueada" => EstadoTarea.Bloqueada,
+                "Completada" => EstadoTarea.Completada
+            };
         }
 
         [Key]

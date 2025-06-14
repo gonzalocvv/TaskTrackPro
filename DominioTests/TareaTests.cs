@@ -7,40 +7,74 @@ namespace DominioTests;
 [TestClass]
 public class TareaTests
 {
-    static CreateUsuarioDto pepeDto = new CreateUsuarioDto
+    private CreateUsuarioDto pepeDto, anaDto;
+    private CrearProyectoDto proyectoDto;
+    private CrearTareaDto tareaDto;
+    private CrearTareaDto tareaDto2;
+    [TestInitialize]
+    public void SetUp()
     {
-        Nombre = "Pepe",
-        Apellido = "López",
-        Email = "pepe@x.com",
-        FechaNacimiento = new DateTime(2000, 1, 1),
-        Contraseña = "Pepe123@"
-    };
-    static Usuario pepe = new Usuario(pepeDto);    
+        pepeDto = new CreateUsuarioDto
+        {
+            Nombre = "Pepe",
+            Apellido = "López",
+            Email = "pepe@x.com",
+            FechaNacimiento = new DateTime(2000, 1, 1),
+            Contraseña = "Pepe123@"
+        };
 
-    static Proyecto proyecto = new("Proyecto1", "Descripcion", new DateTime(2025, 8, 9), pepe);
-    DateTime ejFechaInicio = new DateTime(2025, 8, 9);
+        proyectoDto = new CrearProyectoDto
+        {
+            Nombre = "Proyecto1",
+            Descripcion = "Descripcion",
+            FechaInicio = new DateTime(2025, 8, 9),
+            AdministradorEmail = pepeDto.Email,
+        };
     
-    static CreateUsuarioDto anaDto = new CreateUsuarioDto
-    {
-        Nombre = "Ana",
-        Apellido = "Diaz",
-        Email = "ana@x.com",
-        FechaNacimiento = new DateTime(1995, 5, 2),
-        Contraseña = "Ana1234@"
-    };
-    static Usuario ana = new Usuario(anaDto);    
+        anaDto = new CreateUsuarioDto
+        {
+            Nombre = "Ana",
+            Apellido = "Diaz",
+            Email = "ana@x.com",
+            FechaNacimiento = new DateTime(1995, 5, 2),
+            Contraseña = "Ana1234@"
+        };
+        tareaDto = new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba",
+            Descripcion = "Descripción de la tarea de prueba",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente",
+        };
+        tareaDto2 = new CrearTareaDto
+        {
+            Titulo = "Titulo2",
+            Descripcion = "Desc2",
+            FechaInicio = new DateTime(2025, 8, 9),
+            Duracion = 5,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente",
+        };
+    }
+        
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
     public void TareaTituloVacioExceptionTest()
     {
-        var tarea = new Tarea("", "Cotizar reforma del frente del edificio", ejFechaInicio, 10, proyecto.Nombre);
+       tareaDto.Titulo = "";
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
     public void TareaDescripcionVacioExceptionTest()
     {
-        var tarea = new Tarea("", "Cotizar reforma del frente del edificio", ejFechaInicio, 10, proyecto.Nombre);
+        tareaDto.Descripcion = "";
     }
     
     [TestMethod]
@@ -49,34 +83,32 @@ public class TareaTests
     {
         DateTime fechaPasada = DateTime.Today.AddDays(-1);
 
-        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", fechaPasada, 5, proyecto.Nombre);
+        tareaDto.FechaInicio = fechaPasada;
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaDuracionIgual0ExceptionTest()
     {
-        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", ejFechaInicio, 0, proyecto.Nombre);
+        tareaDto.Duracion = 0;
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaDuracionMenor0ExceptionTest()
     {
-        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", ejFechaInicio, -4, proyecto.Nombre);
+        tareaDto.Duracion = -1;
     }
     
 
     [TestMethod]
     public void TareaEstadoInicialPendienteSinDepsTest()
     {
-        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        Assert.AreEqual(EstadoTarea.Pendiente, tarea.Estado);
+        
+        Assert.Equals(EstadoTarea.Pendiente, tareaDto.Estado);
     }
     [TestMethod]
     public void TareaConDependenciaEstadoBloqueadoTest()
     {
-        var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Titulo2","Desc2", ejFechaInicio, 5, proyecto.Nombre);
-        tarea1.AgregarDependencia(tarea2);
+        tareaDto.AgregarDependencia(tareaDto2);
         Assert.AreEqual(EstadoTarea.Bloqueada, tarea1.Estado);
     }
     [TestMethod]

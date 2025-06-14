@@ -14,6 +14,7 @@ public class TareaServiceTest
     private TareaService _service;
     private Usuario _administradorP;
     private string _proyectoNombre = "Proyecto 1";
+    private Tarea tarea1, tarea2;
 
     [TestInitialize]
     public void SetUp()
@@ -38,6 +39,32 @@ public class TareaServiceTest
             _administradorP
         );
         _db.AgregarProyecto(proyecto);
+        
+        tarea1 = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba 1 ",
+            Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = "Casa",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente"
+        });
+        
+        tarea2 = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba 2",
+            Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = "Casa",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente"
+        });
     }
 
         static CreateUsuarioDto responsableDto = new CreateUsuarioDto
@@ -73,7 +100,7 @@ public class TareaServiceTest
         };
         service.CrearTarea(tareaDto);
     }
-    
+
     [TestMethod]
     public void CompletarTareaPeroTareaExisteMarcaComoCompletadaTest()
     {
@@ -86,14 +113,19 @@ public class TareaServiceTest
             Contraseña = "User123!"
         });
         _db.AgregarUsuario(usuario);
-        
-        var tarea = new Tarea(
-            "Tarea X",
-            "Descripción X",
-            new DateTime(2025, 11, 1),
-            3,
-            _proyectoNombre
-        );
+
+        var tarea = new Tarea(new CrearTareaDto
+        {
+         Titulo = "Tarea de prueba 1 ",
+        Descripcion = "Descripción de la tarea de prueba",
+        ProyectoNombre = "Casa",
+        FechaInicio = DateTime.Now,
+        Duracion = 2,
+        UsuariosAsignadosEmails = [],
+        TareasQueYoDependoTitulos = [],
+        TareasQueDependenDeMiTitulos = [],
+        Estado = "Pendiente"
+    });
         tarea.UsuariosAsignados.Add(usuario);
 
         var proyecto = _db.GetListaProyectosPorNombre(_proyectoNombre);
@@ -131,9 +163,7 @@ public class TareaServiceTest
         });
         _db.AgregarUsuario(usuario);
         
-        var tarea1 = new Tarea("T1", "Desc1", new DateTime(2025, 11, 1), 2, _proyectoNombre);
         tarea1.UsuariosAsignados.Add(usuario);
-        var tarea2 = new Tarea("T2", "Desc2", new DateTime(2025, 11, 2), 3, _proyectoNombre);
         tarea2.UsuariosAsignados.Add(usuario);
         
         var proyecto = _db.GetListaProyectosPorNombre(_proyectoNombre);
@@ -189,9 +219,7 @@ public class TareaServiceTest
         });
         _db.AgregarUsuario(usuario);
         
-        var tarea1 = new Tarea("T1", "Desc1", new DateTime(2025, 11, 1), 2, _proyectoNombre);
         tarea1.UsuariosAsignados.Add(usuario);
-        var tarea2 = new Tarea("T2", "Desc2", new DateTime(2025, 11, 2), 3, _proyectoNombre);
         tarea2.UsuariosAsignados.Add(usuario);
         
         tarea2.TareasQueYoDependo.Add(tarea1);

@@ -13,11 +13,14 @@ public class TarearRepository
 
     public void AgregarTarea(Tarea tarea)
     {
-        throw new NotImplementedException();
+
+        _sqlContext.Tareas.Add(tarea);
+        _sqlContext.SaveChanges();
     }
 
     public Tarea? GetTareaPorTitulo(string tareaTitulo)
     {
-        throw new NotImplementedException();
+        return _sqlContext.Tareas.FirstOrDefault(t => t.Titulo == tareaTitulo);
     }
+    
 }

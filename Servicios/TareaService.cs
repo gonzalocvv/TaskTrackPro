@@ -16,7 +16,7 @@ public class TareaService
     {
         Proyecto proyecto = _db.GetListaProyectosPorNombre(crearTareaDto.ProyectoNombre);
         ValidarProyecto(proyecto);
-        Tarea nuevaTarea = new Tarea(crearTareaDto.Titulo, crearTareaDto.Descripcion, crearTareaDto.FechaInicio, crearTareaDto.Duracion, proyecto.Nombre);
+        Tarea nuevaTarea = new Tarea(crearTareaDto);
         foreach (var mail in crearTareaDto.UsuariosAsignadosEmails.Distinct())
         {
             var usuario = _db.GetUsuarioPorEmail(mail)

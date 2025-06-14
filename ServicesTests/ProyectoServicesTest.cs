@@ -13,6 +13,7 @@ public class ProyectoServicesTest
     private ProyectoService _service;
     private Usuario _administradorP;
     private CrearProyectoDto _proyectoDto;
+    private Tarea tarea1, tarea2;
     
     [TestInitialize]
     public void SetUp()
@@ -38,6 +39,31 @@ public class ProyectoServicesTest
             FechaInicio = new DateTime(2025, 10, 1),
             AdministradorEmail = _administradorP.Email
         };
+        
+        tarea1 = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba 1 ",
+            Descripcion = "Descripción de la tarea de prueba",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente"
+        });
+        
+        tarea2 = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba 2",
+            Descripcion = "Descripción de la tarea de prueba",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente"
+        });
+        
     }
 
     
@@ -200,8 +226,8 @@ public class ProyectoServicesTest
             _proyectoDto.FechaInicio,
             _administradorP
         );
-        proyecto.Tareas.Add(new Tarea("T1", "Desc1", new DateTime(2025, 11, 1), 2, proyecto.Nombre));
-        proyecto.Tareas.Add(new Tarea("T2", "Desc2", new DateTime(2025, 11, 2), 3, proyecto.Nombre));
+        proyecto.Tareas.Add(tarea1);
+        proyecto.Tareas.Add(tarea2);
         _db.AgregarProyecto(proyecto);
 
 

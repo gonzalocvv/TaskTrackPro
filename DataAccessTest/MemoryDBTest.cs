@@ -116,7 +116,18 @@ public class MemoryDBTests
     [TestMethod]
     public void AgregarTareaTest()
     {
-        var tarea = new Tarea("Titulo", "Descripción", DateTime.Now.AddDays(1), 1, "Categoria");
+        var tarea = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba 1 ",
+            Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = "Casa",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente"
+        });
 
         db.AgregarTarea(tarea);
 
