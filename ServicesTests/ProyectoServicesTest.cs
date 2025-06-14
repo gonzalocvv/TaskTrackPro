@@ -13,40 +13,43 @@ public class ProyectoServicesTest
     private MemoryDB _db;
     private ProyectoService _serviceProj;
     private UsuarioService _serviceUser;
-    private Usuario _administradorP;
+    private CreateUsuarioDto _administradorP;
     private CrearProyectoDto _proyectoDto;
     private ProyectoRepository _proyectoRepository;
-    private MemoryAppContextFactory contextFactory;
+    private UsuarioRepository _usuarioRepository;
+    private MemoryAppContextFactory _contextFactory;
     private SqlContext _context;
+    
     [TestInitialize]
     public void SetUp()
     {
         _db = new MemoryDB();
-        contextFactory = new MemoryAppContextFactory();
-        _context = contextFactory.CreateDbContext();
+        _contextFactory = new MemoryAppContextFactory();
+        _context = _contextFactory.CreateDbContext();
         _proyectoRepository = new ProyectoRepository(_context);
+        _usuarioRepository = new UsuarioRepository(_context);
+        
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
         
-        
+        _serviceUser = new UsuarioService(_db, _usuarioRepository);
         _serviceProj = new ProyectoService(_db, _proyectoRepository);
-        var adminDto = new CreateUsuarioDto
+        
+        _administradorP = new CreateUsuarioDto
         {
             Nombre = "Admin",
-            Apellido = "Admin",
-            Email = "admin@gmail.com",
+            Apellido = "User",
+            Email = "admin@admin.com",
             FechaNacimiento = new DateTime(1990, 1, 1),
-            Contraseña = "Admin123!"
+            Contraseña = "Admin123@"
         };
         
-        _serviceUser.CrearUsuario(adminDto);
-
         _proyectoDto = new CrearProyectoDto
         {
             Nombre = "Proyecto 1",
             Descripcion = "Descripcion del proyecto 1",
             FechaInicio = new DateTime(2025, 10, 1),
-            AdministradorEmail = _administradorP.Email
+            AdministradorEmail = "admin@admin.com"
         };
     }
 
@@ -83,12 +86,12 @@ public class ProyectoServicesTest
     [TestMethod]
     public void AgregarMiembroAProyectoQueExisteTest()
     {
-        _serviceUser.GetUsuarioPorEmail(_administradorP.Email);
+        var user = _serviceUser.GetUsuarioPorEmail(_administradorP.Email);
         var proyecto = new Proyecto(
             _proyectoDto.Nombre,
             _proyectoDto.Descripcion,
             _proyectoDto.FechaInicio,
-            _administradorP
+            user
         );
         _db.AgregarProyecto(proyecto);
 
@@ -192,12 +195,12 @@ public class ProyectoServicesTest
     [TestMethod]
     public void GetTareasPorNombreProyectoConTareasRetornaDtosCorrectosTest()
     {
-
+        var user = _serviceUser.GetUsuarioPorEmail(_administradorP.Email);
         var proyecto = new Proyecto(
             _proyectoDto.Nombre,
             _proyectoDto.Descripcion,
             _proyectoDto.FechaInicio,
-            _administradorP
+            user
         );
         proyecto.Tareas.Add(new Tarea("T1", "Desc1", new DateTime(2025, 11, 1), 2, proyecto.Nombre));
         proyecto.Tareas.Add(new Tarea("T2", "Desc2", new DateTime(2025, 11, 2), 3, proyecto.Nombre));
