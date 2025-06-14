@@ -1,4 +1,5 @@
 using DataAccess;
+using DataAccess.repositories;
 using Dominio;
 using Servicios;
 using Dtos;
@@ -9,9 +10,11 @@ namespace Servicios;
 public class ProyectoService
 {
     private MemoryDB _db;
-    public ProyectoService(MemoryDB db)
+    private readonly ProyectoRepository _proyectoRepository;
+    public ProyectoService(MemoryDB db, ProyectoRepository proyectoRepository)
     {
         _db = db;
+        _proyectoRepository = proyectoRepository;
     }
     
     public Proyecto CrearProyecto(CrearProyectoDto ProyectoDto )

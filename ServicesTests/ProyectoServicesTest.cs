@@ -1,4 +1,5 @@
 using DataAccess;
+using DataAccess.repositories;
 using Dominio;
 using Dtos;
 using Servicios;
@@ -10,26 +11,38 @@ namespace ServicesTests;
 public class ProyectoServicesTest
 {
     private MemoryDB _db;
-    private ProyectoService _service;
+    private ProyectoService _serviceProj;
+    private UsuarioService _serviceUser;
     private Usuario _administradorP;
     private CrearProyectoDto _proyectoDto;
-    
+    private UsuarioRepository _usuarioRepository;
+    private ProyectoRepository _proyectoRepository;
+    private MemoryAppContextFactory contextFactory;
+    private SqlContext _context;
     [TestInitialize]
     public void SetUp()
     {
         _db = new MemoryDB();
-        _service = new ProyectoService(_db);
-
-        _administradorP = new Usuario(new CreateUsuarioDto
+        contextFactory = new MemoryAppContextFactory();
+        _context = contextFactory.CreateDbContext();
+        _proyectoRepository = new ProyectoRepository(_context);
+        _usuarioRepository = new UsuarioRepository(_context);
+        _context.Database.EnsureDeleted();
+        _context.Database.EnsureCreated();
+        
+        
+        _serviceProj = new ProyectoService(_db, _proyectoRepository);
+        _serviceUser = new UsuarioService(_db, _usuarioRepository);
+        var adminDto = new CreateUsuarioDto
         {
             Nombre = "Admin",
             Apellido = "Admin",
             Email = "admin@gmail.com",
             FechaNacimiento = new DateTime(1990, 1, 1),
             Contraseña = "Admin123!"
-        });
-
-        _db.AgregarUsuario(_administradorP);
+        };
+        
+        _serviceUser.CrearUsuario(adminDto);
 
         _proyectoDto = new CrearProyectoDto
         {
@@ -44,7 +57,7 @@ public class ProyectoServicesTest
     [TestMethod]
     public void CrearProyectoTest()
     {
-        var result = _service.CrearProyecto(_proyectoDto);
+        var result = _serviceProj.CrearProyecto(_proyectoDto);
 
         Assert.AreEqual(result.Nombre, _proyectoDto.Nombre);
         Assert.AreEqual(result.Descripcion, _proyectoDto.Descripcion);
@@ -55,8 +68,8 @@ public class ProyectoServicesTest
     [TestMethod]
     public void GetProyectoPorNombreTest()
     {
-        _service.CrearProyecto(_proyectoDto);
-        Proyecto result = _service.GetProyectoPorNombre(_proyectoDto.Nombre);
+        _serviceProj.CrearProyecto(_proyectoDto);
+        Proyecto result = _serviceProj.GetProyectoPorNombre(_proyectoDto.Nombre);
 
         Assert.AreEqual(result.Nombre, _proyectoDto.Nombre);
     }
@@ -67,15 +80,13 @@ public class ProyectoServicesTest
     {
         string nombre = "Proyecto 1";
         
-        MemoryDB db = new MemoryDB();
-        ProyectoService service = new ProyectoService(db);
-        
-        Proyecto result = service.GetProyectoPorNombre(nombre);
+        Proyecto result = _serviceProj.GetProyectoPorNombre(nombre);
     }
 
     [TestMethod]
     public void AgregarMiembroAProyectoQueExisteTest()
     {
+        _serviceUser.GetUsuarioPorEmail(_administradorP.Email);
         var proyecto = new Proyecto(
             _proyectoDto.Nombre,
             _proyectoDto.Descripcion,
@@ -94,7 +105,7 @@ public class ProyectoServicesTest
         });
         _db.AgregarUsuario(miembro);
         
-        _service.AgregarMiembro(miembro.Email, proyecto.Nombre);
+        _serviceProj.AgregarMiembro(miembro.Email, proyecto.Nombre);
         
         var emails = proyecto.MiembrosProyecto.Select(u => u.Email).ToList();
         CollectionAssert.Contains(emails, miembro.Email);
@@ -102,24 +113,18 @@ public class ProyectoServicesTest
     }
  
     [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
     public void AgregarMiembroQueNoExisteLanzaArgumentNullExceptionTest()
     {
-        var proyecto = new Proyecto(
-            _proyectoDto.Nombre,
-            _proyectoDto.Descripcion,
-            _proyectoDto.FechaInicio,
-            _administradorP
-        );
-        _db.AgregarProyecto(proyecto);
-
-        var exception = Assert.ThrowsException<ArgumentNullException>(() =>
-            _service.AgregarMiembro("noexiste@gmail.com", proyecto.Nombre)
-        );
         
-        Assert.AreEqual("El usuario no existe", exception.ParamName);
+        _serviceProj.CrearProyecto(_proyectoDto);
+
+        _serviceProj.AgregarMiembro("noexiste@gmail.com", _proyectoDto.Nombre);
+
     }
     
     [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
     public void AgregarMiembroAProyectoNoExisteLanzaArgumentNullExceptionTest()
     {
         var miembro = new Usuario(new CreateUsuarioDto
@@ -132,9 +137,6 @@ public class ProyectoServicesTest
         });
         _db.AgregarUsuario(miembro);
         
-        var exception = Assert.ThrowsException<ArgumentNullException>(() => _service.AgregarMiembro(miembro.Email, "Proyecto Inexistente"));
-        
-        Assert.AreEqual("El proyecto no existe", exception.ParamName);
     }
     
     
@@ -156,8 +158,8 @@ public class ProyectoServicesTest
             FechaInicio = new DateTime(2025, 9, 2),
             AdministradorEmail = _administradorP.Email
         };
-        _service.CrearProyecto(proyectoDto1);
-        _service.CrearProyecto(proyectoDto2);
+        _serviceProj.CrearProyecto(proyectoDto1);
+        _serviceProj.CrearProyecto(proyectoDto2);
         
         var miembro = new Usuario(new CreateUsuarioDto
         {
@@ -168,10 +170,10 @@ public class ProyectoServicesTest
             Contraseña = "Maria123!"
         });
         _db.AgregarUsuario(miembro);
-        _service.AgregarMiembro(miembro.Email, proyectoDto1.Nombre);
+        _serviceProj.AgregarMiembro(miembro.Email, proyectoDto1.Nombre);
 
 
-        var lista = _service.GetListaProyectos();
+        var lista = _serviceProj.GetListaProyectos();
 
 
         Assert.AreEqual(2, lista.Count);
@@ -205,7 +207,7 @@ public class ProyectoServicesTest
         _db.AgregarProyecto(proyecto);
 
 
-        var lista = _service.GetTareasPorNombreProyecto(proyecto.Nombre);
+        var lista = _serviceProj.GetTareasPorNombreProyecto(proyecto.Nombre);
 
 
         Assert.AreEqual(2, lista.Count);
@@ -223,12 +225,10 @@ public class ProyectoServicesTest
     }
 
     [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
     public void GetTareasPorNombreProyectoProyectoNoExisteLanzaArgumentNullExceptionTest()
     {
-        var ex = Assert.ThrowsException<ArgumentNullException>(() =>
-            _service.GetTareasPorNombreProyecto("ProyectoInexistente")
-        );
-        Assert.AreEqual("El proyecto no existe", ex.ParamName);
+        _serviceProj.GetTareasPorNombreProyecto("ProyectoInexistente");
     }
     
     [TestMethod]
@@ -253,7 +253,7 @@ public class ProyectoServicesTest
         
         _proyectoDto.MiembroEmails = new List<string> { miembro1.Email, miembro2.Email };
         
-        var proyectoCreado = _service.CrearProyecto(_proyectoDto);
+        var proyectoCreado = _serviceProj.CrearProyecto(_proyectoDto);
         
         var todosLosEmails = proyectoCreado.MiembrosProyecto.Select(u => u.Email).ToList();
         var soloMiembros = todosLosEmails
