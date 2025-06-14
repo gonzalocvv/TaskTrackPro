@@ -44,6 +44,7 @@ public class ProyectoServicesTest
         {
             Titulo = "Tarea de prueba 1 ",
             Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = "casa",
             FechaInicio = DateTime.Now,
             Duracion = 2,
             UsuariosAsignadosEmails = [],
@@ -56,6 +57,7 @@ public class ProyectoServicesTest
         {
             Titulo = "Tarea de prueba 2",
             Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = "casa",
             FechaInicio = DateTime.Now,
             Duracion = 2,
             UsuariosAsignadosEmails = [],
