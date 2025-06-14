@@ -11,7 +11,7 @@ public class CrearTareaDto
     public List<string> UsuariosAsignadosEmails = new();
     public List<string> TareasQueYoDependoTitulos = new();
     public List<string> TareasQueDependenDeMiTitulos = new();
-    public String Estado;
+    public string Estado;
 }
 
 public class GetTareaDto
@@ -24,5 +24,6 @@ public class GetTareaDto
     public List<string> UsuariosAsignadosEmails = new();
     public List<string> TareasQueYoDependoTitulos = new();
     public List<string> TareasQueDependenDeMiTitulos = new();
-    public String Estado;
+    public string Estado;
+
 }
