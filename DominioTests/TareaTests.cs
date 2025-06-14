@@ -64,7 +64,7 @@ public class TareaTests
             TareasQueDependenDeMiTitulos = [],
             Estado = "Pendiente"
         });
-        tareaDto2 = new Tarea(new CrearTareaDto
+        tareaDto3 = new Tarea(new CrearTareaDto
         {
             Titulo = "Tarea de prueba 3",
             Descripcion = "Descripción de la tarea de prueba",
