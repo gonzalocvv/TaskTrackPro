@@ -137,7 +137,7 @@ public class TareaTests
     {
 
         tareaDto.AgregarDependencia(tareaDto2);
-        Assert.IsTrue(tareaDto.TareasQueYoDependo.Contains(tareaDto));
+        Assert.IsTrue(tareaDto.TareasQueYoDependo.Contains(tareaDto2));
     }
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
