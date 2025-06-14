@@ -118,7 +118,7 @@ public class TareaTests
     public void TareaEstadoInicialPendienteSinDepsTest()
     {
         
-        Assert.Equals(EstadoTarea.Pendiente, tareaDto.Estado);
+        Assert.AreEqual(EstadoTarea.Pendiente, tareaDto.Estado);
     }
     [TestMethod]
     public void TareaConDependenciaEstadoBloqueadoTest()
