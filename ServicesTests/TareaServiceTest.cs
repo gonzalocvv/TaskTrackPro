@@ -218,28 +218,27 @@ public class TareaServiceTest
             Contraseña = "Depen123!"
         });
         _db.AgregarUsuario(usuario);
-        
+    
         tarea1.UsuariosAsignados.Add(usuario);
         tarea2.UsuariosAsignados.Add(usuario);
-        
+    
         tarea2.TareasQueYoDependo.Add(tarea1);
         tarea1.TareasQueDependenDeMi.Add(tarea2);
-        
+    
         var proyecto = _db.GetListaProyectosPorNombre(_proyectoNombre);
         proyecto.AgregarTarea(tarea1);
         proyecto.AgregarTarea(tarea2);
         _db.AgregarTarea(tarea1);
         _db.AgregarTarea(tarea2);
-        
+    
         var listaDtos = _service.GetListaTareasPorUsuario(usuario.Email);
 
-
-        var dto1 = listaDtos.Single(d => d.Titulo == "T1");
+        var dto1 = listaDtos.Single(d => d.Titulo == "Tarea de prueba 1 ");
         Assert.AreEqual(0, dto1.TareasQueYoDependoTitulos.Count, "T1 no debería depender de nadie");
-        CollectionAssert.Contains(dto1.TareasQueDependenDeMiTitulos, "T2");
+        CollectionAssert.Contains(dto1.TareasQueDependenDeMiTitulos, "Tarea de prueba 2");
 
-        var dto2 = listaDtos.Single(d => d.Titulo == "T2");
-        CollectionAssert.Contains(dto2.TareasQueYoDependoTitulos, "T1");
+        var dto2 = listaDtos.Single(d => d.Titulo == "Tarea de prueba 2");
+        CollectionAssert.Contains(dto2.TareasQueYoDependoTitulos, "Tarea de prueba 1 ");
         Assert.AreEqual(0, dto2.TareasQueDependenDeMiTitulos.Count, "T2 no debería tener dependientes");
     }
 
