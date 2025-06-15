@@ -88,24 +88,24 @@ public class ProyectoServicesTest
     [TestMethod]
     public void AgregarMiembroAProyectoQueExisteTest()
     {
-        var user = _serviceUser.GetUsuarioPorEmail(_administradorP.Email);
+        var admin = _serviceUser.GetUsuarioPorEmail("admin@admin.com");
         var proyecto = new Proyecto(
             _proyectoDto.Nombre,
             _proyectoDto.Descripcion,
             _proyectoDto.FechaInicio,
-            user
+            admin
         );
-        _db.AgregarProyecto(proyecto);
+        _proyectoRepository.AgregarProyecto(proyecto);
 
-        var miembro = new Usuario(new CreateUsuarioDto
+        var miembro = new CreateUsuarioDto
         {
             Nombre = "Juan",
             Apellido = "Pérez",
             Email = "juan@gmail.com",
             FechaNacimiento = new DateTime(1995, 5, 5),
             Contraseña = "Juan123!"
-        });
-        _db.AgregarUsuario(miembro);
+        };
+        _serviceUser.CrearUsuario(miembro);
         
         _serviceProj.AgregarMiembro(miembro.Email, proyecto.Nombre);
         

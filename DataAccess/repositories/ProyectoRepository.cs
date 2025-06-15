@@ -17,7 +17,12 @@ public class ProyectoRepository
     }
     public Usuario GetUsuarioPorEmail(string email)
     {
-        return _sqlContext.Usuarios.FirstOrDefault(u => u.Email == email);
+        var result = _sqlContext.Usuarios.FirstOrDefault(u => u.Email == email);
+        if (result == null)
+        {
+            throw new ArgumentNullException("El usuario no existe");
+        }
+        return result;
     }
     public Proyecto GetProyectoPorNombre(string nombre)
     {
