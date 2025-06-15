@@ -42,4 +42,43 @@ public class ProyectoRepositoryTest
         var proyectos = _context.Proyectos.ToList();
         Assert.IsTrue(proyectos.Contains(proyecto));
     }
+
+    [TestMethod]
+    public void GetUsuarioPorEmailTest()
+    {
+        var usuario = new Usuario()
+        {
+            Nombre = "Test",
+            Apellido = "User",
+            Email = "user@test.com",
+            FechaNacimiento = new DateTime(2000, 1, 1),
+            Contraseña = "Test123@"
+        };
+        _context.Usuarios.Add(usuario);
+        _context.SaveChanges();
+        var usuarioEncontrado = _proyectoRepository.GetUsuarioPorEmail(usuario.Email);
+        Assert.IsNotNull(usuarioEncontrado);
+        Assert.AreEqual(usuario, usuarioEncontrado);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetUsuarioPorEmail_NullTest()
+    {
+        var usuarioEncontrado = _proyectoRepository.GetUsuarioPorEmail("user@test.com");
+    }
+    
+    [TestMethod]
+    public void GetProyectoPorNombreTest()
+    {
+        var proyecto = new Proyecto("Proyecto Test", "Descripcion Test", DateTime.Now.AddHours(2.0), _administradorP);
+        _context.Proyectos.Add(proyecto);
+        _context.SaveChanges();
+        
+        var proyectoEncontrado = _proyectoRepository.GetProyectoPorNombre(proyecto.Nombre);
+        
+        Assert.IsNotNull(proyectoEncontrado);
+        Assert.AreEqual(proyecto, proyectoEncontrado);
+    }
+    
 }

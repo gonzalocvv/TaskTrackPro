@@ -54,6 +54,7 @@ public class ProyectoServicesTest
     }
 
     
+    
     [TestMethod]
     public void CrearProyectoTest()
     {
@@ -63,6 +64,15 @@ public class ProyectoServicesTest
         Assert.AreEqual(result.Descripcion, _proyectoDto.Descripcion);
         Assert.AreEqual(result.FechaInicio, _proyectoDto.FechaInicio);
         Assert.AreEqual(result.AdministradorP.Email, _proyectoDto.AdministradorEmail);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetNombreProyectoNoExisteLanzaArgumentNullExceptionTest()
+    {
+        _serviceProj.CrearProyecto(_proyectoDto);
+        string nombre = "Proyecto Inexistente";
+        Proyecto result = _serviceProj.GetProyectoPorNombre(nombre);
     }
 
     [TestMethod]

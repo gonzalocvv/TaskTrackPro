@@ -19,4 +19,8 @@ public class ProyectoRepository
     {
         return _sqlContext.Usuarios.FirstOrDefault(u => u.Email == email);
     }
+    public Proyecto GetProyectoPorNombre(string nombre)
+    {
+        return _sqlContext.Proyectos.FirstOrDefault(p => p.Nombre == nombre);
+    }
 }
