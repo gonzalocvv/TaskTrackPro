@@ -129,15 +129,16 @@ public class ProyectoServicesTest
     [ExpectedException(typeof(ArgumentNullException))]
     public void AgregarMiembroAProyectoNoExisteLanzaArgumentNullExceptionTest()
     {
-        var miembro = new Usuario(new CreateUsuarioDto
+        var miembro = new CreateUsuarioDto
         {
             Nombre = "Ana",
             Apellido = "Gómez",
             Email = "ana@gmail.com",
             FechaNacimiento = new DateTime(1992, 2, 2),
             Contraseña = "Anamaria123!"
-        });
-        _db.AgregarUsuario(miembro);
+        };
+        _serviceUser.CrearUsuario(miembro);
+        _serviceProj.AgregarMiembro(miembro.Email, "Proyecto Inexistente");
         
     }
     
