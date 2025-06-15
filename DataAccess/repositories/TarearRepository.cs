@@ -1,7 +1,5 @@
 using Dominio;
 
-
-
 namespace DataAccess.repositories;
 
 public class TarearRepository
@@ -22,8 +20,9 @@ public class TarearRepository
     {
         return _sqlContext.Tareas.FirstOrDefault(t => t.Titulo == tareaTitulo);
     }
+
     public List<Tarea> GetTareasPorProyecto(string proyectoNombre)
     {
-        throw new NotImplementedException();
+        return _sqlContext.Tareas.Where(t => t.Proyecto.Nombre == proyectoNombre).ToList();
     }
 }

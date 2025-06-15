@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Dominio;
 using Dtos;
+using TaskTrackPro.Backend.Dominio;
 
 namespace Dominio
 {
@@ -21,6 +22,8 @@ namespace Dominio
         private DateTime? _fechaDeInicio;
         private int _duracion;
         private string _tituloProyecto;
+        public Proyecto Proyecto { get; set; }
+
         public EstadoTarea Estado { get; private set; }
 
         private readonly List<Tarea> _tareasYoDependo = new List<Tarea>();

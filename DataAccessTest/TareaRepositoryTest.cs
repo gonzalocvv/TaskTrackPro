@@ -14,6 +14,7 @@ public class TareaRepositoryTest
     private Tarea tareaDto;
     private SqlContext _context;
     private Proyecto _proyecto;
+    private CreateUsuarioDto _administradorP;
     
     [TestInitialize]
     public void SetUp()
@@ -38,6 +39,21 @@ public class TareaRepositoryTest
             TareasQueDependenDeMiTitulos = [],
             Estado = "Pendiente",
         });
+        
+        _administradorP = new CreateUsuarioDto
+        {
+            Nombre = "Admin",
+            Apellido = "User",
+            Email = "admin@admin.com",
+            FechaNacimiento = new DateTime(1990, 1, 1),
+            Contraseña = "Admin123@"
+        };
+        _proyecto = new Proyecto
+        {
+            Nombre = "Proyecto 1",
+            Descripcion = "Descripción del proyecto",
+            AdministradorP= new Usuario(_administradorP),
+        };
     }
 
     [TestMethod]
@@ -67,15 +83,15 @@ public class TareaRepositoryTest
     [TestMethod]
     public void GetTareasPorProjectoTest()
     {
-        _proyecto.Nombre = "Proyecto 1";
+        
         _context.Proyectos.Add(_proyecto);
         _context.SaveChanges();
 
         tareaDto.ProyectoNombre = _proyecto.Nombre;
         repository.AgregarTarea(tareaDto);
-        
+    
         var tareasObtenidas = repository.GetTareasPorProyecto(_proyecto.Nombre);
-        
+    
         Assert.IsNotNull(tareasObtenidas);
         Assert.AreEqual(1, tareasObtenidas.Count);
         Assert.AreEqual(tareaDto.Titulo, tareasObtenidas[0].Titulo);
