@@ -48,5 +48,18 @@ public class TareaRepositoryTest
         Assert.IsNotNull(tareaObtenida);
         Assert.AreEqual(tareaDto.Titulo, tareaObtenida.Titulo);
     }
+    [TestMethod]
+    public void AgregarTareaTest()
+    {
+        repository.AgregarTarea(tareaDto);
+        
+        var tareaObtenida = _context.Tareas.FirstOrDefault(t => t.Titulo == tareaDto.Titulo);
+        
+        Assert.IsNotNull(tareaObtenida);
+        Assert.AreEqual(tareaDto.Titulo, tareaObtenida.Titulo);
+        Assert.AreEqual(tareaDto.Descripcion, tareaObtenida.Descripcion);
+        Assert.AreEqual(tareaDto.FechaDeInicio, tareaObtenida.FechaDeInicio);
+        Assert.AreEqual(tareaDto.Duracion, tareaObtenida.Duracion);
+    }
     
 }
