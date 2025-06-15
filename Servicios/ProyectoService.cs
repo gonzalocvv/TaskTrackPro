@@ -43,7 +43,7 @@ public class ProyectoService
     {
         
         List<GetProyectoDto> listaProyectos = new();
-        foreach (var proyecto in _db.GetListaProyectos())
+        foreach (var proyecto in _proyectoRepository.GetListaProyectos())
         {
             GetProyectoDto proyectoDto = new GetProyectoDto
             {

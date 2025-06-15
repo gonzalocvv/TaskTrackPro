@@ -80,5 +80,19 @@ public class ProyectoRepositoryTest
         Assert.IsNotNull(proyectoEncontrado);
         Assert.AreEqual(proyecto, proyectoEncontrado);
     }
-    
+    [TestMethod]
+    public void GetListaProyectosTest()
+    {
+        var proyecto1 = new Proyecto("Proyecto 1", "Descripcion 1", DateTime.Now.AddHours(2.0), _administradorP);
+        var proyecto2 = new Proyecto("Proyecto 2", "Descripcion 2", DateTime.Now.AddHours(3.0), _administradorP);
+        
+        _context.Proyectos.Add(proyecto1);
+        _context.Proyectos.Add(proyecto2);
+        _context.SaveChanges();
+        
+        var proyectos = _proyectoRepository.GetListaProyectos();
+        
+        Assert.IsTrue(proyectos.Contains(proyecto1));
+        Assert.IsTrue(proyectos.Contains(proyecto2));
+    }
 }
