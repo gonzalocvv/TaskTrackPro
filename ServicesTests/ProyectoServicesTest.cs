@@ -164,20 +164,19 @@ public class ProyectoServicesTest
         _serviceProj.CrearProyecto(proyectoDto1);
         _serviceProj.CrearProyecto(proyectoDto2);
         
-        var miembro = new Usuario(new CreateUsuarioDto
+        var miembro = new CreateUsuarioDto
         {
             Nombre = "María",
             Apellido = "López",
             Email = "maria@correo.com",
             FechaNacimiento = new DateTime(1993, 3, 3),
             Contraseña = "Maria123!"
-        });
-        _db.AgregarUsuario(miembro);
+        };
+        _serviceUser.CrearUsuario(miembro);
         _serviceProj.AgregarMiembro(miembro.Email, proyectoDto1.Nombre);
 
 
         var lista = _serviceProj.GetListaProyectos();
-
 
         Assert.AreEqual(2, lista.Count);
 
