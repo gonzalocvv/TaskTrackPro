@@ -13,7 +13,7 @@ public class TareaServiceTest
     private MemoryDB _db;
     private TareaService _service;
     private Usuario _administradorP;
-    private string _proyectoNombre = "Proyecto 1";
+    private string _proyectoNombre;
     private Tarea tarea1, tarea2;
 
     [TestInitialize]
@@ -30,7 +30,9 @@ public class TareaServiceTest
             FechaNacimiento = new DateTime(1990, 1, 1),
             Contraseña = "Admin123!"
         });
+        
         _db.AgregarUsuario(_administradorP);
+        _proyectoNombre = "Proyecto 1";
         
         var proyecto = new Proyecto(
             _proyectoNombre,

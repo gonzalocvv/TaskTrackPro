@@ -14,5 +14,14 @@ public class SqlContext : DbContext{
            Database.Migrate();    
        }
        
+       
+   }
+   protected override void OnModelCreating(ModelBuilder modelBuilder)
+   {
+       base.OnModelCreating(modelBuilder);
+       modelBuilder.Entity<Tarea>()
+           .Property(t => t.ProyectoNombre)
+           .HasField("_tituloProyecto")
+           .IsRequired(); 
    }
 }

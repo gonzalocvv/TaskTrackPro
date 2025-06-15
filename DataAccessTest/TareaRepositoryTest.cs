@@ -18,17 +18,19 @@ public class TareaRepositoryTest
     {
         var dbContextFactory = new MemoryAppContextFactory();
         _context = dbContextFactory.CreateDbContext();
-        
+
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
-        
+
         repository = new TarearRepository(_context);
-        tareaDto = new Tarea(new CrearTareaDto 
+
+        tareaDto = new Tarea(new CrearTareaDto
         {
             Titulo = "Tarea de prueba",
             Descripcion = "Descripción de la tarea de prueba",
             FechaInicio = DateTime.Now,
             Duracion = 2,
+            ProyectoNombre = "Proyecto de prueba", 
             UsuariosAsignadosEmails = [],
             TareasQueYoDependoTitulos = [],
             TareasQueDependenDeMiTitulos = [],

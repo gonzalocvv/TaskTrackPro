@@ -235,21 +235,20 @@ public class ProyectoServicesTest
         proyecto.Tareas.Add(tarea2);
         _db.AgregarProyecto(proyecto);
 
-
         var lista = _serviceProj.GetTareasPorNombreProyecto(proyecto.Nombre);
 
-
         Assert.AreEqual(2, lista.Count);
-        var dto1 = lista.Single(d => d.Titulo == "T1");
-        Assert.AreEqual("Desc1", dto1.Descripcion);
-        Assert.AreEqual(new DateTime(2025, 11, 1), dto1.FechaInicio);
-        Assert.AreEqual(2, dto1.Duracion);
-        Assert.AreEqual("Pendiente", dto1.Estado); 
 
-        var dto2 = lista.Single(d => d.Titulo == "T2");
-        Assert.AreEqual("Desc2", dto2.Descripcion);
-        Assert.AreEqual(new DateTime(2025, 11, 2), dto2.FechaInicio);
-        Assert.AreEqual(3, dto2.Duracion);
+        var dto1 = lista.Single(d => d.Titulo == "Tarea de prueba 1 ");
+        Assert.AreEqual("Descripción de la tarea de prueba", dto1.Descripcion);
+        Assert.AreEqual(tarea1.FechaDeInicio, dto1.FechaInicio);
+        Assert.AreEqual(2, dto1.Duracion);
+        Assert.AreEqual("Pendiente", dto1.Estado);
+
+        var dto2 = lista.Single(d => d.Titulo == "Tarea de prueba 2");
+        Assert.AreEqual("Descripción de la tarea de prueba", dto2.Descripcion);
+        Assert.AreEqual(tarea2.FechaDeInicio, dto2.FechaInicio);
+        Assert.AreEqual(2, dto2.Duracion);
         Assert.AreEqual("Pendiente", dto2.Estado);
     }
 
