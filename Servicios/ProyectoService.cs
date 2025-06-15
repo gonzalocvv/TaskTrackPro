@@ -1,4 +1,5 @@
 using DataAccess;
+using DataAccess.repositories;
 using Dominio;
 using Servicios;
 using Dtos;
@@ -9,27 +10,29 @@ namespace Servicios;
 public class ProyectoService
 {
     private MemoryDB _db;
-    public ProyectoService(MemoryDB db)
+    private readonly ProyectoRepository _proyectoRepository;
+    public ProyectoService(MemoryDB db, ProyectoRepository proyectoRepository)
     {
         _db = db;
+        _proyectoRepository = proyectoRepository;
     }
     
     public Proyecto CrearProyecto(CrearProyectoDto ProyectoDto )
     {
-        Usuario admin = _db.GetUsuarioPorEmail(ProyectoDto.AdministradorEmail);
+        Usuario admin = _proyectoRepository.GetUsuarioPorEmail(ProyectoDto.AdministradorEmail);
         Proyecto nuevoProyecto = new Proyecto(ProyectoDto.Nombre, ProyectoDto.Descripcion, ProyectoDto.FechaInicio, admin);
         foreach (var email in ProyectoDto.MiembroEmails)
         {
-            Usuario user = _db.GetUsuarioPorEmail(email);
+            Usuario user = _proyectoRepository.GetUsuarioPorEmail(email);
             nuevoProyecto.AgregarMiembro(user);
         }
-        _db.AgregarProyecto(nuevoProyecto);
+        _proyectoRepository.AgregarProyecto(nuevoProyecto);
         return nuevoProyecto;
     }
 
     public Proyecto GetProyectoPorNombre(string nombre)
     {
-        var proyectoParaDevolver = _db.GetListaProyectosPorNombre(nombre);
+        var proyectoParaDevolver = _proyectoRepository.GetProyectoPorNombre(nombre);
         if (proyectoParaDevolver == null)
         {
             throw new ArgumentNullException("El proyecto no existe");
@@ -40,7 +43,7 @@ public class ProyectoService
     {
         
         List<GetProyectoDto> listaProyectos = new();
-        foreach (var proyecto in _db.GetListaProyectos())
+        foreach (var proyecto in _proyectoRepository.GetListaProyectos())
         {
             GetProyectoDto proyectoDto = new GetProyectoDto
             {
@@ -56,8 +59,8 @@ public class ProyectoService
     }
     public void AgregarMiembro(string email, string nombreProyecto)
     {
-        Usuario miembro = _db.GetUsuarioPorEmail(email);
-        Proyecto proyecto = _db.GetListaProyectosPorNombre(nombreProyecto);
+        Usuario miembro = _proyectoRepository.GetUsuarioPorEmail(email);
+        Proyecto proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
         if (miembro == null)
         {
             throw new ArgumentNullException("El usuario no existe");
