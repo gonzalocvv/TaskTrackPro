@@ -1,5 +1,6 @@
 using Dominio;
-using TaskTrackPro.Backend.Dominio;
+
+
 
 namespace DataAccess.repositories;
 
@@ -13,14 +14,12 @@ public class TarearRepository
 
     public void AgregarTarea(Tarea tarea)
     {
-
         _sqlContext.Tareas.Add(tarea);
         _sqlContext.SaveChanges();
     }
 
-    public Tarea? GetTareaPorTitulo(string tareaTitulo)
+    public Tarea GetTareaPorTitulo(string tareaTitulo)
     {
         return _sqlContext.Tareas.FirstOrDefault(t => t.Titulo == tareaTitulo);
     }
-    
 }

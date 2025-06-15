@@ -2,7 +2,7 @@ using DataAccess;
 using DataAccess.repositories;
 using Dominio;
 using Dtos;
-using TaskTrackPro.Backend.Dominio;
+
 
 namespace DataAccessTest;
 
@@ -10,8 +10,7 @@ namespace DataAccessTest;
 public class TareaRepositoryTest
 {
     private TarearRepository repository;
-    private Tarea _tarea;
-    private CrearTareaDto dto;
+    private Tarea tareaDto;
     private SqlContext _context;
     
     [TestInitialize]
@@ -24,7 +23,7 @@ public class TareaRepositoryTest
         _context.Database.EnsureCreated();
         
         repository = new TarearRepository(_context);
-        dto = new CrearTareaDto
+        tareaDto = new Tarea(new CrearTareaDto 
         {
             Titulo = "Tarea de prueba",
             Descripcion = "Descripción de la tarea de prueba",
@@ -34,16 +33,18 @@ public class TareaRepositoryTest
             TareasQueYoDependoTitulos = [],
             TareasQueDependenDeMiTitulos = [],
             Estado = "Pendiente",
-        };
+        });
     }
-    
+
     [TestMethod]
     public void GetTareaPorTituloTest()
     {
-        _tarea = new Tarea();
-        repository.AgregarTarea(_tarea);
-        var tareaObtenida = repository.GetTareaPorTitulo(_tarea.Titulo);
-        Assert.AreEqual(_tarea, tareaObtenida);
+        repository.AgregarTarea(tareaDto);
+        
+        var tareaObtenida = repository.GetTareaPorTitulo(tareaDto.Titulo);
+        
+        Assert.IsNotNull(tareaObtenida);
+        Assert.AreEqual(tareaDto.Titulo, tareaObtenida.Titulo);
     }
     
 }

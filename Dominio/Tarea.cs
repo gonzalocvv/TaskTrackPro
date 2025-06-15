@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Dominio;
 using Dtos;
 
-namespace TaskTrackPro.Backend.Dominio
+namespace Dominio
 {
     public enum EstadoTarea
     {
