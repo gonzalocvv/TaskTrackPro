@@ -59,8 +59,8 @@ public class ProyectoService
     }
     public void AgregarMiembro(string email, string nombreProyecto)
     {
-        Usuario miembro = _db.GetUsuarioPorEmail(email);
-        Proyecto proyecto = _db.GetListaProyectosPorNombre(nombreProyecto);
+        Usuario miembro = _proyectoRepository.GetUsuarioPorEmail(email);
+        Proyecto proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
         if (miembro == null)
         {
             throw new ArgumentNullException("El usuario no existe");
