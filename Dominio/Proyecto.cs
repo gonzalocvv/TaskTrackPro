@@ -26,7 +26,7 @@ namespace TaskTrackPro.Backend.Dominio
             FechaInicio = fechaInicio;
             AdministradorP = administradorP;
 
-            // Agregar el administrador como miembro del proyecto
+            
             _miembrosProyecto.Add(administradorP);
         }
 
