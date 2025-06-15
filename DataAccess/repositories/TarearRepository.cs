@@ -22,4 +22,8 @@ public class TarearRepository
     {
         return _sqlContext.Tareas.FirstOrDefault(t => t.Titulo == tareaTitulo);
     }
+    public List<Tarea> GetTareasPorProyecto(string proyectoNombre)
+    {
+        throw new NotImplementedException();
+    }
 }

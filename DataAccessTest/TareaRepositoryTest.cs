@@ -2,6 +2,7 @@ using DataAccess;
 using DataAccess.repositories;
 using Dominio;
 using Dtos;
+using TaskTrackPro.Backend.Dominio;
 
 
 namespace DataAccessTest;
@@ -12,6 +13,7 @@ public class TareaRepositoryTest
     private TarearRepository repository;
     private Tarea tareaDto;
     private SqlContext _context;
+    private Proyecto _proyecto;
     
     [TestInitialize]
     public void SetUp()
@@ -39,16 +41,6 @@ public class TareaRepositoryTest
     }
 
     [TestMethod]
-    public void GetTareaPorTituloTest()
-    {
-        repository.AgregarTarea(tareaDto);
-        
-        var tareaObtenida = repository.GetTareaPorTitulo(tareaDto.Titulo);
-        
-        Assert.IsNotNull(tareaObtenida);
-        Assert.AreEqual(tareaDto.Titulo, tareaObtenida.Titulo);
-    }
-    [TestMethod]
     public void AgregarTareaTest()
     {
         repository.AgregarTarea(tareaDto);
@@ -60,6 +52,33 @@ public class TareaRepositoryTest
         Assert.AreEqual(tareaDto.Descripcion, tareaObtenida.Descripcion);
         Assert.AreEqual(tareaDto.FechaDeInicio, tareaObtenida.FechaDeInicio);
         Assert.AreEqual(tareaDto.Duracion, tareaObtenida.Duracion);
+    }
+    
+    [TestMethod]
+    public void GetTareaPorTituloTest()
+    {
+        repository.AgregarTarea(tareaDto);
+        
+        var tareaObtenida = repository.GetTareaPorTitulo(tareaDto.Titulo);
+        
+        Assert.IsNotNull(tareaObtenida);
+        Assert.AreEqual(tareaDto.Titulo, tareaObtenida.Titulo);
+    }
+    [TestMethod]
+    public void GetTareasPorProjectoTest()
+    {
+        _proyecto.Nombre = "Proyecto 1";
+        _context.Proyectos.Add(_proyecto);
+        _context.SaveChanges();
+
+        tareaDto.ProyectoNombre = _proyecto.Nombre;
+        repository.AgregarTarea(tareaDto);
+        
+        var tareasObtenidas = repository.GetTareasPorProyecto(_proyecto.Nombre);
+        
+        Assert.IsNotNull(tareasObtenidas);
+        Assert.AreEqual(1, tareasObtenidas.Count);
+        Assert.AreEqual(tareaDto.Titulo, tareasObtenidas[0].Titulo);
     }
     
 }
