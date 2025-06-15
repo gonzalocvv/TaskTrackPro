@@ -236,22 +236,22 @@ public class ProyectoServicesTest
     [TestMethod]
     public void CrearProyectoConMiembrosAgregaTodosLosMiembrosAlProyectoTest()
     {
-        var miembro1 = new Usuario(new CreateUsuarioDto {
+        var miembro1 = new CreateUsuarioDto {
             Nombre = "Miembro1",
             Apellido = "Uno",
             Email = "m1@correo.com",
             FechaNacimiento = new DateTime(1995, 1, 1),
             Contraseña = "M1passw!"
-        });
-        var miembro2 = new Usuario(new CreateUsuarioDto {
+        };
+        var miembro2 = new CreateUsuarioDto {
             Nombre = "Miembro2",
             Apellido = "Dos",
             Email = "m2@correo.com",
             FechaNacimiento = new DateTime(1996, 2, 2),
             Contraseña = "M2passw!"
-        });
-        _db.AgregarUsuario(miembro1);
-        _db.AgregarUsuario(miembro2);
+        };
+        _serviceUser.CrearUsuario(miembro1);
+        _serviceUser.CrearUsuario(miembro2);
         
         _proyectoDto.MiembroEmails = new List<string> { miembro1.Email, miembro2.Email };
         
