@@ -23,7 +23,7 @@ public class TareaServiceTest
     private Proyecto _proyecto;
     private CreateUsuarioDto responsableDto;
     private Usuario responsable;
-    private Proyecto proyecto;
+    private Proyecto proyectoPrueba;
 
     [TestInitialize]
     public void SetUp()
@@ -39,6 +39,9 @@ public class TareaServiceTest
         _context.Database.EnsureDeleted();    
         _context.Database.EnsureCreated();    
         _context.ChangeTracker.Clear();
+        
+        tarea1 = null;
+        tarea2 = null;
 
         _administradorP = new Usuario(new CreateUsuarioDto
         {
@@ -96,7 +99,7 @@ public class TareaServiceTest
             Contraseña = "Gonzalo9@"
         };
          responsable = new Usuario(responsableDto);    
-         proyecto = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", new DateTime(2025, 10, 1), responsable);
+         proyectoPrueba = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", new DateTime(2025, 10, 1), responsable);
 
     }
 
@@ -114,7 +117,7 @@ public class TareaServiceTest
         DateTime fechaInicio = new DateTime(2025, 10, 1);
         int duracion = 5;
         string nombreProyecto = "Proyecto 1";
-        _proyectoRepository.AgregarProyecto(proyecto);
+        _proyectoRepository.AgregarProyecto(proyectoPrueba);
         CrearTareaDto tareaDto = new CrearTareaDto
         {
             Titulo = titulo,
@@ -173,47 +176,62 @@ public class TareaServiceTest
     {
         
         var ex = Assert.ThrowsException<ArgumentException>(() =>
-            _service.CompletarTarea(proyecto.Nombre, "NoExiste", "usuario@correo.com")
+            _service.CompletarTarea(proyectoPrueba.Nombre, "NoExiste", "usuario@correo.com")
         );
         
         Assert.AreEqual("Tarea inexistente", ex.Message);
     }
     
     [TestMethod]
-    public void GetListaTareasPorUsuarioEnLaQueUsuarioConTareasRetornaListaCorrectaTest()
+public void GetListaTareasPorUsuarioEnLaQueUsuarioConTareasRetornaListaCorrectaTest()
+{
+    
+    var usuario = new Usuario(new CreateUsuarioDto
     {
-        var usuario = new Usuario(new CreateUsuarioDto
-        {
-            Nombre = "Test",
-            Apellido = "User",
-            Email = "test@domain.com",
-            FechaNacimiento = new DateTime(1990, 1, 1),
-            Contraseña = "Test123!"
-        });
-        _usuarioRepository.AgregarUsuario(usuario);
+        Nombre = "Test",
+        Apellido = "User",
+        Email = "test@domain.com",
+        FechaNacimiento = new DateTime(1990, 1, 1),
+        Contraseña = "Test123!"
+    });
+    _usuarioRepository.AgregarUsuario(usuario);
     
-        tarea1.UsuariosAsignados.Add(usuario);
-        tarea2.UsuariosAsignados.Add(usuario);
+    _proyectoRepository.AgregarProyecto(proyectoPrueba);
     
-        var proyecto =  _proyectoRepository.GetProyectoPorNombre(_proyectoNombre);
-        proyecto.AgregarTarea(tarea1);
-        proyecto.AgregarTarea(tarea2);
-        _tareaRepository.AgregarTarea(tarea1);
-        _tareaRepository.AgregarTarea(tarea2);
+    tarea1.UsuariosAsignados.Add(usuario);
+    tarea2.UsuariosAsignados.Add(usuario);
+
     
-        var resultado = _service.GetListaTareasPorUsuario(usuario.Email);
+    proyectoPrueba.AgregarTarea(tarea1);
+    proyectoPrueba.AgregarTarea(tarea2);
+    _tareaRepository.AgregarTarea(tarea1);
+    _tareaRepository.AgregarTarea(tarea2);
     
-        Assert.AreEqual(2, resultado.Count);
-        var dto1 = resultado.Single(d => d.Titulo == "Tarea de prueba 1 ");
-        Assert.AreEqual("Descripción de la tarea de prueba", dto1.Descripcion);
-        Assert.AreEqual(tarea1.FechaDeInicio, dto1.FechaInicio);
-        Assert.AreEqual(tarea1.Duracion, dto1.Duracion);
-        Assert.AreEqual(_proyectoNombre, dto1.ProyectoNombre);
-        CollectionAssert.Contains(dto1.UsuariosAsignadosEmails, usuario.Email);
-        Assert.AreEqual(0, dto1.TareasQueYoDependoTitulos.Count);
-        Assert.AreEqual(0, dto1.TareasQueDependenDeMiTitulos.Count);
-        Assert.AreEqual(tarea1.Estado.ToString(), dto1.Estado);
-    }
+    var resultado = _service.GetListaTareasPorUsuario(usuario.Email);
+    
+    Assert.AreEqual(2, resultado.Count);
+
+    var dto1 = resultado.Single(d => d.Titulo == "Tarea de prueba 1");
+    Assert.AreEqual("Descripción de la tarea de prueba", dto1.Descripcion);
+    Assert.AreEqual(tarea1.FechaDeInicio, dto1.FechaInicio);
+    Assert.AreEqual(tarea1.Duracion, dto1.Duracion);
+    Assert.AreEqual(proyectoPrueba.Nombre, dto1.ProyectoNombre);
+    CollectionAssert.Contains(dto1.UsuariosAsignadosEmails, usuario.Email);
+    Assert.AreEqual(0, dto1.TareasQueYoDependoTitulos.Count);
+    Assert.AreEqual(0, dto1.TareasQueDependenDeMiTitulos.Count);
+    Assert.AreEqual(tarea1.Estado.ToString(), dto1.Estado);
+
+    var dto2 = resultado.Single(d => d.Titulo == "Tarea de prueba 2");
+    Assert.AreEqual("Otra descripción", dto2.Descripcion);
+    Assert.AreEqual(tarea2.FechaDeInicio, dto2.FechaInicio);
+    Assert.AreEqual(tarea2.Duracion, dto2.Duracion);
+    Assert.AreEqual(proyectoPrueba.Nombre, dto2.ProyectoNombre);
+    CollectionAssert.Contains(dto2.UsuariosAsignadosEmails, usuario.Email);
+    Assert.AreEqual(0, dto2.TareasQueYoDependoTitulos.Count);
+    Assert.AreEqual(0, dto2.TareasQueDependenDeMiTitulos.Count);
+    Assert.AreEqual(tarea2.Estado.ToString(), dto2.Estado);
+}
+
 
     [TestMethod]
 
@@ -234,41 +252,67 @@ public class TareaServiceTest
         Assert.IsNotNull(resultado);
         Assert.AreEqual(0, resultado.Count);
     }
-    
+
     [TestMethod]
-    public void GetListaTareasPorUsuarioTareasConDependenciasDevuelveDependenciasEnDtoTest()
+public void GetListaTareasPorUsuarioTareasConDependenciasDevuelveDependenciasEnDtoTest()
+{
+    var usuario = new Usuario(new CreateUsuarioDto {
+        Nombre = "Dependiente",
+        Apellido = "Test", 
+        Email = "dep@test.com",
+        FechaNacimiento = new DateTime(1990, 1, 1),
+        Contraseña = "Depen123!"
+    });
+    _usuarioRepository.AgregarUsuario(usuario);
+
+    var timestamp = DateTime.Now.Ticks;
+    var tareaTest1 = new Tarea(new CrearTareaDto
     {
-   
-        var usuario = new Usuario(new CreateUsuarioDto {
-            Nombre = "Dependiente",
-            Apellido = "Test",
-            Email = "dep@test.com",
-            FechaNacimiento = new DateTime(1990, 1, 1),
-            Contraseña = "Depen123!"
-        });
-        _usuarioRepository.AgregarUsuario(usuario);
-        
-        tarea1.AsignarUsuario(usuario);
-        tarea2.AsignarUsuario(usuario);
-        tarea2.AgregarDependencia(tarea1);
+        Titulo = $"Tarea test 1 - {timestamp}",
+        Descripcion = "Descripción test 1",
+        ProyectoNombre = _proyectoNombre,
+        FechaInicio = DateTime.Now,
+        Duracion = 2,
+        UsuariosAsignadosEmails = [],
+        TareasQueYoDependoTitulos = [],
+        TareasQueDependenDeMiTitulos = [],
+        Estado = "Pendiente"
+    });
 
-        var proyectoEnt = _proyectoRepository.GetProyectoPorNombre(_proyectoNombre);
-        proyectoEnt.AgregarTarea(tarea1);
-        proyectoEnt.AgregarTarea(tarea2);
+    var tareaTest2 = new Tarea(new CrearTareaDto
+    {
+        Titulo = $"Tarea test 2 - {timestamp}",
+        Descripcion = "Descripción test 2",
+        ProyectoNombre = _proyectoNombre,
+        FechaInicio = DateTime.Now,
+        Duracion = 2,
+        UsuariosAsignadosEmails = [],
+        TareasQueYoDependoTitulos = [],
+        TareasQueDependenDeMiTitulos = [],
+        Estado = "Pendiente"
+    });
 
-        _tareaRepository.AgregarTarea(tarea1);
-        _tareaRepository.AgregarTarea(tarea2);
-        
-        var listaDtos = _service.GetListaTareasPorUsuario(usuario.Email);
-        
-        var r1 = listaDtos.Single(d => d.Titulo == tarea1.Titulo);
-        Assert.AreEqual(0, r1.TareasQueYoDependoTitulos.Count);
-        CollectionAssert.Contains(r1.TareasQueDependenDeMiTitulos, tarea2.Titulo);
+    tareaTest1.AsignarUsuario(usuario);
+    tareaTest2.AsignarUsuario(usuario);
 
-        var r2 = listaDtos.Single(d => d.Titulo == tarea2.Titulo);
-        CollectionAssert.Contains(r2.TareasQueYoDependoTitulos, tarea1.Titulo);
-        Assert.AreEqual(0, r2.TareasQueDependenDeMiTitulos.Count);
-    }
+
+    _tareaRepository.AgregarTarea(tareaTest1);
+    _tareaRepository.AgregarTarea(tareaTest2);
+    
+    tareaTest2.AgregarDependencia(tareaTest1);
+
+    var listaDtos = _service.GetListaTareasPorUsuario(usuario.Email);
+
+    var r1 = listaDtos.FirstOrDefault(d => d.Titulo == tareaTest1.Titulo);
+    Assert.IsNotNull(r1, $"No se encontró tarea con título {tareaTest1.Titulo}");
+
+    Assert.AreEqual(0, r1.TareasQueYoDependoTitulos.Count);
+    CollectionAssert.Contains(r1.TareasQueDependenDeMiTitulos, tareaTest2.Titulo);
+
+    var r2 = listaDtos.Single(d => d.Titulo == tareaTest2.Titulo);
+    CollectionAssert.Contains(r2.TareasQueYoDependoTitulos, tareaTest1.Titulo);
+    Assert.AreEqual(0, r2.TareasQueDependenDeMiTitulos.Count);
+}
 
 
 

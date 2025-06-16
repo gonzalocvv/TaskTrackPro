@@ -50,8 +50,10 @@ namespace Dominio
             {
                 "Pendiente" => EstadoTarea.Pendiente,
                 "Bloqueada" => EstadoTarea.Bloqueada,
-                "Completada" => EstadoTarea.Completada
+                "Completada" => EstadoTarea.Completada,
+                _ => EstadoTarea.Pendiente  
             };
+
         }
 
         [Key]
