@@ -36,6 +36,11 @@ public class TareaRepository
 
     public Tarea GetTareaPorProyectoYTitulo(string proyectoNombre, string tareaTitulo)
     {
-        throw new NotImplementedException();
+        var proyecto = _sqlContext.Proyectos.FirstOrDefault(p => p.Nombre == proyectoNombre);
+        if (proyecto == null)
+        {
+            throw new ArgumentNullException(nameof(proyecto), "El proyecto no puede ser nulo.");
+        }
+        return _sqlContext.Tareas.FirstOrDefault(t => t.Proyecto.Nombre == proyectoNombre && t.Titulo == tareaTitulo);
     }
 }
