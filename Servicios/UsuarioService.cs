@@ -18,15 +18,17 @@ public class UsuarioService
         _db = db;
         _usuarioRepository = usuarioRepository;
         
-        CreateUsuarioDto AdminDto = new CreateUsuarioDto();
-        AdminDto.Nombre = "Admin";
-        AdminDto.Apellido = "User";
-        AdminDto.Email = "admin@admin.com";
-        AdminDto.FechaNacimiento = new DateTime(1990, 1, 1);
-        AdminDto.Contraseña = "Admin123@";
-        Usuario adminUser = new Usuario(AdminDto);
-        if (!_usuarioRepository.ExisteUsuario(adminUser.Email))
+       
+        if (!_usuarioRepository.ExisteUsuario("admin@admin.com"))
         {
+            CreateUsuarioDto AdminDto = new CreateUsuarioDto();
+            AdminDto.Nombre = "Admin";
+            AdminDto.Apellido = "User";
+            AdminDto.Email = "admin@admin.com";
+            AdminDto.FechaNacimiento = new DateTime(1990, 1, 1);
+            AdminDto.Contraseña = "Admin123@";
+            Usuario adminUser = new Usuario(AdminDto);
+            
             Rol rolAdmin = new Rol("Administrador del Sistema");
             Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
             adminUser.AgregarRol(rolAdminProyecto);
@@ -50,6 +52,7 @@ public class UsuarioService
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
         Usuario nuevoUsuario = new Usuario(UsuarioDto);
+        nuevoUsuario.HashearContraseña();
         var usuarioParaDevolver =_usuarioRepository.GetUsuarioPorEmail(nuevoUsuario.Email);
         if (usuarioParaDevolver != null)
         {

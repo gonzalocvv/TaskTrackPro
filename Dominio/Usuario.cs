@@ -90,7 +90,6 @@ namespace Dominio
                 ValidarContraseñaContieneMinuscula(value);
                 ValidarContraseñaContieneNúmero(value);
                 ValidarContraseñaContieneCaracterEspecial(value);
-                _contraseñaHash = BCrypt.Net.BCrypt.HashPassword(value);
             }
         }
 
@@ -213,6 +212,9 @@ namespace Dominio
                 throw new ArgumentException("La contraseña debe contener al menos un carácter especial.");
             }
         }
-        
+        public void HashearContraseña()
+        {
+            
+        }
     }
 }

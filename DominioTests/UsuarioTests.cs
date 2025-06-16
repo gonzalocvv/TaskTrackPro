@@ -172,4 +172,12 @@ public class UsuarioTests
         usuario.EliminarRol(rol);
     }
 
+    [TestMethod]
+    public void HashearContraseñaTest()
+    {
+        string contraseñaOriginal = "Gonzalo9@";
+        usuario.Contraseña = contraseñaOriginal;
+        Assert.IsTrue(BCrypt.Net.BCrypt.Verify(contraseñaOriginal, usuario.Contraseña));
+    }
+
 }
