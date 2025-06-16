@@ -2,10 +2,10 @@ using Dominio;
 
 namespace DataAccess.repositories;
 
-public class TarearRepository
+public class TareaRepository
 {
     private readonly SqlContext _sqlContext;
-    public TarearRepository(SqlContext sqlContext)
+    public TareaRepository(SqlContext sqlContext)
     {
         _sqlContext = sqlContext;
     }
@@ -24,5 +24,10 @@ public class TarearRepository
     public List<Tarea> GetTareasPorProyecto(string proyectoNombre)
     {
         return _sqlContext.Tareas.Where(t => t.Proyecto.Nombre == proyectoNombre).ToList();
+    }
+
+    public List<Tarea> GetListaTareasPorUsuario(string administradorPEmail)
+    {
+        throw new NotImplementedException();
     }
 }

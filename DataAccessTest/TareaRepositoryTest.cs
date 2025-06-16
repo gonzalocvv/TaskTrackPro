@@ -10,7 +10,7 @@ namespace DataAccessTest;
 [TestClass]
 public class TareaRepositoryTest
 {
-    private TarearRepository repository;
+    private TareaRepository repository;
     private Tarea tareaDto;
     private SqlContext _context;
     private Proyecto _proyecto;
@@ -25,7 +25,7 @@ public class TareaRepositoryTest
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
 
-        repository = new TarearRepository(_context);
+        repository = new TareaRepository(_context);
 
         tareaDto = new Tarea(new CrearTareaDto
         {
@@ -97,4 +97,20 @@ public class TareaRepositoryTest
         Assert.AreEqual(tareaDto.Titulo, tareasObtenidas[0].Titulo);
     }
     
+    [TestMethod]
+    public void GetListaTareasPorUsuarioTest()
+    {
+        _context.Proyectos.Add(_proyecto);
+        _context.SaveChanges();
+
+        tareaDto.ProyectoNombre = _proyecto.Nombre;
+        tareaDto.AsignarUsuario(new Usuario(_administradorP)); 
+        repository.AgregarTarea(tareaDto);
+    
+        var tareasObtenidas = repository.GetListaTareasPorUsuario(_administradorP.Email);
+    
+        Assert.IsNotNull(tareasObtenidas);
+        Assert.AreEqual(1, tareasObtenidas.Count); 
+        Assert.AreEqual(tareaDto.Titulo, tareasObtenidas[0].Titulo); 
+    }
 }

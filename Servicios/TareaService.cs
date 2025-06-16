@@ -2,15 +2,21 @@ using DataAccess;
 using Dominio;
 using Dtos;
 using TaskTrackPro.Backend.Dominio;
+using DataAccess.repositories;
 
 namespace Servicios;
 
 public class TareaService
 {
     private MemoryDB _db = new ();
-    public TareaService(MemoryDB db)
+    private readonly TareaRepository _tareaRepository;
+    private readonly UsuarioRepository _usuarioRepository;
+    
+    public TareaService(MemoryDB db, TareaRepository tareaRepository, UsuarioRepository usuarioRepository)
     {
         _db = db;
+        _tareaRepository = tareaRepository;
+        _usuarioRepository = usuarioRepository;
     }
     public void CrearTarea(CrearTareaDto crearTareaDto)
     {
@@ -19,13 +25,13 @@ public class TareaService
         Tarea nuevaTarea = new Tarea(crearTareaDto);
         foreach (var mail in crearTareaDto.UsuariosAsignadosEmails.Distinct())
         {
-            var usuario = _db.GetUsuarioPorEmail(mail)
+            var usuario = _usuarioRepository.GetUsuarioPorEmail(mail)
                           ?? throw new ArgumentException($"Usuario {mail} no existe");
 
             nuevaTarea.AsignarUsuario(usuario);
         }
         proyecto.AgregarTarea(nuevaTarea);
-        _db.AgregarTarea(nuevaTarea);
+        _tareaRepository.AgregarTarea(nuevaTarea);
     }
 
     private static void ValidarProyecto(Proyecto proyecto)
