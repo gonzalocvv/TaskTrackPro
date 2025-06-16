@@ -10,17 +10,20 @@ namespace ServicesTests;
 [TestClass]
 public class TareaServiceTest
 {
-    
     private MemoryDB _db;
     private TareaService _service;
     private Usuario _administradorP;
     private UsuarioRepository _usuarioRepository;
-    private readonly TareaRepository _tareaRepository;
-    private readonly ProyectoRepository _proyectoRepository;
+    private TareaRepository _tareaRepository;
+    private ProyectoRepository _proyectoRepository;
     private string _proyectoNombre;
     private Tarea tarea1, tarea2;
     private MemoryAppContextFactory contextFactory;
     private SqlContext _context;
+    private Proyecto _proyecto;
+    private CreateUsuarioDto responsableDto;
+    private Usuario responsable;
+    private Proyecto proyecto;
 
     [TestInitialize]
     public void SetUp()
@@ -29,8 +32,14 @@ public class TareaServiceTest
         contextFactory = new MemoryAppContextFactory();
         _context = contextFactory.CreateDbContext();
         _usuarioRepository = new UsuarioRepository(_context);
-        _service = new TareaService(_db,_tareaRepository);
-        
+        _tareaRepository = new TareaRepository(_context);
+        _proyectoRepository = new ProyectoRepository(_context);
+        _service = new TareaService(_db, _tareaRepository);
+
+        _context.Database.EnsureDeleted();    
+        _context.Database.EnsureCreated();    
+        _context.ChangeTracker.Clear();
+
         _administradorP = new Usuario(new CreateUsuarioDto
         {
             Nombre = "Admin",
@@ -39,23 +48,23 @@ public class TareaServiceTest
             FechaNacimiento = new DateTime(1990, 1, 1),
             Contraseña = "Admin123!"
         });
-        
+
         _usuarioRepository.AgregarUsuario(_administradorP);
         _proyectoNombre = "Proyecto 1";
-        
-        var proyecto = new Proyecto(
+
+        _proyecto = new Proyecto(
             _proyectoNombre,
             "Descripción del proyecto",
             new DateTime(2025, 10, 1),
             _administradorP
         );
-        _proyectoRepository.AgregarProyecto(proyecto);
-        
+        _proyectoRepository.AgregarProyecto(_proyecto);
+
         tarea1 = new Tarea(new CrearTareaDto
         {
             Titulo = "Tarea de prueba 1 ",
             Descripcion = "Descripción de la tarea de prueba",
-            ProyectoNombre = "Proyecto 1",
+            ProyectoNombre = _proyectoNombre,
             FechaInicio = DateTime.Now,
             Duracion = 2,
             UsuariosAsignadosEmails = [],
@@ -63,12 +72,12 @@ public class TareaServiceTest
             TareasQueDependenDeMiTitulos = [],
             Estado = "Pendiente"
         });
-        
+
         tarea2 = new Tarea(new CrearTareaDto
         {
-            Titulo = "Tarea de prueba 2",
+            Titulo = "Tarea de prueba 2", 
             Descripcion = "Descripción de la tarea de prueba",
-            ProyectoNombre = "Casa",
+            ProyectoNombre = _proyectoNombre, 
             FechaInicio = DateTime.Now,
             Duracion = 2,
             UsuariosAsignadosEmails = [],
@@ -76,17 +85,23 @@ public class TareaServiceTest
             TareasQueDependenDeMiTitulos = [],
             Estado = "Pendiente"
         });
+
+        
+       responsableDto = new CreateUsuarioDto
+        {
+            Nombre = "Gonzalo",
+            Apellido = "Cabrera",
+            Email = "gonzalo@gmail.com",
+            FechaNacimiento = new DateTime(2004, 9, 7),
+            Contraseña = "Gonzalo9@"
+        };
+         responsable = new Usuario(responsableDto);    
+         proyecto = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", new DateTime(2025, 10, 1), responsable);
+
     }
 
-        static CreateUsuarioDto responsableDto = new CreateUsuarioDto
-    {
-        Nombre = "Gonzalo",
-        Apellido = "Cabrera",
-        Email = "gonzalo@gmail.com",
-        FechaNacimiento = new DateTime(2004, 9, 7),
-        Contraseña = "Gonzalo9@"
-    };
-    static Usuario responsable = new Usuario(responsableDto);    static Proyecto proyecto = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", new DateTime(2025, 10, 1), responsable);
+   
+
 
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
@@ -219,8 +234,8 @@ public class TareaServiceTest
     [TestMethod]
     public void GetListaTareasPorUsuarioTareasConDependenciasDevuelveDependenciasEnDtoTest()
     {
-        var usuario = new Usuario(new CreateUsuarioDto
-        {
+   
+        var usuario = new Usuario(new CreateUsuarioDto {
             Nombre = "Dependiente",
             Apellido = "Test",
             Email = "dep@test.com",
@@ -228,29 +243,29 @@ public class TareaServiceTest
             Contraseña = "Depen123!"
         });
         _usuarioRepository.AgregarUsuario(usuario);
-    
-        tarea1.UsuariosAsignados.Add(usuario);
-        tarea2.UsuariosAsignados.Add(usuario);
-    
-        tarea2.TareasQueYoDependo.Add(tarea1);
-        tarea1.TareasQueDependenDeMi.Add(tarea2);
-    
-        var proyecto = _proyectoRepository.GetProyectoPorNombre(_proyectoNombre);
-        proyecto.AgregarTarea(tarea1);
-        proyecto.AgregarTarea(tarea2);
+        
+        tarea1.AsignarUsuario(usuario);
+        tarea2.AsignarUsuario(usuario);
+        tarea2.AgregarDependencia(tarea1);
+
+        var proyectoEnt = _proyectoRepository.GetProyectoPorNombre(_proyectoNombre);
+        proyectoEnt.AgregarTarea(tarea1);
+        proyectoEnt.AgregarTarea(tarea2);
+
         _tareaRepository.AgregarTarea(tarea1);
         _tareaRepository.AgregarTarea(tarea2);
-    
+        
         var listaDtos = _service.GetListaTareasPorUsuario(usuario.Email);
+        
+        var r1 = listaDtos.Single(d => d.Titulo == tarea1.Titulo);
+        Assert.AreEqual(0, r1.TareasQueYoDependoTitulos.Count);
+        CollectionAssert.Contains(r1.TareasQueDependenDeMiTitulos, tarea2.Titulo);
 
-        var dto1 = listaDtos.Single(d => d.Titulo == "Tarea de prueba 1 ");
-        Assert.AreEqual(0, dto1.TareasQueYoDependoTitulos.Count, "T1 no debería depender de nadie");
-        CollectionAssert.Contains(dto1.TareasQueDependenDeMiTitulos, "Tarea de prueba 2");
-
-        var dto2 = listaDtos.Single(d => d.Titulo == "Tarea de prueba 2");
-        CollectionAssert.Contains(dto2.TareasQueYoDependoTitulos, "Tarea de prueba 1 ");
-        Assert.AreEqual(0, dto2.TareasQueDependenDeMiTitulos.Count, "T2 no debería tener dependientes");
+        var r2 = listaDtos.Single(d => d.Titulo == tarea2.Titulo);
+        CollectionAssert.Contains(r2.TareasQueYoDependoTitulos, tarea1.Titulo);
+        Assert.AreEqual(0, r2.TareasQueDependenDeMiTitulos.Count);
     }
+
 
 
 }
