@@ -52,6 +52,7 @@ public class UsuarioService
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
         Usuario nuevoUsuario = new Usuario(UsuarioDto);
+        
         nuevoUsuario.HashearContraseña();
         var usuarioParaDevolver =_usuarioRepository.GetUsuarioPorEmail(nuevoUsuario.Email);
         if (usuarioParaDevolver != null)

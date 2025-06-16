@@ -177,6 +177,7 @@ public class UsuarioTests
     {
         string contraseñaOriginal = "Gonzalo9@";
         usuario.Contraseña = contraseñaOriginal;
+        usuario.HashearContraseña();
         Assert.IsTrue(BCrypt.Net.BCrypt.Verify(contraseñaOriginal, usuario.Contraseña));
     }
 
