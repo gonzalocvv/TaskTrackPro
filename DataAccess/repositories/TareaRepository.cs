@@ -33,4 +33,9 @@ public class TareaRepository
             .Where(t => t.UsuariosAsignados.Any(u => u.Email == administradorPEmail))
             .ToList();
     }
+
+    public Tarea GetTareaPorProyectoYTitulo(string proyectoNombre, string tareaTitulo)
+    {
+        throw new NotImplementedException();
+    }
 }

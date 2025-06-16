@@ -2,6 +2,7 @@ using DataAccess;
 using Dominio;
 using Dtos;
 using Servicios;
+using DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
 
 namespace ServicesTests;
@@ -13,14 +14,22 @@ public class TareaServiceTest
     private MemoryDB _db;
     private TareaService _service;
     private Usuario _administradorP;
+    private UsuarioRepository _usuarioRepository;
+    private readonly TareaRepository _tareaRepository;
+    private readonly ProyectoRepository _proyectoRepository;
     private string _proyectoNombre;
     private Tarea tarea1, tarea2;
+    private MemoryAppContextFactory contextFactory;
+    private SqlContext _context;
 
     [TestInitialize]
     public void SetUp()
     {
         _db = new MemoryDB();
-        _service = new TareaService(_db);
+        contextFactory = new MemoryAppContextFactory();
+        _context = contextFactory.CreateDbContext();
+        _usuarioRepository = new UsuarioRepository(_context);
+        _service = new TareaService(_db,_tareaRepository);
         
         _administradorP = new Usuario(new CreateUsuarioDto
         {
@@ -31,7 +40,7 @@ public class TareaServiceTest
             Contraseña = "Admin123!"
         });
         
-        _db.AgregarUsuario(_administradorP);
+        _usuarioRepository.AgregarUsuario(_administradorP);
         _proyectoNombre = "Proyecto 1";
         
         var proyecto = new Proyecto(
@@ -40,7 +49,7 @@ public class TareaServiceTest
             new DateTime(2025, 10, 1),
             _administradorP
         );
-        _db.AgregarProyecto(proyecto);
+        _proyectoRepository.AgregarProyecto(proyecto);
         
         tarea1 = new Tarea(new CrearTareaDto
         {
@@ -83,15 +92,14 @@ public class TareaServiceTest
     [ExpectedException(typeof(ArgumentNullException))]
     public void CrearTareaNombreVacioExceptionTest()
     {
-        MemoryDB db = new MemoryDB();
-        TareaService service = new TareaService(db);
+        
 
         string titulo = "";
         string descripcion = "Descripcion de la tarea 1";
         DateTime fechaInicio = new DateTime(2025, 10, 1);
         int duracion = 5;
         string nombreProyecto = "Proyecto 1";
-        db.AgregarProyecto(proyecto);
+        _proyectoRepository.AgregarProyecto(proyecto);
         CrearTareaDto tareaDto = new CrearTareaDto
         {
             Titulo = titulo,
@@ -100,7 +108,7 @@ public class TareaServiceTest
             Duracion = duracion,
             ProyectoNombre = nombreProyecto
         };
-        service.CrearTarea(tareaDto);
+        _service.CrearTarea(tareaDto);
     }
 
     [TestMethod]
@@ -114,7 +122,7 @@ public class TareaServiceTest
             FechaNacimiento = new DateTime(1992, 2, 2),
             Contraseña = "User123!"
         });
-        _db.AgregarUsuario(usuario);
+        _usuarioRepository.AgregarUsuario(usuario);
 
         var tarea = new Tarea(new CrearTareaDto
         {
@@ -130,9 +138,9 @@ public class TareaServiceTest
     });
         tarea.UsuariosAsignados.Add(usuario);
 
-        var proyecto = _db.GetListaProyectosPorNombre(_proyectoNombre);
+        var proyecto = _proyectoRepository.GetProyectoPorNombre(_proyectoNombre);
         proyecto.AgregarTarea(tarea);
-        _db.AgregarTarea(tarea);
+        _tareaRepository.AgregarTarea(tarea);
         
         _service.CompletarTarea(_proyectoNombre, tarea.Titulo, usuario.Email);
         
@@ -163,16 +171,16 @@ public class TareaServiceTest
             FechaNacimiento = new DateTime(1990, 1, 1),
             Contraseña = "Test123!"
         });
-        _db.AgregarUsuario(usuario);
+        _usuarioRepository.AgregarUsuario(usuario);
     
         tarea1.UsuariosAsignados.Add(usuario);
         tarea2.UsuariosAsignados.Add(usuario);
     
-        var proyecto = _db.GetListaProyectosPorNombre(_proyectoNombre);
+        var proyecto =  _proyectoRepository.GetProyectoPorNombre(_proyectoNombre);
         proyecto.AgregarTarea(tarea1);
         proyecto.AgregarTarea(tarea2);
-        _db.AgregarTarea(tarea1);
-        _db.AgregarTarea(tarea2);
+        _tareaRepository.AgregarTarea(tarea1);
+        _tareaRepository.AgregarTarea(tarea2);
     
         var resultado = _service.GetListaTareasPorUsuario(usuario.Email);
     
@@ -200,7 +208,7 @@ public class TareaServiceTest
             FechaNacimiento = new DateTime(1990, 1, 1),
             Contraseña = "Sinn123!"
         });
-        _db.AgregarUsuario(usuarioSinTareas);
+        _usuarioRepository.AgregarUsuario(usuarioSinTareas);
         
         var resultado = _service.GetListaTareasPorUsuario(usuarioSinTareas.Email);
         
@@ -219,7 +227,7 @@ public class TareaServiceTest
             FechaNacimiento = new DateTime(1990, 1, 1),
             Contraseña = "Depen123!"
         });
-        _db.AgregarUsuario(usuario);
+        _usuarioRepository.AgregarUsuario(usuario);
     
         tarea1.UsuariosAsignados.Add(usuario);
         tarea2.UsuariosAsignados.Add(usuario);
@@ -227,11 +235,11 @@ public class TareaServiceTest
         tarea2.TareasQueYoDependo.Add(tarea1);
         tarea1.TareasQueDependenDeMi.Add(tarea2);
     
-        var proyecto = _db.GetListaProyectosPorNombre(_proyectoNombre);
+        var proyecto = _proyectoRepository.GetProyectoPorNombre(_proyectoNombre);
         proyecto.AgregarTarea(tarea1);
         proyecto.AgregarTarea(tarea2);
-        _db.AgregarTarea(tarea1);
-        _db.AgregarTarea(tarea2);
+        _tareaRepository.AgregarTarea(tarea1);
+        _tareaRepository.AgregarTarea(tarea2);
     
         var listaDtos = _service.GetListaTareasPorUsuario(usuario.Email);
 

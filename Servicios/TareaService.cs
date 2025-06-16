@@ -1,26 +1,25 @@
 using DataAccess;
 using Dominio;
 using Dtos;
-using TaskTrackPro.Backend.Dominio;
 using DataAccess.repositories;
+using TaskTrackPro.Backend.Dominio;
 
 namespace Servicios;
 
 public class TareaService
 {
     private MemoryDB _db = new ();
+    private UsuarioRepository _usuarioRepository;
     private readonly TareaRepository _tareaRepository;
-    private readonly UsuarioRepository _usuarioRepository;
-    
-    public TareaService(MemoryDB db, TareaRepository tareaRepository, UsuarioRepository usuarioRepository)
+    private readonly ProyectoRepository _proyectoRepository;
+    public TareaService(MemoryDB db, TareaRepository tareaRepository)
     {
         _db = db;
         _tareaRepository = tareaRepository;
-        _usuarioRepository = usuarioRepository;
     }
     public void CrearTarea(CrearTareaDto crearTareaDto)
     {
-        Proyecto proyecto = _db.GetListaProyectosPorNombre(crearTareaDto.ProyectoNombre);
+        Proyecto proyecto = _proyectoRepository.GetProyectoPorNombre(crearTareaDto.ProyectoNombre);
         ValidarProyecto(proyecto);
         Tarea nuevaTarea = new Tarea(crearTareaDto);
         foreach (var mail in crearTareaDto.UsuariosAsignadosEmails.Distinct())
@@ -43,7 +42,7 @@ public class TareaService
     public List<GetTareaDto> GetListaTareasPorUsuario(string email)
     {
         List<GetTareaDto> listaTareas = new();
-        foreach (var tarea in _db.GetListaTareasPorUsuario(email))
+        foreach (var tarea in _tareaRepository.GetListaTareasPorUsuario(email))
         {
             GetTareaDto tareaDto = new GetTareaDto
             {
@@ -67,7 +66,7 @@ public class TareaService
         var tarea = _db.GetTareaPorProyectoYTitulo(proyecto, titulo); 
         if(tarea == null)        
             throw new ArgumentException("Tarea inexistente");
-        Usuario usuarioParaCompletar = _db.GetUsuarioPorEmail(usuario);
+        Usuario usuarioParaCompletar = _usuarioRepository.GetUsuarioPorEmail(usuario);
         tarea.CompletarTarea(usuarioParaCompletar);
     }
 }
