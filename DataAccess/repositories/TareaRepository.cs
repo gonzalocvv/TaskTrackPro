@@ -12,12 +12,22 @@ public class TareaRepository
 
     public void AgregarTarea(Tarea tarea)
     {
-        if (_sqlContext.Tareas.Any(t => t.Titulo == tarea.Titulo && t.Proyecto.Nombre == tarea.Proyecto.Nombre))
-            throw new InvalidOperationException($"Ya existe una tarea con el título '{tarea.Titulo}' en el proyecto '{tarea.Proyecto.Nombre}'.");
+        if (_sqlContext.Tareas.Any(t => t.Titulo == tarea.Titulo && t.Proyecto.Nombre == tarea.ProyectoNombre))
+            throw new InvalidOperationException($"Ya existe una tarea con el título '{tarea.Titulo}' en el proyecto '{tarea.ProyectoNombre}'.");
+        
+        if (tarea.Proyecto == null)
+        {
+            var proyecto = _sqlContext.Proyectos.FirstOrDefault(p => p.Nombre == tarea.ProyectoNombre);
+            if (proyecto == null)
+                throw new ArgumentException($"No se encontró el proyecto con nombre: {tarea.ProyectoNombre}");
+
+            tarea.Proyecto = proyecto;
+        }
 
         _sqlContext.Tareas.Add(tarea);
         _sqlContext.SaveChanges();
     }
+
 
 
     public Tarea GetTareaPorTitulo(string tareaTitulo)

@@ -34,7 +34,7 @@ public class TareaServiceTest
         _usuarioRepository = new UsuarioRepository(_context);
         _tareaRepository = new TareaRepository(_context);
         _proyectoRepository = new ProyectoRepository(_context);
-        _service = new TareaService(_db, _tareaRepository);
+        _service = new TareaService(_db, _tareaRepository, _usuarioRepository, _proyectoRepository);
 
         _context.Database.EnsureDeleted();    
         _context.Database.EnsureCreated();    
@@ -139,29 +139,33 @@ public class TareaServiceTest
         });
         _usuarioRepository.AgregarUsuario(usuario);
 
+        var proyecto = new Proyecto("Casa", "Descripcion Test", DateTime.Now.AddHours(2.0), _administradorP);
+
+        _proyectoRepository.AgregarProyecto(proyecto); 
+
         var tarea = new Tarea(new CrearTareaDto
         {
-         Titulo = "Tarea de prueba 1 ",
-        Descripcion = "Descripción de la tarea de prueba",
-        ProyectoNombre = "Casa",
-        FechaInicio = DateTime.Now,
-        Duracion = 2,
-        UsuariosAsignadosEmails = [],
-        TareasQueYoDependoTitulos = [],
-        TareasQueDependenDeMiTitulos = [],
-        Estado = "Pendiente"
-    });
-        tarea.UsuariosAsignados.Add(usuario);
+            Titulo = "Tarea de prueba 1",
+            Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = "Casa",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente"
+        });
 
-        var proyecto = _proyectoRepository.GetProyectoPorNombre(_proyectoNombre);
+        tarea.UsuariosAsignados.Add(usuario);
         proyecto.AgregarTarea(tarea);
         _tareaRepository.AgregarTarea(tarea);
-        
-        _service.CompletarTarea(_proyectoNombre, tarea.Titulo, usuario.Email);
-        
-        var tareaEnDb = _db.GetTareaPorProyectoYTitulo(_proyectoNombre, tarea.Titulo);
+
+        _service.CompletarTarea("Casa", tarea.Titulo, usuario.Email);
+
+        var tareaEnDb = _tareaRepository.GetTareaPorProyectoYTitulo("Casa", tarea.Titulo);
         Assert.AreEqual(EstadoTarea.Completada, tareaEnDb.Estado);
     }
+
     
     
     [TestMethod]

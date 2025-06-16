@@ -9,12 +9,12 @@ namespace DataAccessTest;
 [TestClass]
 public class TareaRepositoryTest
 {
-    private TareaRepository repository;
+    private TareaRepository _tareaRepository;
     private Tarea tareaDto;
     private SqlContext _context;
     private Proyecto _proyecto;
-    private CreateUsuarioDto _administradorP;
-    private Usuario _usuario; // Store the tracked Usuario
+    private Usuario _administradorP;
+    private Usuario _usuario;
 
     [TestInitialize]
     public void SetUp()
@@ -25,22 +25,9 @@ public class TareaRepositoryTest
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
 
-        repository = new TareaRepository(_context);
+        _tareaRepository = new TareaRepository(_context);
 
-        tareaDto = new Tarea(new CrearTareaDto
-        {
-            Titulo = "Tarea de prueba",
-            Descripcion = "Descripción de la tarea de prueba",
-            FechaInicio = DateTime.Now,
-            Duracion = 2,
-            ProyectoNombre = "Proyecto de prueba",
-            UsuariosAsignadosEmails = [],
-            TareasQueYoDependoTitulos = [],
-            TareasQueDependenDeMiTitulos = [],
-            Estado = "Pendiente",
-        });
-
-        _administradorP = new CreateUsuarioDto
+        _administradorP = new Usuario
         {
             Nombre = "Admin",
             Apellido = "User",
@@ -48,25 +35,46 @@ public class TareaRepositoryTest
             FechaNacimiento = new DateTime(1990, 1, 1),
             Contraseña = "Admin123@"
         };
-        _usuario = new Usuario(_administradorP);
-        _context.Usuarios.Add(_usuario);
-        _context.SaveChanges();
+
+        _usuario = new Usuario
+        {
+            Nombre = "Usuario",
+            Apellido = "Test",
+            Email = "usuario@test.com",
+            FechaNacimiento = new DateTime(1995, 1, 1),
+            Contraseña = "Usuario123@"
+        };
 
         _proyecto = new Proyecto
         {
             Nombre = "Proyecto 1",
             Descripcion = "Descripción del proyecto",
-            AdministradorP = _usuario,
+            AdministradorP = _administradorP,
         };
+
+        _context.Usuarios.Add(_administradorP);
+        _context.Usuarios.Add(_usuario);
         _context.Proyectos.Add(_proyecto);
         _context.SaveChanges();
-        
+
+        tareaDto = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba",
+            Descripcion = "Descripción de la tarea de prueba",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            ProyectoNombre = _proyecto.Nombre,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente",
+        });
     }
 
     [TestMethod]
     public void AgregarTareaTest()
     {
-        repository.AgregarTarea(tareaDto);
+        _tareaRepository.AgregarTarea(tareaDto);
 
         var tareaObtenida = _context.Tareas.FirstOrDefault(t => t.Titulo == tareaDto.Titulo);
 
@@ -80,9 +88,9 @@ public class TareaRepositoryTest
     [TestMethod]
     public void GetTareaPorTituloTest()
     {
-        repository.AgregarTarea(tareaDto);
+        _tareaRepository.AgregarTarea(tareaDto);
 
-        var tareaObtenida = repository.GetTareaPorTitulo(tareaDto.Titulo);
+        var tareaObtenida = _tareaRepository.GetTareaPorTitulo(tareaDto.Titulo);
 
         Assert.IsNotNull(tareaObtenida);
         Assert.AreEqual(tareaDto.Titulo, tareaObtenida.Titulo);
@@ -91,10 +99,9 @@ public class TareaRepositoryTest
     [TestMethod]
     public void GetTareasPorProjectoTest()
     {
-        tareaDto.ProyectoNombre = _proyecto.Nombre;
-        repository.AgregarTarea(tareaDto);
+        _tareaRepository.AgregarTarea(tareaDto);
 
-        var tareasObtenidas = repository.GetTareasPorProyecto(_proyecto.Nombre);
+        var tareasObtenidas = _tareaRepository.GetTareasPorProyecto(_proyecto.Nombre);
 
         Assert.IsNotNull(tareasObtenidas);
         Assert.AreEqual(1, tareasObtenidas.Count);
@@ -104,12 +111,10 @@ public class TareaRepositoryTest
     [TestMethod]
     public void GetListaTareasPorUsuarioTest()
     {
-        tareaDto.ProyectoNombre = _proyecto.Nombre;
-        tareaDto.UsuariosAsignados.Clear();
-        tareaDto.AsignarUsuario(_usuario); 
-        repository.AgregarTarea(tareaDto);
+        tareaDto.AsignarUsuario(_usuario);
+        _tareaRepository.AgregarTarea(tareaDto);
 
-        var tareasObtenidas = repository.GetListaTareasPorUsuario(_administradorP.Email);
+        var tareasObtenidas = _tareaRepository.GetListaTareasPorUsuario(_usuario.Email);
 
         Assert.IsNotNull(tareasObtenidas);
         Assert.AreEqual(1, tareasObtenidas.Count);
@@ -120,14 +125,13 @@ public class TareaRepositoryTest
     public void GetTareaPorProyectoYTituloTest()
     {
         tareaDto.Proyecto = _proyecto;
-        _context.Tareas.Add(tareaDto); 
+        _context.Tareas.Add(tareaDto);
         _context.SaveChanges();
-    
-        var tareaObtenida = repository.GetTareaPorProyectoYTitulo(_proyecto.Nombre, tareaDto.Titulo);
-    
+
+        var tareaObtenida = _tareaRepository.GetTareaPorProyectoYTitulo(_proyecto.Nombre, tareaDto.Titulo);
+
         Assert.IsNotNull(tareaObtenida);
         Assert.AreEqual(tareaDto.Titulo, tareaObtenida.Titulo);
         Assert.AreEqual(_proyecto.Nombre, tareaObtenida.ProyectoNombre);
-        
     }
 }

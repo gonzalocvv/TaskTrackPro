@@ -12,15 +12,22 @@ public class TareaService
     private UsuarioRepository _usuarioRepository;
     private readonly TareaRepository _tareaRepository;
     private readonly ProyectoRepository _proyectoRepository;
-    public TareaService(MemoryDB db, TareaRepository tareaRepository)
+    public TareaService(MemoryDB db, TareaRepository tareaRepository, UsuarioRepository usuarioRepository, ProyectoRepository proyectoRepository)
     {
         _db = db;
         _tareaRepository = tareaRepository;
+        _usuarioRepository = usuarioRepository;
+        _proyectoRepository = proyectoRepository;
     }
+
     public void CrearTarea(CrearTareaDto crearTareaDto)
     {
+        if (string.IsNullOrWhiteSpace(crearTareaDto.Titulo))
+            throw new ArgumentNullException(nameof(crearTareaDto.Titulo), "El título no puede estar vacío");
+
         Proyecto proyecto = _proyectoRepository.GetProyectoPorNombre(crearTareaDto.ProyectoNombre);
         ValidarProyecto(proyecto);
+
         Tarea nuevaTarea = new Tarea(crearTareaDto);
         foreach (var mail in crearTareaDto.UsuariosAsignadosEmails.Distinct())
         {
