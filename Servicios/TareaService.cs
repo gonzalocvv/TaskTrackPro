@@ -63,7 +63,7 @@ public class TareaService
 
     public void CompletarTarea(string proyecto, string titulo, string usuario)
     {
-        var tarea = _db.GetTareaPorProyectoYTitulo(proyecto, titulo); 
+        var tarea = _tareaRepository.GetTareaPorProyectoYTitulo(proyecto, titulo); 
         if(tarea == null)        
             throw new ArgumentException("Tarea inexistente");
         Usuario usuarioParaCompletar = _usuarioRepository.GetUsuarioPorEmail(usuario);
