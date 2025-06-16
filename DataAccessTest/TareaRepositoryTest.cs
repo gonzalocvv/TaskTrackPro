@@ -101,16 +101,18 @@ public class TareaRepositoryTest
     public void GetListaTareasPorUsuarioTest()
     {
         _context.Proyectos.Add(_proyecto);
+        _context.Usuarios.Add(new Usuario(_administradorP));
         _context.SaveChanges();
 
         tareaDto.ProyectoNombre = _proyecto.Nombre;
-        tareaDto.AsignarUsuario(new Usuario(_administradorP)); 
+        var usuarioExistente = _context.Usuarios.First(u => u.Email == _administradorP.Email);
+        tareaDto.AsignarUsuario(usuarioExistente);
         repository.AgregarTarea(tareaDto);
-    
+
         var tareasObtenidas = repository.GetListaTareasPorUsuario(_administradorP.Email);
-    
+
         Assert.IsNotNull(tareasObtenidas);
-        Assert.AreEqual(1, tareasObtenidas.Count); 
-        Assert.AreEqual(tareaDto.Titulo, tareasObtenidas[0].Titulo); 
+        Assert.AreEqual(1, tareasObtenidas.Count);
+        Assert.AreEqual(tareaDto.Titulo, tareasObtenidas[0].Titulo);
     }
 }

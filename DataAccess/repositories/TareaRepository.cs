@@ -28,6 +28,9 @@ public class TareaRepository
 
     public List<Tarea> GetListaTareasPorUsuario(string administradorPEmail)
     {
-        throw new NotImplementedException();
+        
+        return _sqlContext.Tareas
+            .Where(t => t.UsuariosAsignados.Any(u => u.Email == administradorPEmail))
+            .ToList();
     }
 }
