@@ -118,20 +118,20 @@ namespace TaskTrackPro.Backend.Dominio
 
         public void AgregarTarea(Tarea tarea)
         {
-            ValidarTareaNoNull(tarea);
-
-            if (_tareas.Exists(t => t.Titulo == tarea.Titulo))
+            if (_tareas.Any(t => t.Titulo == tarea.Titulo))
             {
-                throw new InvalidOperationException("Ya existe una tarea con ese nombre.");
+                throw new InvalidOperationException($"Ya existe una tarea con el título '{tarea.Titulo}' en el proyecto.");
             }
-
             _tareas.Add(tarea);
         }
 
         public void RemoverTarea(Tarea tarea)
         {
-            ValidarTareaNoNull(tarea);
-            _tareas.Remove(tarea);
+            if (tarea == null)
+            {
+                throw new ArgumentNullException(nameof(tarea), "La tarea no puede ser null.");
+            }
+            Tareas.Remove(tarea);
         }
 
         
