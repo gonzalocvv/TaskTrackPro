@@ -28,7 +28,7 @@ public class UsuarioService
             AdminDto.FechaNacimiento = new DateTime(1990, 1, 1);
             AdminDto.Contraseña = "Admin123@";
             Usuario adminUser = new Usuario(AdminDto);
-            
+            adminUser.HashearContraseña();
             Rol rolAdmin = new Rol("Administrador del Sistema");
             Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
             adminUser.AgregarRol(rolAdminProyecto);
@@ -147,6 +147,7 @@ public class UsuarioService
             throw new InvalidOperationException("No se puede resetear la contraseña de otro administrador del sistema.");
 
         usuario.Contraseña = dto.NuevaContrasena ?? ContraseñaPorDefecto;
+        usuario.HashearContraseña();
     }
 
     
