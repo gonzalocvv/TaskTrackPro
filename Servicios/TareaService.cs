@@ -72,4 +72,5 @@ public class TareaService
         Usuario usuarioParaCompletar = _tareaRepository.GetUsuarioPorEmail(usuario);
         tarea.CompletarTarea(usuarioParaCompletar);
     }
+    
 }

@@ -134,6 +134,7 @@ public class TareaRepositoryTest
         Assert.AreEqual(tareaDto.Titulo, tareaObtenida.Titulo);
         Assert.AreEqual(_proyecto.Nombre, tareaObtenida.ProyectoNombre);
     }
+
     [TestMethod]
     public void GetUsuarioPorEmailTest()
     {
@@ -151,16 +152,42 @@ public class TareaRepositoryTest
         Assert.IsNotNull(usuarioEncontrado);
         Assert.AreEqual(usuario, usuarioEncontrado);
     }
+
     [TestMethod]
     public void GetProyectoPorNombre()
     {
         var proyecto = new Proyecto("Proyecto Test", "Descripcion Test", DateTime.Now.AddHours(2.0), _administradorP);
         _context.Proyectos.Add(proyecto);
         _context.SaveChanges();
-        
+
         var proyectoEncontrado = _tareaRepository.GetProyectoPorNombre(proyecto.Nombre);
-        
+
         Assert.IsNotNull(proyectoEncontrado);
         Assert.AreEqual(proyecto, proyectoEncontrado);
     }
+
+    [TestMethod]
+    public void GetTareaPorTitulo(){
+        var tarea = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea Test",
+            Descripcion = "Descripcion Test",
+            FechaInicio = DateTime.Now,
+            Duracion = 1,
+            ProyectoNombre = _proyecto.Nombre,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente",
+        });
+        _tareaRepository.AgregarTarea(tarea);
+        
+
+        var tareaEncontrada = _tareaRepository.GetTareaPorTitulo(tarea.Titulo);
+
+        Assert.IsNotNull(tareaEncontrada);
+        Assert.AreEqual(tarea, tareaEncontrada);
+    }
+
+
 }
