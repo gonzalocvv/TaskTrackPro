@@ -83,14 +83,8 @@ namespace Dominio
         {
             get => _contraseñaHash;
             set
-            {
-                ValidarStringNoVacío(value, "La contraseña");
-                ValidarLongitudContraseña(value);
-                ValidarContraseñaContieneMayuscula(value);
-                ValidarContraseñaContieneMinuscula(value);
-                ValidarContraseñaContieneNúmero(value);
-                ValidarContraseñaContieneCaracterEspecial(value);
-                _contraseñaHash = BCrypt.Net.BCrypt.HashPassword(value);
+            {   ValidarContraseña(value);
+                _contraseñaHash = value;
             }
         }
 
@@ -121,7 +115,16 @@ namespace Dominio
             }
         }
         
-
+        private void ValidarContraseña(string contraseña)
+        {
+            ValidarStringNoVacío(contraseña, "La contraseña");
+            ValidarLongitudContraseña(contraseña);
+            ValidarContraseñaContieneMayuscula(contraseña);
+            ValidarContraseñaContieneMinuscula(contraseña);
+            ValidarContraseñaContieneNúmero(contraseña);
+            ValidarContraseñaContieneCaracterEspecial(contraseña);
+        }  
+        
         private static void ValidarStringNoVacío(string dato, string nombreCampo)
         {
             if (string.IsNullOrWhiteSpace(dato))
@@ -213,6 +216,9 @@ namespace Dominio
                 throw new ArgumentException("La contraseña debe contener al menos un carácter especial.");
             }
         }
-        
+        public void HashearContraseña()
+        {
+            _contraseñaHash = BCrypt.Net.BCrypt.HashPassword(Contraseña);
+        }
     }
 }

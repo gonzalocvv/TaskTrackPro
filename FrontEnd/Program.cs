@@ -20,6 +20,8 @@ builder.Services.AddDbContextFactory<SqlContext>(
         providerOptions => providerOptions.EnableRetryOnFailure())
 );
 builder.Services.AddScoped<UsuarioRepository>();
+builder.Services.AddScoped<ProyectoRepository>();
+builder.Services.AddScoped<TarearRepository>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProyectoService>();
 builder.Services.AddScoped<TareaService>();
