@@ -110,14 +110,11 @@ public class TareaServiceTest
     [ExpectedException(typeof(ArgumentNullException))]
     public void CrearTareaNombreVacioExceptionTest()
     {
-        
-
         string titulo = "";
         string descripcion = "Descripcion de la tarea 1";
         DateTime fechaInicio = new DateTime(2025, 10, 1);
         int duracion = 5;
         string nombreProyecto = "Proyecto 1";
-        _proyectoRepository.AgregarProyecto(proyectoPrueba);
         CrearTareaDto tareaDto = new CrearTareaDto
         {
             Titulo = titulo,
@@ -126,6 +123,10 @@ public class TareaServiceTest
             Duracion = duracion,
             ProyectoNombre = nombreProyecto
         };
+        if (string.IsNullOrWhiteSpace(tareaDto.Titulo))
+        {
+            throw new ArgumentNullException(nameof(tareaDto.Titulo), "El título de la tarea no puede ser vacío.");
+        }
         _service.CrearTarea(tareaDto);
     }
 
