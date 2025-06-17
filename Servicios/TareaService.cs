@@ -9,15 +9,11 @@ namespace Servicios;
 public class TareaService
 {
     private MemoryDB _db = new ();
-    private UsuarioRepository _usuarioRepository;
     private readonly TareaRepository _tareaRepository;
-    private readonly ProyectoRepository _proyectoRepository;
-    public TareaService(MemoryDB db, TareaRepository tareaRepository, UsuarioRepository usuarioRepository, ProyectoRepository proyectoRepository)
+    public TareaService(MemoryDB db, TareaRepository tareaRepository)
     {
         _db = db;
         _tareaRepository = tareaRepository;
-        _usuarioRepository = usuarioRepository;
-        _proyectoRepository = proyectoRepository;
     }
 
     public void CrearTarea(CrearTareaDto crearTareaDto)
@@ -25,13 +21,13 @@ public class TareaService
         if (string.IsNullOrWhiteSpace(crearTareaDto.Titulo))
             throw new ArgumentNullException(nameof(crearTareaDto.Titulo), "El título no puede estar vacío");
 
-        Proyecto proyecto = _proyectoRepository.GetProyectoPorNombre(crearTareaDto.ProyectoNombre);
+        Proyecto proyecto = _tareaRepository.GetProyectoPorNombre(crearTareaDto.ProyectoNombre);
         ValidarProyecto(proyecto);
 
         Tarea nuevaTarea = new Tarea(crearTareaDto);
         foreach (var mail in crearTareaDto.UsuariosAsignadosEmails.Distinct())
         {
-            var usuario = _usuarioRepository.GetUsuarioPorEmail(mail)
+            var usuario = _tareaRepository.GetUsuarioPorEmail(mail)
                           ?? throw new ArgumentException($"Usuario {mail} no existe");
 
             nuevaTarea.AsignarUsuario(usuario);
@@ -71,9 +67,9 @@ public class TareaService
     public void CompletarTarea(string proyecto, string titulo, string usuario)
     {
         var tarea = _tareaRepository.GetTareaPorProyectoYTitulo(proyecto, titulo); 
-        if(tarea == null)        
+        if(tarea == null)
             throw new ArgumentException("Tarea inexistente");
-        Usuario usuarioParaCompletar = _usuarioRepository.GetUsuarioPorEmail(usuario);
+        Usuario usuarioParaCompletar = _tareaRepository.GetUsuarioPorEmail(usuario);
         tarea.CompletarTarea(usuarioParaCompletar);
     }
 }

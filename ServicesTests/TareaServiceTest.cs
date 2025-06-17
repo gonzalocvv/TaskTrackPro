@@ -17,7 +17,7 @@ public class TareaServiceTest
     private TareaRepository _tareaRepository;
     private ProyectoRepository _proyectoRepository;
     private string _proyectoNombre;
-    private Tarea tarea1, tarea2;
+    private CrearTareaDto tarea1, tarea2;
     private MemoryAppContextFactory contextFactory;
     private SqlContext _context;
     private Proyecto _proyecto;
@@ -34,7 +34,7 @@ public class TareaServiceTest
         _usuarioRepository = new UsuarioRepository(_context);
         _tareaRepository = new TareaRepository(_context);
         _proyectoRepository = new ProyectoRepository(_context);
-        _service = new TareaService(_db, _tareaRepository, _usuarioRepository, _proyectoRepository);
+        _service = new TareaService(_db, _tareaRepository);
 
         _context.Database.EnsureDeleted();    
         _context.Database.EnsureCreated();    
@@ -63,7 +63,7 @@ public class TareaServiceTest
         );
         _proyectoRepository.AgregarProyecto(_proyecto);
 
-        tarea1 = new Tarea(new CrearTareaDto
+        tarea1 = new CrearTareaDto
         {
             Titulo = "Tarea de prueba 1 ",
             Descripcion = "Descripción de la tarea de prueba",
@@ -74,9 +74,9 @@ public class TareaServiceTest
             TareasQueYoDependoTitulos = [],
             TareasQueDependenDeMiTitulos = [],
             Estado = "Pendiente"
-        });
+        };
 
-        tarea2 = new Tarea(new CrearTareaDto
+        tarea2 = new CrearTareaDto
         {
             Titulo = "Tarea de prueba 2", 
             Descripcion = "Descripción de la tarea de prueba",
@@ -87,7 +87,7 @@ public class TareaServiceTest
             TareasQueYoDependoTitulos = [],
             TareasQueDependenDeMiTitulos = [],
             Estado = "Pendiente"
-        });
+        };
 
         
        responsableDto = new CreateUsuarioDto
@@ -197,16 +197,17 @@ public void GetListaTareasPorUsuarioEnLaQueUsuarioConTareasRetornaListaCorrectaT
     });
     _usuarioRepository.AgregarUsuario(usuario);
     
-    _proyectoRepository.AgregarProyecto(proyectoPrueba);
     
-    tarea1.UsuariosAsignados.Add(usuario);
-    tarea2.UsuariosAsignados.Add(usuario);
-
     
-    proyectoPrueba.AgregarTarea(tarea1);
-    proyectoPrueba.AgregarTarea(tarea2);
-    _tareaRepository.AgregarTarea(tarea1);
-    _tareaRepository.AgregarTarea(tarea2);
+    tarea1.UsuariosAsignadosEmails.Add(usuario.Email);
+    tarea2.UsuariosAsignadosEmails.Add(usuario.Email);
+    var Tarea1 = new Tarea(tarea1);
+    var Tarea2 = new Tarea(tarea2);
+    
+    proyectoPrueba.AgregarTarea(Tarea1);
+    proyectoPrueba.AgregarTarea(Tarea2);
+    _service.CrearTarea(tarea1);
+    _service.CrearTarea(tarea2);
     
     var resultado = _service.GetListaTareasPorUsuario(usuario.Email);
     
@@ -214,8 +215,8 @@ public void GetListaTareasPorUsuarioEnLaQueUsuarioConTareasRetornaListaCorrectaT
 
     var dto1 = resultado.Single(d => d.Titulo == "Tarea de prueba 1");
     Assert.AreEqual("Descripción de la tarea de prueba", dto1.Descripcion);
-    Assert.AreEqual(tarea1.FechaDeInicio, dto1.FechaInicio);
-    Assert.AreEqual(tarea1.Duracion, dto1.Duracion);
+    Assert.AreEqual(Tarea1.FechaDeInicio, dto1.FechaInicio);
+    Assert.AreEqual(Tarea1.Duracion, dto1.Duracion);
     Assert.AreEqual(proyectoPrueba.Nombre, dto1.ProyectoNombre);
     CollectionAssert.Contains(dto1.UsuariosAsignadosEmails, usuario.Email);
     Assert.AreEqual(0, dto1.TareasQueYoDependoTitulos.Count);
@@ -224,8 +225,8 @@ public void GetListaTareasPorUsuarioEnLaQueUsuarioConTareasRetornaListaCorrectaT
 
     var dto2 = resultado.Single(d => d.Titulo == "Tarea de prueba 2");
     Assert.AreEqual("Otra descripción", dto2.Descripcion);
-    Assert.AreEqual(tarea2.FechaDeInicio, dto2.FechaInicio);
-    Assert.AreEqual(tarea2.Duracion, dto2.Duracion);
+    Assert.AreEqual(Tarea2.FechaDeInicio, dto2.FechaInicio);
+    Assert.AreEqual(Tarea2.Duracion, dto2.Duracion);
     Assert.AreEqual(proyectoPrueba.Nombre, dto2.ProyectoNombre);
     CollectionAssert.Contains(dto2.UsuariosAsignadosEmails, usuario.Email);
     Assert.AreEqual(0, dto2.TareasQueYoDependoTitulos.Count);

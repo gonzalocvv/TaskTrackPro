@@ -127,10 +127,7 @@ namespace TaskTrackPro.Backend.Dominio
 
         public void RemoverTarea(Tarea tarea)
         {
-            if (tarea == null)
-            {
-                throw new ArgumentNullException(nameof(tarea), "La tarea no puede ser null.");
-            }
+            ValidarTareaNoNull(tarea);
             Tareas.Remove(tarea);
         }
 

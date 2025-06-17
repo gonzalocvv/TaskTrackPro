@@ -134,4 +134,10 @@ public class TareaRepositoryTest
         Assert.AreEqual(tareaDto.Titulo, tareaObtenida.Titulo);
         Assert.AreEqual(_proyecto.Nombre, tareaObtenida.ProyectoNombre);
     }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetUsuarioPorEmail_NullTest()
+    {
+        var usuarioEncontrado = _tareaRepository.GetUsuarioPorEmail("user@test.com");
+    }
 }

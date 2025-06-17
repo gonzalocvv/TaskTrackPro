@@ -21,7 +21,7 @@ builder.Services.AddDbContextFactory<SqlContext>(
 );
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<ProyectoRepository>();
-builder.Services.AddScoped<TarearRepository>();
+builder.Services.AddScoped<TareaRepository>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProyectoService>();
 builder.Services.AddScoped<TareaService>();
