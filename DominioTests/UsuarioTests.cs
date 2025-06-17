@@ -83,7 +83,7 @@ public class UsuarioTests
     public void UsuarioContraseñaCortaExceptionTest()
     {
         String contraInvalida = "Gon9@";
-        usuario.Contraseña=contraInvalida;
+        usuario.Contraseña = contraInvalida;
     }
     
     [TestMethod]
@@ -170,6 +170,15 @@ public class UsuarioTests
     {
         var rol = new Rol("Administrador del Proyecto");
         usuario.EliminarRol(rol);
+    }
+
+    [TestMethod]
+    public void HashearContraseñaTest()
+    {
+        string contraseñaOriginal = "Gonzalo9@";
+        usuario.Contraseña = contraseñaOriginal;
+        usuario.HashearContraseña();
+        Assert.IsTrue(BCrypt.Net.BCrypt.Verify(contraseñaOriginal, usuario.Contraseña));
     }
 
 }
