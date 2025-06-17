@@ -135,9 +135,32 @@ public class TareaRepositoryTest
         Assert.AreEqual(_proyecto.Nombre, tareaObtenida.ProyectoNombre);
     }
     [TestMethod]
-    [ExpectedException(typeof(ArgumentNullException))]
-    public void GetUsuarioPorEmail_NullTest()
+    public void GetUsuarioPorEmailTest()
     {
-        var usuarioEncontrado = _tareaRepository.GetUsuarioPorEmail("user@test.com");
+        var usuario = new Usuario()
+        {
+            Nombre = "Test",
+            Apellido = "User",
+            Email = "user@test.com",
+            FechaNacimiento = new DateTime(2000, 1, 1),
+            Contraseña = "Test123@"
+        };
+        _context.Usuarios.Add(usuario);
+        _context.SaveChanges();
+        var usuarioEncontrado = _tareaRepository.GetUsuarioPorEmail(usuario.Email);
+        Assert.IsNotNull(usuarioEncontrado);
+        Assert.AreEqual(usuario, usuarioEncontrado);
+    }
+    [TestMethod]
+    public void GetProyectoPorNombre()
+    {
+        var proyecto = new Proyecto("Proyecto Test", "Descripcion Test", DateTime.Now.AddHours(2.0), _administradorP);
+        _context.Proyectos.Add(proyecto);
+        _context.SaveChanges();
+        
+        var proyectoEncontrado = _tareaRepository.GetProyectoPorNombre(proyecto.Nombre);
+        
+        Assert.IsNotNull(proyectoEncontrado);
+        Assert.AreEqual(proyecto, proyectoEncontrado);
     }
 }

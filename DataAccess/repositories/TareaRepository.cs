@@ -1,4 +1,5 @@
 using Dominio;
+using TaskTrackPro.Backend.Dominio;
 
 namespace DataAccess.repositories;
 
@@ -40,11 +41,11 @@ public class TareaRepository
         return _sqlContext.Tareas.Where(t => t.Proyecto.Nombre == proyectoNombre).ToList();
     }
 
-    public List<Tarea> GetListaTareasPorUsuario(string administradorPEmail)
+    public List<Tarea> GetListaTareasPorUsuario(string user)
     {
         
         return _sqlContext.Tareas
-            .Where(t => t.UsuariosAsignados.Any(u => u.Email == administradorPEmail))
+            .Where(t => t.UsuariosAsignados.Any(u => u.Email == user))
             .ToList();
     }
 
@@ -56,5 +57,13 @@ public class TareaRepository
             throw new ArgumentNullException(nameof(proyecto), "El proyecto no puede ser nulo.");
         }
         return _sqlContext.Tareas.FirstOrDefault(t => t.Proyecto.Nombre == proyectoNombre && t.Titulo == tareaTitulo);
+    }
+    public Usuario GetUsuarioPorEmail(string email)
+    {
+        return _sqlContext.Usuarios.FirstOrDefault(u => u.Email == email);
+    }
+    public Proyecto GetProyectoPorNombre(string proyectoNombre)
+    {
+        return _sqlContext.Proyectos.FirstOrDefault(p => p.Nombre == proyectoNombre);
     }
 }
