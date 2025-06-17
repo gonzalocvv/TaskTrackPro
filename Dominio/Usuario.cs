@@ -83,7 +83,7 @@ namespace Dominio
         {
             get => _contraseñaHash;
             set
-            {
+            {   ValidarContraseña(value);
                 _contraseñaHash = value;
             }
         }

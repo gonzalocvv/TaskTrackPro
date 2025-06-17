@@ -83,7 +83,7 @@ public class UsuarioTests
     public void UsuarioContraseñaCortaExceptionTest()
     {
         String contraInvalida = "Gon9@";
-        usuario.Contraseña=contraInvalida;
+        usuario.Contraseña = contraInvalida;
     }
     
     [TestMethod]

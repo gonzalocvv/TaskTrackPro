@@ -42,17 +42,8 @@ namespace TaskTrackPro.Backend.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProyectoNombre")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TareaTitulo")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Email");
 
-                    b.HasIndex("ProyectoNombre");
-
-                    b.HasIndex("TareaTitulo");
 
                     b.ToTable("Usuarios");
                 });

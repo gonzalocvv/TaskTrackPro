@@ -103,6 +103,7 @@ public class ProyectoTests
     [TestMethod]
     public void ProyectoRemoverTareaTest()
     {
+        dto.ProyectoNombre = _proyecto.Nombre;
         var tarea = new Tarea(dto);
         _proyecto.AgregarTarea(tarea);
         Assert.IsTrue(_proyecto.Tareas.Contains(tarea)); 
@@ -159,12 +160,13 @@ public class ProyectoTests
     [ExpectedException(typeof(InvalidOperationException))]
     public void ProyectoAgregarTarea_TituloDuplicado_LanzaExcepcion()
     {
-        
+        dto.ProyectoNombre = _proyecto.Nombre;
         var tarea1 = new Tarea(dto);
         dto2 = new CrearTareaDto
         {
             Titulo = "Tarea de prueba",
             Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = _proyecto.Nombre,
             FechaInicio = DateTime.Now,
             Duracion = 2,
             UsuariosAsignadosEmails = [],
