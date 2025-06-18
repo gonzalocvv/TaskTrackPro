@@ -137,7 +137,7 @@ public class UsuarioService
 
         var usuario = GetUsuarioPorEmail(dto.Email);
 
-        if (usuario.Roles == Rol.AdministradorSistema)
+        if (usuario.EsAdminSistema)
             throw new InvalidOperationException("No se puede resetear la contraseña de otro administrador del sistema.");
 
         usuario.Contraseña = dto.NuevaContrasena ?? ContraseñaPorDefecto;
