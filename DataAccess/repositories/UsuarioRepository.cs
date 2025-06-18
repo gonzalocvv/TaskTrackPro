@@ -39,7 +39,7 @@ public class UsuarioRepository
         var usuario = GetUsuarioPorEmail(email);
         if (usuario == null)
         {
-            throw new ArgumentException("El usuario no existe");
+            throw new ArgumentNullException("El usuario no existe");
         }
         usuario.AgregarRol(rol);
         _sqlContext.SaveChanges();

@@ -187,6 +187,32 @@ public class TareaRepositoryTest
         Assert.IsNotNull(tareaEncontrada);
         Assert.AreEqual(tarea, tareaEncontrada);
     }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void GetTareaPorProyectoYTitulo_ProyectoNull_LanzaExcepcionTest()
+    {
+        _tareaRepository.GetTareaPorProyectoYTitulo(null, tareaDto.Titulo);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void AgregarTarea_ProyectoNull_LanzaExcepcionTest()
+    {
+        var tareaConProyectoNull = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea sin proyecto",
+            Descripcion = "Descripción de la tarea sin proyecto",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            ProyectoNombre = null, 
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente",
+        });
 
-
+        _tareaRepository.AgregarTarea(tareaConProyectoNull);
+    }
 }
+

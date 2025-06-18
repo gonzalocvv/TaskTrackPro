@@ -281,5 +281,50 @@ public class UsuarioServicesTest
         Assert.IsTrue(usuario.TieneRol(Rol.AdministradorSistema));
         
     }
+    
+    [TestMethod]
+    public void EsRolNullOAdmin_SinSesionActivaDevuelveTrueTest()
+    {
+        service.CerrarSesion();
+        
+        var resultado = service.EsRolNullOAdmin();
+
+        Assert.IsTrue(resultado);
+    }
+    
+    [TestMethod]
+    public void EsRolNullOAdmin_UsuarioAdminDevuelveTrueTest()
+    {
+        service.IniciarSesion(loginDtoAdmin);
+        
+        var resultado = service.EsRolNullOAdmin();
+        
+        Assert.IsTrue(resultado);
+    }
+    
+    [TestMethod]
+    public void EsRolNullOAdmin_UsuarioNoAdminDevuelveFalseTest()
+    {
+
+        service.CrearUsuario(UsuarioDto);
+        service.IniciarSesion(loginDtoUser);
+        
+        var resultado = service.EsRolNullOAdmin();
+        
+        Assert.IsFalse(resultado);
+    }
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public async Task AgregarRolUsuario_UsuarioNoExiste_LanzaExcepcionTest()
+    {
+        string emailInexistente = "inexistente@correo.com";
+        Rol rol = Rol.AdministradorSistema;
+
+        await service.AgregarRolUsuario(emailInexistente, rol);
+
+    }
+
+
+
 
 }
