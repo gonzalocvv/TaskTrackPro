@@ -31,5 +31,10 @@ public class UsuarioRepository
     {
         return _sqlContext.Usuarios.Any(u => u.Email == email);
     }
-    
+
+
+    public void AgregarRol(Rol rol)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -80,7 +80,20 @@ public class UserRepositoryTest
         _userRepository.AgregarUsuario(_usuario);
         Assert.IsTrue(_userRepository.ExisteUsuario(_usuario.Email));
     }
+    
+    [TestMethod]
+    public void AgregarRolTest()
+    {
+        _usuario = new Usuario(dto);
+        _userRepository.AgregarUsuario(_usuario);
+        _userRepository.AgregarRol(Rol.AdministradorProyecto); 
+        _userRepository.AgregarUsuario(_usuario);
+        
+        var usuarioObtenido = _userRepository.GetUsuarioPorEmail(_usuario.Email);
+        Assert.IsTrue(usuarioObtenido.TieneRol(Rol.AdministradorProyecto));
+    }
 }
 
     
+
     
