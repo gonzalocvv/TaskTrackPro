@@ -4,6 +4,7 @@ using Dominio;
 using Servicios;
 using Dtos;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dominio.Interfaces;
 
 namespace Servicios;
 
@@ -93,5 +94,12 @@ public class ProyectoService
             listaTareas.Add(tareaDto);
         }
         return listaTareas;
+    }
+    
+    public void ExportarProyectos(IExportadorProyectos exportador, string ruta)
+    {
+        var proyectos = _proyectoRepository.GetListaProyectos();
+        var contenido = exportador.Exportar(proyectos);
+        File.WriteAllText(ruta, contenido);
     }
 }
