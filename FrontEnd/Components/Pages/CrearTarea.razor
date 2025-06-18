@@ -16,6 +16,7 @@
     <div class="mb-3">
         <label class="form-label">Seleccione un proyecto</label>
         <select class="form-select" @bind="tareaForm.ProyectoNombre" @bind:after="ProyectoCambio">
+            <option value="PrimeraFila">Seleccione un proyecto </option>
             @foreach (var proyecto in proyectos)
             {
                 if (proyecto.MiembroEmails.Contains(UsuarioService.SesionActual?.Email))
@@ -72,7 +73,7 @@
                 {
                     if (tarea.Estado.ToString() != "Completada")
                     {
-                        <option value="@tarea.Titulo">@tarea.Titulo (@tarea.Estado)</option>
+                        <option value="@tarea.Titulo">@tarea.Titulo (@tarea.Estado)(@tarea.Duracion)</option>
                     }
                     else
                     {
@@ -145,7 +146,7 @@
             errorMessage = "Debe iniciar sesión para crear proyectos.";
             return;
         }
-        if (string.IsNullOrWhiteSpace(tareaForm.ProyectoNombre))
+        if (string.IsNullOrWhiteSpace(tareaForm.ProyectoNombre) || tareaForm.ProyectoNombre == "PrimeraFila")
         {
             errorMessage = "Debe seleccionar un proyecto.";
             return;
@@ -161,6 +162,7 @@
             showSuccessMessage = true;
             
             tareaForm = new();
+            tareaForm.FechaInicio = DateTime.Today;
             emailsSeleccionados = Array.Empty<string>();
         }
         catch (Exception ex)

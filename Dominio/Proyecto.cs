@@ -158,7 +158,7 @@ namespace TaskTrackPro.Backend.Dominio
 
         private static void ValidarFechaDeInicioValida(DateTime fechaInicio)
         {
-            if (fechaInicio < DateTime.Now)
+            if (fechaInicio < DateTime.Today)
             {
                 throw new ArgumentException("La fecha de inicio tiene que ser mayor o igual a la actual.");
             }

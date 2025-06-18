@@ -72,7 +72,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        nuevoProyecto.FechaInicio = DateTime.Now;
+        nuevoProyecto.FechaInicio = DateTime.Today;
         if (UsuarioService.SesionActual == null)
         {
             NavigationManager.NavigateTo("/iniciarSesion", true);
@@ -108,6 +108,7 @@
             ProyectoService.CrearProyecto(nuevoProyecto);
             
             nuevoProyecto = new();
+            nuevoProyecto.FechaInicio = DateTime.Today;
             emailsSeleccionados = Array.Empty<string>();
             showSuccessMessage = true;
         }

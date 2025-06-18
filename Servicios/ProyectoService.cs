@@ -71,7 +71,7 @@ public class ProyectoService
     }
     public List<GetTareaDto> GetTareasPorNombreProyecto(string nombreProyecto)
     {
-        var proyecto = _db.GetListaProyectosPorNombre(nombreProyecto);
+        var proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
         if (proyecto == null)
         {
             throw new ArgumentNullException("El proyecto no existe");
@@ -91,5 +91,22 @@ public class ProyectoService
             listaTareas.Add(tareaDto);
         }
         return listaTareas;
+    }
+    public List<String> GetTitulosTareasPorNombreProyecto(string nombreProyecto)
+    {
+        var proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
+        if (proyecto == null)
+        {
+            throw new ArgumentNullException("El proyecto no existe");
+        }
+        List<string> listaTitulos = new();
+        foreach (var tarea in proyecto.Tareas)
+        {
+            if (tarea.Estado != EstadoTarea.Completada)
+            {
+                listaTitulos.Add(tarea.Titulo);
+            }
+        }
+        return listaTitulos;
     }
 }
