@@ -115,6 +115,21 @@ public class UserRepositoryTest
         Assert.IsTrue(BCrypt.Net.BCrypt.Verify(ContraseñaPorDefecto, usuarioActualizado.Contraseña),
             "La contraseña actualizada no coincide con la contraseña por defecto esperada.");
     }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void RestablecerContraseñaYGuardar_UsuarioNull_LanzaExcepcionTest()
+    {
+        _userRepository.RestablecerContraseñaYGuardar(null);
+    }
+    
+    [TestMethod]
+    [ExpectedException(typeof(ArgumentNullException))]
+    public void AgregarRolAUsuario_UsuarioNull_LanzaExcepcionTest()
+    {
+        _userRepository.AgregarRolAUsuario(null, Rol.AdministradorProyecto);
+    }
+
    
 }
 
