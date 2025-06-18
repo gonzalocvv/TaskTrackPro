@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace DataAccess;
+namespace TaskTrackPro.Backend.DataAccess;
 
 public class MemoryAppContextFactory
 {

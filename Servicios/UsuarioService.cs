@@ -1,11 +1,9 @@
-﻿using Dominio;
-using DataAccess;
-using Dtos;
-using BCrypt.Net;
-using DataAccess.repositories;
+﻿using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
 
-namespace Servicios;
+namespace TaskTrackPro.Backend.Servicios;
 
 public class UsuarioService
 {
@@ -29,10 +27,8 @@ public class UsuarioService
             AdminDto.Contraseña = "Admin123@";
             Usuario adminUser = new Usuario(AdminDto);
             adminUser.HashearContraseña();
-            Rol rolAdmin = new Rol("Administrador del Sistema");
-            Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
-            adminUser.AgregarRol(rolAdminProyecto);
-            adminUser.AgregarRol(rolAdmin);
+            adminUser.AgregarRol(Rol.AdministradorProyecto);
+            adminUser.AgregarRol(Rol.AdministradorSistema);
             _usuarioRepository.AgregarUsuario(adminUser);
         }
         
@@ -46,8 +42,7 @@ public class UsuarioService
 
     public bool EsAdminSistema()
     {
-        return _sesionActual != null && 
-               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema");
+        return _sesionActual != null && _sesionActual.EsAdminSistema;
     }
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
@@ -65,14 +60,13 @@ public class UsuarioService
 
     public bool EsAdminProyecto()
     {
-        return _sesionActual != null && 
-               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Proyecto");
+        return _sesionActual != null && _sesionActual.EsAdminProyecto;
     }
 
     public bool EsRolNullOAdmin()
     {
         return _sesionActual == null || 
-               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema");
+               _sesionActual.EsAdminSistema;
     }
     public Usuario GetUsuarioPorNombre(string nombre)
     {
@@ -143,7 +137,7 @@ public class UsuarioService
 
         var usuario = GetUsuarioPorEmail(dto.Email);
 
-        if (usuario.ObtenerRoles().Any(r => r.Nombre == Rol.AdministradorSistema))
+        if (usuario.EsAdminSistema)
             throw new InvalidOperationException("No se puede resetear la contraseña de otro administrador del sistema.");
 
         usuario.Contraseña = dto.NuevaContrasena ?? ContraseñaPorDefecto;

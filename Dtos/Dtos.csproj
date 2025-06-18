@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <RootNamespace>TaskTrackPro.Backend.Dtos</RootNamespace>
     </PropertyGroup>
-
-
-
+	<ItemGroup>
+	</ItemGroup>
+   
 </Project>

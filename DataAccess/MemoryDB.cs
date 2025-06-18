@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using Dominio;
-using TaskTrackPro.Backend.Dominio;
+﻿using TaskTrackPro.Backend.Dominio;
 
-namespace DataAccess;
+namespace TaskTrackPro.Backend.DataAccess;
 
 public class MemoryDB
 {

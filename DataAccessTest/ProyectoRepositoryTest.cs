@@ -1,9 +1,8 @@
-using DataAccess;
-using DataAccess.repositories;
-using Dominio;
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
 
-namespace DataAccessTest;
+namespace TaskTrackPro.Backend.DataAccessTest;
 
 [TestClass]
 public class ProyectoRepositoryTest

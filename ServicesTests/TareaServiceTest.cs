@@ -1,11 +1,10 @@
-using DataAccess;
-using Dominio;
-using Dtos;
-using Servicios;
-using DataAccess.repositories;
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
+using TaskTrackPro.Backend.Servicios;
 
-namespace ServicesTests;
+namespace TaskTrackPro.Backend.ServicesTests;
 
 [TestClass]
 public class TareaServiceTest

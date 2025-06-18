@@ -1,7 +1,6 @@
-using Dominio;
 using TaskTrackPro.Backend.Dominio;
 
-namespace DataAccess.repositories;
+namespace TaskTrackPro.Backend.DataAccess.repositories;
 
 public class ProyectoRepository
 {

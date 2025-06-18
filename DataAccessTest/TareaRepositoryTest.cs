@@ -1,10 +1,9 @@
-using DataAccess;
-using DataAccess.repositories;
-using Dominio;
-using Dtos;
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
 
-namespace DataAccessTest;
+namespace TaskTrackPro.Backend.DataAccessTest;
 
 [TestClass]
 public class TareaRepositoryTest

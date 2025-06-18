@@ -1,11 +1,10 @@
-using DataAccess;
-using DataAccess.repositories;
-using Dominio;
-using Dtos;
-using Servicios;
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
+using TaskTrackPro.Backend.Servicios;
 
-namespace ServicesTests;
+namespace TaskTrackPro.Backend.ServicesTests;
 
 [TestClass]
 public class UsuarioServicesTest
@@ -47,7 +46,7 @@ public class UsuarioServicesTest
             Apellido = "User",
             Email = "admin@admin.com",
             FechaNacimiento = new DateTime(1990, 1, 1),
-            Contraseña = "Admin123@"
+            Contraseña = "Admin123@",
         };
         loginDtoAdmin = new LoginDto
         {
@@ -182,7 +181,7 @@ public class UsuarioServicesTest
         service.CrearUsuario(UsuarioDto);
 
         var usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
-        usuario.AgregarRol(new Rol("Administrador del Sistema"));
+        usuario.AgregarRol(Rol.AdministradorSistema);
 
         var dto = new ResetearContrasenaDto
         {

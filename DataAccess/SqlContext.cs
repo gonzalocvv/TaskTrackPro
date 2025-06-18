@@ -1,8 +1,7 @@
-using Dominio;
 using Microsoft.EntityFrameworkCore;
 using TaskTrackPro.Backend.Dominio;
 
-namespace DataAccess;
+namespace TaskTrackPro.Backend.DataAccess;
 public class SqlContext : DbContext{
    public DbSet<Usuario> Usuarios { get; set; }
    public DbSet<Proyecto> Proyectos { get; set; }
