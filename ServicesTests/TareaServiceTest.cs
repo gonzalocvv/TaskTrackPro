@@ -185,59 +185,64 @@ public class TareaServiceTest
     }
     
     [TestMethod]
-public void GetListaTareasPorUsuarioEnLaQueUsuarioConTareasRetornaListaCorrectaTest()
-{
-    
-    var usuario = new Usuario(new CreateUsuarioDto
+    public void GetListaTareasPorUsuarioEnLaQueUsuarioConTareasRetornaListaCorrectaTest()
     {
-        Nombre = "Test",
-        Apellido = "User",
-        Email = "test@domain.com",
-        FechaNacimiento = new DateTime(1990, 1, 1),
-        Contraseña = "Test123!"
-    });
-    _usuarioRepository.AgregarUsuario(usuario);
-    
-    
-    
-    tarea1.UsuariosAsignadosEmails.Add(usuario.Email);
-    tarea2.UsuariosAsignadosEmails.Add(usuario.Email);
-    
-    _tareaService.CrearTarea(tarea1);
-    _tareaService.CrearTarea(tarea2);
-    
-    var Tarea1 = _tareaService.GetTareaPorTitulo(tarea1.Titulo);
-    var Tarea2 = _tareaService.GetTareaPorTitulo(tarea2.Titulo);
-    
-    proyectoPrueba.AgregarTarea(Tarea1);
-    proyectoPrueba.AgregarTarea(Tarea2);
-    _tareaService.CrearTarea(tarea1);
-    _tareaService.CrearTarea(tarea2);
-    
-    var resultado = _tareaService.GetListaTareasPorUsuario(usuario.Email);
-    
-    Assert.AreEqual(2, resultado.Count);
+        var usuarioDto = new CreateUsuarioDto
+        {
+           Nombre = "Test",
+           Apellido = "User",
+            Email = "test@domain.com",
+            FechaNacimiento = new DateTime(1990, 1, 1),
+            Contraseña = "Test123!"
+        };
+        _userService.CrearUsuario(usuarioDto);
 
-    var dto1 = resultado.Single(d => d.Titulo == "Tarea de prueba 1");
-    Assert.AreEqual("Descripción de la tarea de prueba", dto1.Descripcion);
-    Assert.AreEqual(Tarea1.FechaDeInicio, dto1.FechaInicio);
-    Assert.AreEqual(Tarea1.Duracion, dto1.Duracion);
-    Assert.AreEqual(proyectoPrueba.Nombre, dto1.ProyectoNombre);
-    CollectionAssert.Contains(dto1.UsuariosAsignadosEmails, usuario.Email);
-    Assert.AreEqual(0, dto1.TareasQueYoDependoTitulos.Count);
-    Assert.AreEqual(0, dto1.TareasQueDependenDeMiTitulos.Count);
-    Assert.AreEqual(tarea1.Estado.ToString(), dto1.Estado);
+        var tareaDto1 = new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba 1",
+            Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = _proyectoNombre,
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [ usuarioDto.Email ],
+            Estado = "Pendiente"
+        };
 
-    var dto2 = resultado.Single(d => d.Titulo == "Tarea de prueba 2");
-    Assert.AreEqual("Otra descripción", dto2.Descripcion);
-    Assert.AreEqual(Tarea2.FechaDeInicio, dto2.FechaInicio);
-    Assert.AreEqual(Tarea2.Duracion, dto2.Duracion);
-    Assert.AreEqual(proyectoPrueba.Nombre, dto2.ProyectoNombre);
-    CollectionAssert.Contains(dto2.UsuariosAsignadosEmails, usuario.Email);
-    Assert.AreEqual(0, dto2.TareasQueYoDependoTitulos.Count);
-    Assert.AreEqual(0, dto2.TareasQueDependenDeMiTitulos.Count);
-    Assert.AreEqual(tarea2.Estado.ToString(), dto2.Estado);
-}
+        var tareaDto2 = new CrearTareaDto
+        { 
+            Titulo = "Tarea de prueba 2",
+            Descripcion = "Otra descripción",
+            ProyectoNombre = _proyectoNombre,
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [ usuarioDto.Email ],
+            Estado = "Pendiente"
+        };
+
+        _tareaService.CrearTarea(tareaDto1);
+        _tareaService.CrearTarea(tareaDto2);
+
+        var resultado = _tareaService.GetListaTareasPorUsuario(usuarioDto.Email);
+        Assert.AreEqual(2, resultado.Count);
+
+        var dto1 = resultado.Single(d => d.Titulo == tareaDto1.Titulo);
+        Assert.AreEqual(tareaDto1.Descripcion, dto1.Descripcion);
+        Assert.AreEqual(tareaDto1.Duracion, dto1.Duracion);
+        Assert.AreEqual(_proyectoNombre, dto1.ProyectoNombre);
+        CollectionAssert.Contains(dto1.UsuariosAsignadosEmails, usuarioDto.Email);
+        Assert.AreEqual(0, dto1.TareasQueYoDependoTitulos.Count);
+        Assert.AreEqual(0, dto1.TareasQueDependenDeMiTitulos.Count);
+        Assert.AreEqual("Pendiente", dto1.Estado);
+        
+        var dto2 = resultado.Single(d => d.Titulo == tareaDto2.Titulo);
+        Assert.AreEqual(tareaDto2.Descripcion, dto2.Descripcion);
+        Assert.AreEqual(tareaDto2.Duracion, dto2.Duracion);
+        Assert.AreEqual(_proyectoNombre, dto2.ProyectoNombre);
+        CollectionAssert.Contains(dto2.UsuariosAsignadosEmails, usuarioDto.Email);
+        Assert.AreEqual(0, dto2.TareasQueYoDependoTitulos.Count);
+        Assert.AreEqual(0, dto2.TareasQueDependenDeMiTitulos.Count);
+        Assert.AreEqual("Pendiente", dto2.Estado);
+    }   
 
 
     [TestMethod]
