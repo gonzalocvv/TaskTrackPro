@@ -1,235 +1,284 @@
-using Dominio;
+using System.ComponentModel.DataAnnotations;
+using TaskTrackPro.Backend.Dtos;
 
-namespace TaskTrackPro.Backend.Dominio;
-
-public enum EstadoTarea
+namespace TaskTrackPro.Backend.Dominio
 {
-    Pendiente,
-    Bloqueada,
-    Completada
-};
-public class Tarea
-{
-    private const int duracionMinimaDeTarea = 0;
-    private string _titulo;
-    private string _descripcion;
-    private DateTime? _fechaDeInicio;
-    private int _duracion;
-    private string _TituloProyecto;
-    public EstadoTarea Estado { get; private set; }
-
-    private List<Tarea> _TareasYoDependo { get; set; } = new List<Tarea>();
-    private List<Tarea> _TareasDependenDeMi { get; set; } = new List<Tarea>();
-    private List<Usuario> _usuariosAsignados { get; set; } = new List<Usuario>();
-    
-    public List<Tarea> TareasQueYoDependo => _TareasYoDependo;
-    public List<Tarea> TareasQueDependenDeMi => _TareasDependenDeMi;
-    
-    public List<Usuario> UsuariosAsignados => _usuariosAsignados;
-    public string Titulo
+    public enum EstadoTarea
     {
-        get => _titulo;
-        set
+        Pendiente,
+        Bloqueada,
+        Completada
+    }
+
+    public class Tarea
+    {
+        private const int duracionMinimaDeTarea = 0;
+
+        private string _titulo;
+        private string _descripcion;
+        private string _proyectoNombre;
+        private DateTime? _fechaDeInicio;
+        private int _duracion;
+        private string _tituloProyecto;
+        public Proyecto Proyecto { get; set; }
+
+        public EstadoTarea Estado { get; private set; }
+
+        private readonly List<Tarea> _tareasYoDependo = new List<Tarea>();
+        private readonly List<Tarea> _tareasDependenDeMi = new List<Tarea>();
+        private readonly List<Usuario> _usuariosAsignados = new List<Usuario>();
+
+        public List<Tarea> TareasQueYoDependo => _tareasYoDependo;
+        public List<Tarea> TareasQueDependenDeMi => _tareasDependenDeMi;
+        public List<Usuario> UsuariosAsignados => _usuariosAsignados;
+
+        public Tarea()
         {
-            ValidarCamposString(value, "El título");
-            _titulo = value;
+            Estado = EstadoTarea.Pendiente;
         }
-    }
 
-    public string Descripcion
-    {
-        get => _descripcion;
-        set
+        public Tarea(CrearTareaDto dto)
         {
-            ValidarCamposString(value, "La descripción");
-            _descripcion = value;
+            Titulo = dto.Titulo;
+            Descripcion = dto.Descripcion;
+            ProyectoNombre = dto.ProyectoNombre;
+            Duracion = dto.Duracion;
+            FechaDeInicio = dto.FechaInicio;
+            Estado = dto.Estado switch
+            {
+                "Pendiente" => EstadoTarea.Pendiente,
+                "Bloqueada" => EstadoTarea.Bloqueada,
+                "Completada" => EstadoTarea.Completada,
+                _ => EstadoTarea.Pendiente  
+            };
+
         }
-    }
 
-    public DateTime? FechaDeInicio
-    {
-        get => _fechaDeInicio;
-        set  
+        [Key]
+        public string Titulo
         {
-            FechaInicioTieneValor(value);
-            _fechaDeInicio = value;
+            get => _titulo;
+            set
+            {
+                ValidarCamposString(value, "El título");
+                _titulo = value;
+            }
         }
-    }
 
-    public int Duracion
-    {
-        get => _duracion;
-        set
+        public string Descripcion
         {
-            ValidarDuracion(value);
-            _duracion = value;
-        } 
-    }
-    public string ProyectoNombre
-    {
-        get => _TituloProyecto;
-        set
-        {
-            ValidarCamposString(value, "El nombre del proyecto");
-            _TituloProyecto = value;
+            get => _descripcion;
+            set
+            {
+                ValidarCamposString(value, "La descripción");
+                _descripcion = value;
+            }
         }
-    }
-    
 
-    public Tarea(string titulo, string descripcion, DateTime? fechaDeInicio, int duracion, string tituloProyecto)
-    {
-        ValidarCamposString(titulo, "El título");
-        ValidarCamposString(descripcion, "La descripción");
-        ValidarCamposString(tituloProyecto, "EL proyecto");
-        ValidarDuracion(duracion);
-        
-        FechaInicioTieneValor(fechaDeInicio);
-        ValidarDuracion(duracion);
-        _TituloProyecto = tituloProyecto;
-        _titulo = titulo;
-        _descripcion = descripcion;
-        _fechaDeInicio = fechaDeInicio;
-        _duracion = duracion;
-        Estado = EstadoTarea.Pendiente;
-    }
+        public DateTime? FechaDeInicio
+        {
+            get => _fechaDeInicio;
+            set
+            {
+                if (value.HasValue)
+                {
+                    ValidarFechaDeInicioValida(value.Value);
+                }
+                _fechaDeInicio = value;
+            }
+        }
 
-    private static void FechaInicioTieneValor(DateTime? fechaDeInicio)
-    {
-        if (fechaDeInicio.HasValue)
-            ValidarFechaDeInicioValida(fechaDeInicio.Value);
-    }
+        public int Duracion
+        {
+            get => _duracion;
+            set
+            {
+                ValidarDuracion(value);
+                _duracion = value;
+            }
+        }
 
-    public void AgregarDependencia(Tarea tarea)
-    {
-        ValidarTareaNull(tarea);
-        DependenciasYaContieneTarea(tarea);
-        ValidarAutoDependencia(tarea);
-        ValidarRecursividadTareas(tarea);
+        public string ProyectoNombre
+        {
+            get => _tituloProyecto;
+            set
+            {
+                ValidarCamposString(value, "El nombre del proyecto");
+                _tituloProyecto = value;
+            }
+        }
 
-        _TareasYoDependo.Add(tarea);
-        tarea._TareasDependenDeMi.Add(this);
+        public void AgregarDependencia(Tarea tarea)
+        {
+            ValidarTareaNull(tarea);
+            ValidarAutoDependencia(tarea);
+            DependenciasYaContieneTarea(tarea);
+            ValidarRecursividadTareas(tarea);
 
-        if (Estado == EstadoTarea.Pendiente)
-            Estado = EstadoTarea.Bloqueada;
-    }
+            _tareasYoDependo.Add(tarea);
+            tarea._tareasDependenDeMi.Add(this);
 
-    private void ValidarRecursividadTareas(Tarea tarea)
-    {
-        if (tarea.TieneDependenciaRecursiva(this))
-            throw new InvalidOperationException("Dependencia cíclica detectada.");
-    }
+            if (Estado == EstadoTarea.Pendiente)
+            {
+                Estado = EstadoTarea.Bloqueada;
+            }
+        }
 
-    private void ValidarAutoDependencia(Tarea tarea)
-    {
-        if (tarea == this)
-            throw new ArgumentException("No se puede agregar una tarea como dependencia de sí misma.");
-    }
+        private void ValidarRecursividadTareas(Tarea tarea)
+        {
+            if (tarea.TieneDependenciaRecursiva(this))
+            {
+                throw new InvalidOperationException("Dependencia cíclica detectada.");
+            }
+        }
 
-    private void DependenciasYaContieneTarea(Tarea tarea)
-    {
-        if (_TareasYoDependo.Contains(tarea))
-            throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
-    }
+        private void ValidarAutoDependencia(Tarea tarea)
+        {
+            if (tarea == this)
+            {
+                throw new ArgumentException("No se puede agregar una tarea como dependencia de sí misma.");
+            }
+        }
 
-    private bool TieneDependenciaRecursiva(Tarea objetivo)
-    {
-        if (_TareasYoDependo.Contains(objetivo))
-            return true;
-        
-        foreach (var dep in _TareasYoDependo)
-            if (dep.TieneDependenciaRecursiva(objetivo))
+        private void DependenciasYaContieneTarea(Tarea tarea)
+        {
+            if (_tareasYoDependo.Contains(tarea))
+            {
+                throw new InvalidOperationException("La tarea ya está en la lista de dependencias.");
+            }
+        }
+
+        private bool TieneDependenciaRecursiva(Tarea objetivo)
+        {
+            if (_tareasYoDependo.Contains(objetivo))
+            {
                 return true;
+            }
 
-        return false;
-    }
-    
-    private static void ValidarTareaNull(Tarea tarea)
-    {
-        if (tarea == null)
-            throw new ArgumentNullException(nameof(tarea));
-    }
+            foreach (var dep in _tareasYoDependo)
+            {
+                if (dep.TieneDependenciaRecursiva(objetivo))
+                {
+                    return true;
+                }
+            }
 
-    public void AsignarUsuario(Usuario usuario)
-    {
-        if (usuario == null)
-            throw new ArgumentNullException(nameof(usuario));
-        if (UsuarioEstaAsignado(usuario))
-            throw new InvalidOperationException("El usuario ya está asignado a esta tarea.");
-        _usuariosAsignados.Add(usuario);
-    }
+            return false;
+        }
 
-    private bool UsuarioEstaAsignado(Usuario usuario)
-    {
-        return _usuariosAsignados.Contains(usuario);
-    }
-
-
-    private static void ValidarDuracion(int value)
-    {
-        if (value <= duracionMinimaDeTarea)
-            throw new ArgumentException("La duración debe ser mayor a 0.");
-    }
-
-    private static void ValidarCamposString(string dato, string nombreCampo)
-    {
-        if (string.IsNullOrWhiteSpace(dato))
-            throw new ArgumentNullException($"{nombreCampo} no puede ser vacío.");
-    }
-
-    private static void ValidarFechaDeInicioValida(DateTime fechaDeInicio)
-    {
-        if (fechaDeInicio < DateTime.Today)
-            throw new InvalidOperationException("La fecha de inicio no puede ser anterior a hoy.");
-    }
-    public void CambiarEstado(EstadoTarea nuevoEstado)
-    {
-        Estado = nuevoEstado;
-    }
-    public void CompletarTarea(Usuario usuario)
-    {
-        if (Estado == EstadoTarea.Completada)
-            return;
-        if (!TareaEstaPendiente())
-            throw new InvalidOperationException("No se puede completar una tarea que no está pendiente.");
-        if (!UsuarioEstaAsignado(usuario))
-            throw new InvalidOperationException("El usuario no está asignado a esta tarea.");
-
-        CambiarEstado(EstadoTarea.Completada);
-        
-        foreach (var tareaDependiente in _TareasDependenDeMi)
+        private static void ValidarTareaNull(Tarea tarea)
         {
-            tareaDependiente._TareasYoDependo.Remove(this);
-            tareaDependiente.SinDependenciasCambiaEstado();
+            if (tarea == null)
+            {
+                throw new ArgumentNullException(nameof(tarea));
+            }
+        }
+
+        public void AsignarUsuario(Usuario usuario)
+        {
+            if (usuario == null)
+            {
+                throw new ArgumentNullException(nameof(usuario));
+            }
+
+            if (UsuarioEstaAsignado(usuario))
+            {
+                throw new InvalidOperationException("El usuario ya está asignado a esta tarea.");
+            }
+
+            _usuariosAsignados.Add(usuario);
+        }
+
+        private bool UsuarioEstaAsignado(Usuario usuario)
+        {
+            return _usuariosAsignados.Contains(usuario);
+        }
+
+        private static void ValidarDuracion(int value)
+        {
+            if (value <= duracionMinimaDeTarea)
+            {
+                throw new ArgumentException("La duración debe ser mayor a 0.");
+            }
+        }
+
+        private static void ValidarCamposString(string dato, string nombreCampo)
+        {
+            if (string.IsNullOrWhiteSpace(dato))
+            {
+                throw new ArgumentNullException($"{nombreCampo} no puede ser vacío.");
+            }
+        }
+
+        private static void ValidarFechaDeInicioValida(DateTime fechaDeInicio)
+        {
+            if (fechaDeInicio < DateTime.Today)
+            {
+                throw new InvalidOperationException("La fecha de inicio no puede ser anterior a hoy.");
+            }
+        }
+
+        public void CambiarEstado(EstadoTarea nuevoEstado)
+        {
+            Estado = nuevoEstado;
+        }
+
+        public void CompletarTarea(Usuario usuario)
+        {
+            if (Estado == EstadoTarea.Completada)
+            {
+                return;
+            }
+
+            if (!TareaEstaPendiente())
+            {
+                throw new InvalidOperationException("No se puede completar una tarea que no está pendiente.");
+            }
+
+            if (!UsuarioEstaAsignado(usuario))
+            {
+                throw new InvalidOperationException("El usuario no está asignado a esta tarea.");
+            }
+
+            CambiarEstado(EstadoTarea.Completada);
+
+            foreach (var tareaDependiente in _tareasDependenDeMi)
+            {
+                tareaDependiente._tareasYoDependo.Remove(this);
+                tareaDependiente.SinDependenciasCambiaEstado();
+            }
+        }
+
+        private bool TareaEstaPendiente()
+        {
+            return Estado == EstadoTarea.Pendiente;
+        }
+
+        public void QuitarDependencia(Tarea tarea)
+        {
+            ValidarTareaNull(tarea);
+            TareaNoPerteneceDependencias(tarea);
+
+            _tareasYoDependo.Remove(tarea);
+            tarea._tareasDependenDeMi.Remove(this);
+
+            SinDependenciasCambiaEstado();
+        }
+
+        private void SinDependenciasCambiaEstado()
+        {
+            if (_tareasYoDependo.Count == 0 && Estado == EstadoTarea.Bloqueada)
+            {
+                CambiarEstado(EstadoTarea.Pendiente);
+            }
+        }
+
+        private void TareaNoPerteneceDependencias(Tarea tarea)
+        {
+            if (!_tareasYoDependo.Contains(tarea))
+            {
+                throw new InvalidOperationException("La tarea no está en la lista de dependencias.");
+            }
         }
     }
-
-    private bool TareaEstaPendiente()
-    {
-        return Estado == EstadoTarea.Pendiente;
-    }
-    
-    public void QuitarDependencia(Tarea tarea)
-    {
-        ValidarTareaNull(tarea);
-        TareaNoPerteneceDependencias(tarea);
-
-        _TareasYoDependo.Remove(tarea);
-        tarea._TareasDependenDeMi.Remove(this);
-
-        SinDependenciasCambiaEstado();
-    }
-
-    private void SinDependenciasCambiaEstado()
-    {
-        if (_TareasYoDependo.Count == 0 && Estado == EstadoTarea.Bloqueada)
-            CambiarEstado(EstadoTarea.Pendiente);
-    }
-
-    private void TareaNoPerteneceDependencias(Tarea tarea)
-    {
-        if (!_TareasYoDependo.Contains(tarea))
-            throw new InvalidOperationException("La tarea no está en la lista de dependencias.");
-    }
-    
-    
 }

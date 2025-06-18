@@ -1,21 +1,34 @@
 using FrontEnd.Components;
-using Servicios;
-using DataAccess;
+using Microsoft.EntityFrameworkCore;
 using Syncfusion.Licensing;
 using Syncfusion.Blazor;
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
+using TaskTrackPro.Backend.Servicios;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-builder.Services.AddSingleton<MemoryDB>();
-builder.Services.AddSingleton<UsuarioService>();
-builder.Services.AddSingleton<ProyectoService>();
-builder.Services.AddSyncfusionBlazor();
-SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF1cWWhPYVJyWmFZfVtgdV9GYlZUQmYuP1ZhSXxWdkBiXH9fcXVWQGdVUEV9XUs=");
 
-builder.Services.AddSingleton<TareaService>();
+builder.Services.AddScoped<MemoryDB>();
+
+builder.Services.AddDbContextFactory<SqlContext>(
+    options => options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        providerOptions => providerOptions.EnableRetryOnFailure())
+);
+builder.Services.AddScoped<UsuarioRepository>();
+builder.Services.AddScoped<ProyectoRepository>();
+builder.Services.AddScoped<TareaRepository>();
+builder.Services.AddScoped<UsuarioService>();
+builder.Services.AddScoped<ProyectoService>();
+builder.Services.AddScoped<TareaService>();
+builder.Services.AddSyncfusionBlazor();
+SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF1cWWhOYVJxWmFZfVtgfV9CZVZQQGY/P1ZhSXxWdkNiXn1fdHFQTmJVV0B9XUs=");
+
+
 
 
 var app = builder.Build();

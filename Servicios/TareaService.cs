@@ -1,31 +1,45 @@
-using DataAccess;
-using Dominio;
-using Dtos;
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
 
-namespace Servicios;
+namespace TaskTrackPro.Backend.Servicios;
 
 public class TareaService
 {
     private MemoryDB _db = new ();
-    public TareaService(MemoryDB db)
+    private readonly TareaRepository _tareaRepository;
+    public TareaService(MemoryDB db, TareaRepository tareaRepository)
     {
         _db = db;
+        _tareaRepository = tareaRepository;
     }
+
     public void CrearTarea(CrearTareaDto crearTareaDto)
     {
-        Proyecto proyecto = _db.GetListaProyectosPorNombre(crearTareaDto.ProyectoNombre);
+        if (string.IsNullOrWhiteSpace(crearTareaDto.Titulo))
+            throw new ArgumentNullException(nameof(crearTareaDto.Titulo), "El título no puede estar vacío");
+
+        Proyecto proyecto = _tareaRepository.GetProyectoPorNombre(crearTareaDto.ProyectoNombre);
         ValidarProyecto(proyecto);
-        Tarea nuevaTarea = new Tarea(crearTareaDto.Titulo, crearTareaDto.Descripcion, crearTareaDto.FechaInicio, crearTareaDto.Duracion, proyecto.Nombre);
+
+        Tarea nuevaTarea = new Tarea(crearTareaDto);
         foreach (var mail in crearTareaDto.UsuariosAsignadosEmails.Distinct())
         {
-            var usuario = _db.GetUsuarioPorEmail(mail)
+            var usuario = _tareaRepository.GetUsuarioPorEmail(mail)
                           ?? throw new ArgumentException($"Usuario {mail} no existe");
 
             nuevaTarea.AsignarUsuario(usuario);
         }
+        foreach (var titulo in crearTareaDto.TareasQueYoDependoTitulos ?? Enumerable.Empty<string>())
+        {
+            var dependiente = _tareaRepository.GetTareaPorProyectoYTitulo(crearTareaDto.ProyectoNombre, titulo)
+                              ?? throw new ArgumentException($"No existe la tarea dependiente '{titulo}'");
+
+            nuevaTarea.AgregarDependencia(dependiente);
+        }
         proyecto.AgregarTarea(nuevaTarea);
-        _db.AgregarTarea(nuevaTarea);
+        _tareaRepository.AgregarTarea(nuevaTarea);
     }
 
     private static void ValidarProyecto(Proyecto proyecto)
@@ -37,7 +51,7 @@ public class TareaService
     public List<GetTareaDto> GetListaTareasPorUsuario(string email)
     {
         List<GetTareaDto> listaTareas = new();
-        foreach (var tarea in _db.GetListaTareasPorUsuario(email))
+        foreach (var tarea in _tareaRepository.GetListaTareasPorUsuario(email))
         {
             GetTareaDto tareaDto = new GetTareaDto
             {
@@ -58,10 +72,18 @@ public class TareaService
 
     public void CompletarTarea(string proyecto, string titulo, string usuario)
     {
-        var tarea = _db.GetTareaPorProyectoYTitulo(proyecto, titulo); 
-        if(tarea == null)        
+        var tarea = _tareaRepository.GetTareaPorProyectoYTitulo(proyecto, titulo); 
+        if(tarea == null)
             throw new ArgumentException("Tarea inexistente");
-        Usuario usuarioParaCompletar = _db.GetUsuarioPorEmail(usuario);
+        Usuario usuarioParaCompletar = _tareaRepository.GetUsuarioPorEmail(usuario);
         tarea.CompletarTarea(usuarioParaCompletar);
     }
+    public Tarea GetTareaPorTitulo(string titulo)
+    {
+        var tarea = _tareaRepository.GetTareaPorTitulo(titulo);
+        if (tarea == null)
+            throw new ArgumentException("Tarea inexistente");
+        return tarea;
+    }
+    
 }

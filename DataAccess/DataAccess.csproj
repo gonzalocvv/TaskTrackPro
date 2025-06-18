@@ -9,6 +9,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Dominio\Dominio.csproj" />
+      <ProjectReference Include="../Dominio/Dominio.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.16" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.16">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.16" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.16" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
     </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
-﻿namespace Dtos;
+﻿
+namespace TaskTrackPro.Backend.Dtos;
 
 public class CreateUsuarioDto
 {
@@ -7,6 +8,7 @@ public class CreateUsuarioDto
     public string Email;
     public DateTime FechaNacimiento;
     public string Contraseña;
+    public int Roles { get; set; } = 1;
 }
 
 public class LoginDto
@@ -20,6 +22,7 @@ public class GetUsuarioDto
     public string Nombre;
     public string Apellido;
     public string Email;
+    public int Roles { get; set; }=1;
 }
 public class ResetearContrasenaDto
 {

@@ -1,17 +1,16 @@
 ﻿@page "/MisProyectos"
-@using Dtos
-@using Servicios
+@using TaskTrackPro.Backend.Dtos
+@using TaskTrackPro.Backend.Servicios
+@inject UsuarioService UsuarioService
 @inject ProyectoService ProyectoServicio
 <h3>Mis proyectos</h3>
 
 @if (listaProyectos == null)
 {
     <p><em>No tienes ningún proyecto.</em></p>
-
 }
 else
 {
-    
     <SfGantt DataSource="@TaskCollection" Height="215px" Width="914px" TreeColumnIndex="1">
         <GanttTaskFields Id="TaskId" Name="TaskName" StartDate="StartDate" EndDate="EndDate" Duration="Duration" Progress="Progress" ParentID="ParentId" Dependency="Predecessor">
         </GanttTaskFields>
@@ -19,16 +18,20 @@ else
             <GanttColumn Field="TaskId" HeaderText="ID" Width="100"></GanttColumn>
             <GanttColumn Field="TaskName" HeaderText="Nombre de la Tarea" Width="250"></GanttColumn>
         </GanttColumns>
-
     </SfGantt>
 }
 
-    
 @code{
     private List<GetProyectoDto> listaProyectos;
     private List<TaskData> TaskCollection { get; set; }
     protected override void OnInitialized()
     {
+        var UserActualEmail = UsuarioService.SesionActual?.Email;
+        var allProyectos = ProyectoServicio.GetListaProyectos();
+        listaProyectos = allProyectos
+            .Where(p => p.MiembroEmails.Contains(UserActualEmail))
+            .ToList();
+
         this.TaskCollection = GetTaskCollection();
     }
 

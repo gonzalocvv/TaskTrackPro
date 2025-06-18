@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using Dominio;
-using TaskTrackPro.Backend.Dominio;
+﻿using TaskTrackPro.Backend.Dominio;
 
-namespace DataAccess;
+namespace TaskTrackPro.Backend.DataAccess;
 
 public class MemoryDB
 {
@@ -15,9 +13,8 @@ public class MemoryDB
     {
         if (usuario == null)
         {
-            throw new ArgumentNullException(nameof(usuario), "El usuario no puede ser nulo.");
+            throw new ArgumentNullException(nameof(usuario), "El usuario no puede ser null");
         }
-
         if (ExisteUsuario(usuario.Email))
         {
             throw new ArgumentException("El usuario ya existe.");
@@ -32,13 +29,13 @@ public class MemoryDB
 
     public Usuario GetUsuarioPorNombre(string nombre)
     {
-        return this._listUsuarios.Find(usuario => usuario.Nombre == nombre);
+        return _listUsuarios.Find(usuario => usuario.Nombre == nombre);
     }
     
 
     public Usuario GetUsuarioPorEmail(string email)
     {
-        return this._listUsuarios.Find(usuario => usuario.Email == email);
+        return _listUsuarios.Find(usuario => usuario.Email == email);
     }
     public List<Usuario> GetListaUsuariosRegistrados()
     {

@@ -1,46 +1,94 @@
-using Dominio;
-using Dtos;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
 
-namespace DominioTests;
+namespace TaskTrackPro.Backend.DominioTests;
 
 [TestClass]
 public class TareaTests
 {
-    static CreateUsuarioDto pepeDto = new CreateUsuarioDto
-    {
-        Nombre = "Pepe",
-        Apellido = "López",
-        Email = "pepe@x.com",
-        FechaNacimiento = new DateTime(2000, 1, 1),
-        Contraseña = "Pepe123@"
-    };
-    static Usuario pepe = new Usuario(pepeDto);    
-
-    static Proyecto proyecto = new("Proyecto1", "Descripcion", new DateTime(2025, 8, 9), pepe);
-    DateTime ejFechaInicio = new DateTime(2025, 8, 9);
+    private Usuario pepeDto, anaDto;
+    private CrearProyectoDto proyectoDto;
+    private Tarea tareaDto, tareaDto2, tareaDto3;
     
-    static CreateUsuarioDto anaDto = new CreateUsuarioDto
+    [TestInitialize]
+    public void SetUp()
     {
-        Nombre = "Ana",
-        Apellido = "Diaz",
-        Email = "ana@x.com",
-        FechaNacimiento = new DateTime(1995, 5, 2),
-        Contraseña = "Ana1234@"
-    };
-    static Usuario ana = new Usuario(anaDto);    
+        pepeDto = new Usuario(new CreateUsuarioDto
+        {
+            Nombre = "Pepe",
+            Apellido = "López",
+            Email = "pepe@x.com",
+            FechaNacimiento = new DateTime(2000, 1, 1),
+            Contraseña = "Pepe123@"
+        });
+
+        proyectoDto = new CrearProyectoDto
+        {
+            Nombre = "Proyecto1",
+            Descripcion = "Descripcion",
+            FechaInicio = new DateTime(2025, 8, 9),
+            AdministradorEmail = pepeDto.Email,
+        };
+    
+        anaDto = new Usuario(new CreateUsuarioDto
+        {
+            Nombre = "Ana",
+            Apellido = "Diaz",
+            Email = "ana@x.com",
+            FechaNacimiento = new DateTime(1995, 5, 2),
+            Contraseña = "Ana1234@"
+        });
+        tareaDto = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba 1 ",
+            Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = "casa",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente"
+        });
+        
+        tareaDto2 = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba 2",
+            Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = "casa",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente"
+        });
+        tareaDto3 = new Tarea(new CrearTareaDto
+        {
+            Titulo = "Tarea de prueba 3",
+            Descripcion = "Descripción de la tarea de prueba",
+            ProyectoNombre = "casa",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [],
+            TareasQueYoDependoTitulos = [],
+            TareasQueDependenDeMiTitulos = [],
+            Estado = "Pendiente"
+        });
+    }
+        
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
     public void TareaTituloVacioExceptionTest()
     {
-        var tarea = new Tarea("", "Cotizar reforma del frente del edificio", ejFechaInicio, 10, proyecto.Nombre);
+       tareaDto.Titulo = "";
     }
     
     [TestMethod]
     [ExpectedException(typeof(ArgumentNullException))]
     public void TareaDescripcionVacioExceptionTest()
     {
-        var tarea = new Tarea("", "Cotizar reforma del frente del edificio", ejFechaInicio, 10, proyecto.Nombre);
+        tareaDto.Descripcion = "";
     }
     
     [TestMethod]
@@ -49,215 +97,187 @@ public class TareaTests
     {
         DateTime fechaPasada = DateTime.Today.AddDays(-1);
 
-        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", fechaPasada, 5, proyecto.Nombre);
+        tareaDto.FechaDeInicio = fechaPasada;
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaDuracionIgual0ExceptionTest()
     {
-        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", ejFechaInicio, 0, proyecto.Nombre);
+        tareaDto.Duracion = 0;
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaDuracionMenor0ExceptionTest()
     {
-        var tarea = new Tarea("Cotizar", "Cotizar reforma del frente del edificio", ejFechaInicio, -4, proyecto.Nombre);
+        tareaDto.Duracion = -1;
     }
     
 
     [TestMethod]
     public void TareaEstadoInicialPendienteSinDepsTest()
     {
-        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        Assert.AreEqual(EstadoTarea.Pendiente, tarea.Estado);
+        
+        Assert.AreEqual(EstadoTarea.Pendiente, tareaDto.Estado);
     }
     [TestMethod]
     public void TareaConDependenciaEstadoBloqueadoTest()
     {
-        var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Titulo2","Desc2", ejFechaInicio, 5, proyecto.Nombre);
-        tarea1.AgregarDependencia(tarea2);
-        Assert.AreEqual(EstadoTarea.Bloqueada, tarea1.Estado);
+        tareaDto.AgregarDependencia(tareaDto2);
+        Assert.AreEqual(EstadoTarea.Bloqueada, tareaDto.Estado);
     }
     [TestMethod]
     [ExpectedException(typeof(ArgumentException))]
     public void TareaAgregarDependenciaCiclicaExceptionTest()
     {
-        var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        tarea1.AgregarDependencia(tarea1);
+        tareaDto.AgregarDependencia(tareaDto);
     }
     [TestMethod]
     public void TareaAgregarDependenciaTest()
     {
-        var tarea1 = new Tarea("Titulo","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Titulo2","Desc2", ejFechaInicio, 5, proyecto.Nombre);
-        tarea1.AgregarDependencia(tarea2);
-        Assert.IsTrue(tarea1.TareasQueYoDependo.Contains(tarea2));
+
+        tareaDto.AgregarDependencia(tareaDto2);
+        Assert.IsTrue(tareaDto.TareasQueYoDependo.Contains(tareaDto2));
     }
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void AgregarTareaRepetidaTest()
     {
-        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Titulo2","Desc2", ejFechaInicio, 5, proyecto.Nombre);
-        tarea.AgregarDependencia(tarea2);
-        tarea.AgregarDependencia(tarea2);
+
+        tareaDto.AgregarDependencia(tareaDto2);
+        tareaDto.AgregarDependencia(tareaDto2);
     }
     
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void AsignarUsuarioUnicoTest()
     {
-        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        tarea.AsignarUsuario(pepe);
-        tarea.AsignarUsuario(pepe);
+
+        tareaDto.AsignarUsuario(pepeDto);
+        tareaDto.AsignarUsuario(pepeDto);
     }
     
     [TestMethod]
     public void AsignarUsuarioTest()
     {
-        var tarea = new Tarea("Titulo","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        tarea.AsignarUsuario(pepe);
-        Assert.IsTrue(tarea.UsuariosAsignados.Contains(pepe));
+        tareaDto.AsignarUsuario(pepeDto);
+        Assert.IsTrue(tareaDto.UsuariosAsignados.Contains(pepeDto));
     }
     
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void CompletarTareaSinUsuarioAsignadoTest()
     {
-        var tarea = new Tarea("Título","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        tarea.CompletarTarea(pepe);
+
+        tareaDto.CompletarTarea(pepeDto);
     }
     
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void CompletarTareaBloqueadaExceptionTest()
     {
-        var tarea1 = new Tarea("Título","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Título2","Desc2", ejFechaInicio, 5, proyecto.Nombre);
-        tarea1.AsignarUsuario(pepe);
-        tarea1.AgregarDependencia(tarea2);
-        tarea1.CompletarTarea(pepe);
+
+        tareaDto.AsignarUsuario(pepeDto);
+        tareaDto.AgregarDependencia(tareaDto2);
+        tareaDto.CompletarTarea(pepeDto);
     }
     [TestMethod]
     public void CompletarTareaTest()
     {
-        var tarea = new Tarea("Título","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        tarea.AsignarUsuario(pepe);
-        tarea.CompletarTarea(pepe);
-        Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
+        tareaDto.AsignarUsuario(pepeDto);
+        tareaDto.CompletarTarea(pepeDto);
+        Assert.AreEqual(EstadoTarea.Completada, tareaDto.Estado);
     }
     
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void CompletarTareaUsuarioNoAsignadoExceptionTest()
     {
-        var tarea = new Tarea("Título","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        tarea.AsignarUsuario(pepe);
-        tarea.CompletarTarea(ana);
+        tareaDto.AsignarUsuario(pepeDto);
+        tareaDto.CompletarTarea(anaDto);
     }
     
     [TestMethod]
     public void CambiarEstadoTest()
     {
-        var tarea = new Tarea("Título","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        tarea.CambiarEstado(EstadoTarea.Completada);
-        Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
+
+        tareaDto.CambiarEstado(EstadoTarea.Completada);
+        Assert.AreEqual(EstadoTarea.Completada, tareaDto.Estado);
     }
     
     [TestMethod]
     public void QuitarDependenciaDesbloqueaPendienteTest()
     {
-        var tarea1 = new Tarea("Título","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Título2","Desc2", ejFechaInicio, 5, proyecto.Nombre);
-        tarea1.AgregarDependencia(tarea2);
-        tarea1.QuitarDependencia(tarea2);
-        Assert.AreEqual(EstadoTarea.Pendiente, tarea1.Estado);
+        tareaDto.AgregarDependencia(tareaDto2);
+        tareaDto.QuitarDependencia(tareaDto2);
+        Assert.AreEqual(EstadoTarea.Pendiente, tareaDto.Estado);
     }
     
     [TestMethod]
     public void CompletarTareaDependienteTest()
     {
-        var tarea1 = new Tarea("Título","Desc", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Título2","Desc2", ejFechaInicio, 5, proyecto.Nombre);
-        tarea2.AgregarDependencia(tarea1);
-        tarea1.AsignarUsuario(pepe);
-        tarea1.CompletarTarea(pepe);
-        Assert.AreEqual(EstadoTarea.Pendiente, tarea2.Estado);
+        tareaDto2.AgregarDependencia(tareaDto);
+        tareaDto.AsignarUsuario(pepeDto);
+        tareaDto.CompletarTarea(pepeDto);
+        Assert.AreEqual(EstadoTarea.Pendiente, tareaDto2.Estado);
     }
 
     [TestMethod]
     public void CompletarTareaActualizaDependientesTest()
     {
-        var tarea1 = new Tarea("Título1", "Desc1", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Título2", "Desc2", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea3 = new Tarea("Título3", "Desc3", ejFechaInicio, 5, proyecto.Nombre);
+        tareaDto2.AgregarDependencia(tareaDto);
+        tareaDto3.AgregarDependencia(tareaDto);
 
-        tarea2.AgregarDependencia(tarea1);
-        tarea3.AgregarDependencia(tarea1);
+        tareaDto.AsignarUsuario(pepeDto);
+        tareaDto.CompletarTarea(pepeDto);
 
-        tarea1.AsignarUsuario(pepe);
-        tarea1.CompletarTarea(pepe);
-
-        Assert.AreEqual(EstadoTarea.Pendiente, tarea2.Estado);
-        Assert.AreEqual(EstadoTarea.Pendiente, tarea3.Estado);
-        Assert.IsFalse(tarea2.TareasQueYoDependo.Contains(tarea1));
-        Assert.IsFalse(tarea3.TareasQueYoDependo.Contains(tarea1));
+        Assert.AreEqual(EstadoTarea.Pendiente, tareaDto2.Estado);
+        Assert.AreEqual(EstadoTarea.Pendiente, tareaDto3.Estado);
+        Assert.IsFalse(tareaDto2.TareasQueYoDependo.Contains(tareaDto));
+        Assert.IsFalse(tareaDto3.TareasQueYoDependo.Contains(tareaDto));
     }
 
     [TestMethod]
     public void QuitarDependenciaActualizaDependientesTest()
     {
-        var tarea1 = new Tarea("Título1", "Desc1", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Título2", "Desc2", ejFechaInicio, 5, proyecto.Nombre);
+        
+        tareaDto2.AgregarDependencia(tareaDto);
+        tareaDto2.QuitarDependencia(tareaDto);
 
-        tarea2.AgregarDependencia(tarea1);
-        tarea2.QuitarDependencia(tarea1);
-
-        Assert.AreEqual(EstadoTarea.Pendiente, tarea2.Estado);
-        Assert.IsFalse(tarea1.TareasQueDependenDeMi.Contains(tarea2));
+        Assert.AreEqual(EstadoTarea.Pendiente, tareaDto2.Estado);
+        Assert.IsFalse(tareaDto.TareasQueDependenDeMi.Contains(tareaDto2));
     }
 
     [TestMethod]
     public void AgregarDependenciaActualizaDependientesTest()
     {
-        var tarea1 = new Tarea("Título1", "Desc1", ejFechaInicio, 5, proyecto.Nombre);
-        var tarea2 = new Tarea("Título2", "Desc2", ejFechaInicio, 5, proyecto.Nombre);
+        tareaDto2.AgregarDependencia(tareaDto);
 
-        tarea2.AgregarDependencia(tarea1);
-
-        Assert.IsTrue(tarea1.TareasQueDependenDeMi.Contains(tarea2));
-        Assert.IsTrue(tarea2.TareasQueYoDependo.Contains(tarea1));
+        Assert.IsTrue(tareaDto.TareasQueDependenDeMi.Contains(tareaDto2));
+        Assert.IsTrue(tareaDto2.TareasQueYoDependo.Contains(tareaDto));
     }
     
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void AgregarDependenciaIndirectaCiclicaExceptionTest()
     {
-        var t1 = new Tarea("T1", "D1", ejFechaInicio, 3, proyecto.Nombre);
-        var t2 = new Tarea("T2", "D2", ejFechaInicio, 3, proyecto.Nombre);
-        var t3 = new Tarea("T3", "D3", ejFechaInicio, 3, proyecto.Nombre);
+        tareaDto.AgregarDependencia(tareaDto2);
+        tareaDto2.AgregarDependencia(tareaDto3);
 
-        t1.AgregarDependencia(t2);
-        t2.AgregarDependencia(t3);
-
-        t3.AgregarDependencia(t1);
+        tareaDto3.AgregarDependencia(tareaDto);
     }
     [TestMethod]
     [ExpectedException(typeof(InvalidOperationException))]
     public void QuitarDependenciaNoExisteExcepcionTest()
     {
-        var tarea1 = new Tarea("T1", "D1", ejFechaInicio, 3, proyecto.Nombre);
-        var tareaInexistente = new Tarea("T2", "D2", ejFechaInicio, 1, proyecto.Nombre);
-        tarea1.QuitarDependencia(tareaInexistente);
+        tareaDto.QuitarDependencia(tareaDto2);
     }
     [TestMethod]
     public void TareaCompletarDosVecesNoFalla()
     {
-        var tarea = new Tarea("T", "D", ejFechaInicio, 2, proyecto.Nombre);
-        tarea.AsignarUsuario(pepe);
-        tarea.CompletarTarea(pepe);
-        tarea.CompletarTarea(pepe);
-        Assert.AreEqual(EstadoTarea.Completada, tarea.Estado);
+
+        tareaDto.AsignarUsuario(pepeDto);
+        tareaDto.CompletarTarea(pepeDto);
+        tareaDto.CompletarTarea(pepeDto);
+        Assert.AreEqual(EstadoTarea.Completada, tareaDto.Estado);
     }
 }

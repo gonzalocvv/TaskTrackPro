@@ -1,35 +1,37 @@
-﻿using Dominio;
-using DataAccess;
-using Dtos;
-using BCrypt.Net;
+﻿using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
 
-namespace Servicios;
+namespace TaskTrackPro.Backend.Servicios;
 
 public class UsuarioService
 {
     private MemoryDB _db;
-    const string ContraseñaPorDefecto = "Valida123@";
+    private readonly UsuarioRepository _usuarioRepository;
+    const string ContraseñaPorDefecto = "Default123@";
 
-    public UsuarioService(MemoryDB db)
+    public UsuarioService(MemoryDB db, UsuarioRepository usuarioRepository)
     {
         _db = db;
-        CreateUsuarioDto AdminDto = new CreateUsuarioDto();
-        AdminDto.Nombre = "Admin";
-        AdminDto.Apellido = "User";
-        AdminDto.Email = "admin@admin.com";
-        AdminDto.FechaNacimiento = new DateTime(1990, 1, 1);
-        AdminDto.Contraseña = "Admin123@";
-        Usuario adminUser = new Usuario(AdminDto);
-        if (_db.ExisteUsuario(adminUser.Email))
+        _usuarioRepository = usuarioRepository;
+        
+       
+        if (!_usuarioRepository.ExisteUsuario("admin@admin.com"))
         {
-            throw new ArgumentException("El usuario ya existe");
+            CreateUsuarioDto AdminDto = new CreateUsuarioDto();
+            AdminDto.Nombre = "Admin";
+            AdminDto.Apellido = "User";
+            AdminDto.Email = "admin@admin.com";
+            AdminDto.FechaNacimiento = new DateTime(1990, 1, 1);
+            AdminDto.Contraseña = "Admin123@";
+            Usuario adminUser = new Usuario(AdminDto);
+            adminUser.HashearContraseña();
+            adminUser.AgregarRol(Rol.AdministradorProyecto);
+            adminUser.AgregarRol(Rol.AdministradorSistema);
+            _usuarioRepository.AgregarUsuario(adminUser);
         }
-        Rol rolAdmin = new Rol("Administrador del Sistema");
-        Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
-        adminUser.AgregarRol(rolAdminProyecto);
-        adminUser.AgregarRol(rolAdmin);
-        _db.AgregarUsuario(adminUser);
+        
     }
     
     
@@ -40,38 +42,41 @@ public class UsuarioService
 
     public bool EsAdminSistema()
     {
-        return _sesionActual != null && 
-               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema");
+        return _sesionActual != null && _sesionActual.EsAdminSistema;
     }
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
         Usuario nuevoUsuario = new Usuario(UsuarioDto);
-        if (_db.ExisteUsuario(nuevoUsuario.Email))
+        
+        nuevoUsuario.HashearContraseña();
+        var usuarioParaDevolver =_usuarioRepository.GetUsuarioPorEmail(nuevoUsuario.Email);
+        if (usuarioParaDevolver != null)
         {
-            throw new ArgumentException("Ya existe un usuario con ese Email");        }
-        _db.AgregarUsuario(nuevoUsuario);
+            throw new ArgumentException("Ya existe un usuario con ese Email");
+            
+        }
+        _usuarioRepository.AgregarUsuario(nuevoUsuario);
     }
 
     public bool EsAdminProyecto()
     {
-        return _sesionActual != null && 
-               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Proyecto");
+        return _sesionActual != null && _sesionActual.EsAdminProyecto;
     }
 
     public bool EsRolNullOAdmin()
     {
         return _sesionActual == null || 
-               _sesionActual.ObtenerRoles().Any(r => r.Nombre == "Administrador del Sistema");
+               _sesionActual.EsAdminSistema;
     }
     public Usuario GetUsuarioPorNombre(string nombre)
     {
-       var usuarioParaDevolver = _db.GetUsuarioPorNombre(nombre);
+       var usuarioParaDevolver = _usuarioRepository.GetUsuarioPorNombre(nombre);
        UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
        return usuarioParaDevolver;
     }
     public Usuario GetUsuarioPorEmail(string email)
     {
-        var usuarioParaDevolver =_db.GetUsuarioPorEmail(email);
+        var usuarioParaDevolver =_usuarioRepository.GetUsuarioPorEmail(email);
         UsuarioNullDevuelveExcepcion(usuarioParaDevolver);
         return usuarioParaDevolver;
     }
@@ -80,7 +85,7 @@ public class UsuarioService
     {
         if (usuarioParaDevolver == null)
         {
-            throw new ArgumentNullException(nameof(usuarioParaDevolver.Email), "El email no puede estar vacío y debe estar registrado.");
+            throw new ArgumentNullException("usuario", "El usuario no existe o el email no está registrado.");
         }
     }
     
@@ -113,7 +118,7 @@ public class UsuarioService
     public List<GetUsuarioDto> GetListaUsuariosRegistrados()
     {
         List<GetUsuarioDto> listaUsuarios = new List<GetUsuarioDto>();
-        foreach (var usuario in _db.GetListaUsuariosRegistrados())
+        foreach (var usuario in _usuarioRepository.GetListaUsuarios())
         {
             listaUsuarios.Add(new GetUsuarioDto
             {
@@ -124,18 +129,33 @@ public class UsuarioService
         }
         return listaUsuarios;
     }
-    
-    public void ResetearContrasenaDefecto(ResetearContrasenaDto dto)
+    public Task ResetearContrasenaDefecto(ResetearContrasenaDto dto)
     {
         if (SesionActual == null || !EsAdminSistema())
             throw new InvalidOperationException("Debe ser administrador del sistema para resetear contraseñas.");
 
-        var usuario = GetUsuarioPorEmail(dto.Email);
+        var usuario = GetUsuarioPorEmail(dto.Email); 
 
-        if (usuario.ObtenerRoles().Any(r => r.Nombre == Rol.AdministradorSistema))
+        if (usuario.EsAdminSistema)
             throw new InvalidOperationException("No se puede resetear la contraseña de otro administrador del sistema.");
 
-        usuario.Contraseña = BCrypt.Net.BCrypt.HashPassword(dto.NuevaContrasena ?? ContraseñaPorDefecto);
+        usuario.Contraseña = dto.NuevaContrasena ?? ContraseñaPorDefecto;
+        usuario.HashearContraseña(); 
+
+        _usuarioRepository.RestablecerContraseñaYGuardar(usuario);
+
+        return Task.CompletedTask; 
+    }
+
+    public async Task AgregarRolUsuario(string email, Rol rol)
+    {
+        var usuario = GetUsuarioPorEmail(email); 
+        if (usuario == null)
+        {
+            throw new ArgumentException("El usuario no existe.");
+        }
+        
+        _usuarioRepository.AgregarRolAUsuario(email, rol);
     }
 
     

@@ -1,0 +1,128 @@
+@page "/admin/gestion-usuario"
+@using TaskTrackPro.Backend.Dominio
+@using TaskTrackPro.Backend.Dtos
+@using TaskTrackPro.Backend.Servicios
+@inject UsuarioService UsuarioService
+@inject IJSRuntime jsRuntime
+
+<h1>Gestión de Usuarios</h1>
+
+@if (usuariosRegistrados == null)
+{
+    <p>Cargando usuarios...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th class="ps-5">Email</th>
+            <th class="ps-5">Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var usuario in usuariosRegistrados)
+        {
+            <tr>
+                <td>@usuario.Nombre</td>
+                <td class="ps-5">@usuario.Email</td>
+                <td class="ps-5">
+                    <button class="btn btn-primary btn-sm me-5" @onclick="() => ResetearContrasena(usuario.Email)">
+                        Restablecer Contraseña
+                    </button>
+                    <button class="btn btn-info btn-sm me-2" @onclick="() => AsignarRolAdministrador(usuario.Email)">
+                        Administrador de sistema
+                    </button>
+                    <button class="btn btn-warning btn-sm me-2 " @onclick="() => AsignarRolLiderProyecto(usuario.Email)">
+                        Líder de proyecto
+                    </button>
+                    <button class="btn btn-success btn-sm" @onclick="() => AsignarRolAdministradorProyecto(usuario.Email)">
+                        Administrador de proyecto
+                    </button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<GetUsuarioDto> usuariosRegistrados;
+
+    protected override void OnInitialized()
+    {
+        usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados();
+    }
+
+    private async Task ResetearContrasena(string email)
+    {
+        try
+        {
+            var dto = new ResetearContrasenaDto
+            {
+                Email = email,
+                NuevaContrasena = null
+            };
+
+            await UsuarioService.ResetearContrasenaDefecto(dto);
+
+            await jsRuntime.InvokeVoidAsync("alert", "Contraseña restablecida.");
+        }
+        catch (Exception ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error al restablecer contraseña: {ex.Message}");
+        }
+    }
+
+    private async Task AsignarRolAdministrador(string email)
+    {
+        try
+        {
+            await UsuarioService.AgregarRolUsuario(email, Rol.AdministradorSistema);
+            await jsRuntime.InvokeVoidAsync("alert", $"Rol 'Administrador de sistema' asignado a {email} correctamente.");
+        }
+        catch (ArgumentException ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error al asignar rol de 'Administrador de sistema' a {email}: {ex.Message}");
+        }
+    }
+
+    private async Task AsignarRolLiderProyecto(string email)
+    {
+        try
+        {
+            await UsuarioService.AgregarRolUsuario(email, Rol.LiderProyecto);
+            await jsRuntime.InvokeVoidAsync("alert", $"Rol 'Líder de proyecto' asignado a {email} correctamente.");
+        }
+        catch (ArgumentException ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error al asignar rol de 'Líder de proyecto' a {email}: {ex.Message}");
+        }
+    }
+
+    private async Task AsignarRolAdministradorProyecto(string email)
+    {
+        try
+        {
+            await UsuarioService.AgregarRolUsuario(email, Rol.AdministradorProyecto);
+            await jsRuntime.InvokeVoidAsync("alert", $"Rol 'Administrador de proyecto' asignado a {email} correctamente.");
+        }
+        catch (ArgumentException ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error al asignar rol de 'Administrador de proyecto' a {email}: {ex.Message}");
+        }
+    }
+}

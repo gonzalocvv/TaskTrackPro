@@ -1,213 +1,215 @@
-﻿using Dtos;
-using BCrypt.Net;
-using TaskTrackPro.Backend.Dominio;
+﻿using System.ComponentModel.DataAnnotations;
+using TaskTrackPro.Backend.Dtos;
 
-namespace Dominio;
-
-public class Usuario
+namespace TaskTrackPro.Backend.Dominio
 {
-    private const int MinimoContraseña = 8;
-    private const string ArrobaParaEmail = "@";
-    private const string PuntoParaEmail = ".";
-    private string _nombre;
-    private string _apellido;
-    private string _email;
-    private DateTime _fechaNacimiento;
-    private string _contraseña;
-    private List <Rol> _roles = new List<Rol>();
-
-    public string Nombre
+    public class Usuario
     {
-        get => _nombre;
-        set
-        {
-            ValidarCamposString(value, "El nombre");
-            _nombre = value;
-        }
-    }
+        private const int MinimoContraseña = 8;
+        private const string ArrobaParaEmail = "@";
+        private const string PuntoParaEmail = ".";
 
-    public string Apellido { 
-        get => _apellido;
-        set
-        {
-            ValidarCamposString(value, "El apellido");
-            _apellido = value;
-        }
-    }
+        private string _nombre;
+        private string _apellido;
+        private string _email;
+        private DateTime _fechaNacimiento;
+        private string _contraseñaHash;
+        private Rol _roles { get; set; } = Rol.MiembroProyecto;
 
-    public string Email
-    {
-        get => _email;
-        set
+        public Usuario()
         {
-            ValidarFormatoEmail(value);
-            ValidarCamposString(value, "El email");
-            _email = value;
+            
         }
-    }
 
-    public DateTime FechaNacimiento
-    {
-        get => _fechaNacimiento;
-        set
+        public Usuario(CreateUsuarioDto userDto)
         {
-            ValidarFecha(value);
-            _fechaNacimiento = value;
+            Nombre = userDto.Nombre;
+            Apellido = userDto.Apellido;
+            Email = userDto.Email.ToLower();
+            FechaNacimiento = userDto.FechaNacimiento;
+            Contraseña = userDto.Contraseña;
+            _roles = Rol.MiembroProyecto;
         }
-    }
 
-    public string Contraseña
-    {
-        get => _contraseña;
-        set
+        public string Nombre
         {
-            ValidarContraeña(value);
-            _contraseña = value;
+            get => _nombre;
+            set
+            {
+                ValidarStringNoVacío(value, "El nombre");
+                _nombre = value;
+            }
         }
-    }
-    
-    public Usuario(CreateUsuarioDto userDto)
-    {
-        ValidarCamposString(userDto.Nombre, "El nombre");
-        ValidarCamposString(userDto.Apellido, "El apellido");
-        ValidarCamposString(userDto.Email, "El email");
-        ValidarCamposString(userDto.FechaNacimiento.ToString(), "La fecha de nacimiento");
-        ValidarFormatoEmail(userDto.Email);
-        ValidarFecha(userDto.FechaNacimiento);
-        ValidarContraeña(userDto.Contraseña);
+
+        public string Apellido
+        {
+            get => _apellido;
+            set
+            {
+                ValidarStringNoVacío(value, "El apellido");
+                _apellido = value;
+            }
+        }
+
+        [Key]
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                ValidarStringNoVacío(value, "El email");
+                ValidarFormatoEmail(value);
+                _email = value;
+            }
+        }
+
+        public DateTime FechaNacimiento
+        {
+            get => _fechaNacimiento;
+            set
+            {
+                ValidarFechaNoVacia(value);
+                ValidarFechaAnterior(value);
+                ValidarRangoEdad(value);
+                _fechaNacimiento = value;
+            }
+        }
+
+        public string Contraseña
+        {
+            get => _contraseñaHash;
+            set
+            {   ValidarContraseña(value);
+                _contraseñaHash = value;
+            }
+        }
+        public Rol Roles
+        {
+            get => _roles;
+            set
+            {
+                _roles = value;
+            }
+        }
+        public bool TieneRol(Rol r) => _roles.HasFlag(r);
+
+        public bool EsAdminSistema      => TieneRol(Rol.AdministradorSistema);
+        public bool EsAdminProyecto     => TieneRol(Rol.AdministradorProyecto);
+        public bool EsMiembroProyecto   => TieneRol(Rol.MiembroProyecto);
+        public bool EsLiderProyecto => TieneRol(Rol.LiderProyecto);
+        public void AgregarRol(Rol nuevoRol)
+        {
+            _roles |= nuevoRol;
+        }
+        public void QuitarRol(Rol rolAEliminar)
+        {
+            _roles &= ~rolAEliminar;
+        }
         
-        _nombre = userDto.Nombre;
-        _apellido = userDto.Apellido;
-        _email = userDto.Email.ToLower();
-        _fechaNacimiento = userDto.FechaNacimiento;
-        _contraseña = BCrypt.Net.BCrypt.HashPassword(userDto.Contraseña);;
-        _roles.Add(new Rol(Rol.MiembroProyecto));
-    }
-
-    private static void ValidarContraeña(string contraseña)
-    {
-        ValidarCamposString(contraseña, "La contraseña");
-        ValidarLargoContraseña(contraseña);
-        ValidarContraseñaContieneMayuscula(contraseña);
-        ValidarContraseñaContieneNumero(contraseña);
-        ValidarContraseñaConCaracterEspecial(contraseña);
-        ValidarContraseñaConMinuscula(contraseña);
-    }
-
-    private static void ValidarContraseñaConMinuscula(string contraseña)
-    {
-        bool tieneMinuscula = "abcdefghijklmnopqrstuvwxyz".Any(letra => contraseña.Contains(letra));
-        if (!tieneMinuscula)
+        private void ValidarContraseña(string contraseña)
         {
-            throw new ArgumentException("La contraseña debe contener al menos una minúscula");
-        }
-    }
-
-    private static void ValidarContraseñaConCaracterEspecial(string contraseña)
-    {
-        bool tieneCaracter = "!@#$%&*()_+-=?/{}|:;,.<>~^".Any(caracter => contraseña.Contains(caracter));
-        if (!tieneCaracter)
+            ValidarStringNoVacío(contraseña, "La contraseña");
+            ValidarLongitudContraseña(contraseña);
+            ValidarContraseñaContieneMayuscula(contraseña);
+            ValidarContraseñaContieneMinuscula(contraseña);
+            ValidarContraseñaContieneNúmero(contraseña);
+            ValidarContraseñaContieneCaracterEspecial(contraseña);
+        }  
+        
+        private static void ValidarStringNoVacío(string dato, string nombreCampo)
         {
-            throw new ArgumentException("La contraseña debe contener al menos un caracter especial");
-        }
-    }
-
-    private static void ValidarContraseñaContieneNumero(string contraseña)
-    {
-        bool tieneNumero = "0123456789".Any(digito => contraseña.Contains(digito));
-        if (!tieneNumero)
-        {
-            throw new ArgumentException("La contraseña debe contener al menos un número");
-        }
-    }
-
-    private static void ValidarContraseñaContieneMayuscula(string contraseña)
-    {
-        bool tieneMayuscula = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".Any(letra => contraseña.Contains(letra));
-        if (!tieneMayuscula)
-        {
-            throw new ArgumentException("La contraseña debe contener al menos una mayúscula");
-        }
-    }
-
-    private static void ValidarLargoContraseña(string contraseña)
-    {
-        if (contraseña.Length < MinimoContraseña)
-        {
-            throw new ArgumentException("La contraseña debe tener al menos 8 caracteres");
-        }
-    }
-
-    private static void ValidarFecha(DateTime fechaNacimiento)
-    {
-        ValidarFechaNoVacia(fechaNacimiento);
-        ValidarFechaAnterioraActual(fechaNacimiento);
-        ValidarRangoEdadValido(fechaNacimiento);
-    }
-
-    private static void ValidarFechaAnterioraActual(DateTime fechaNacimiento)
-    {
-        if (fechaNacimiento > DateTime.Now)
-            throw new ArgumentException("La fecha de nacimiento no puede ser futura.");
-    }
-    private static void ValidarRangoEdadValido(DateTime fechaNacimiento)
-    {
-        int edad = DateTime.Now.Year - fechaNacimiento.Year;
-        if (fechaNacimiento > DateTime.Now.AddYears(-edad))
-        {
-            edad--;
+            if (string.IsNullOrWhiteSpace(dato))
+            {
+                throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
+            }
         }
 
-        if (edad < 18)
+        private static void ValidarFormatoEmail(string email)
         {
-            throw new ArgumentException("El usuario debe ser mayor o igual a 18 años.");
+            if (!email.Contains(ArrobaParaEmail) || !email.Contains(PuntoParaEmail))
+            {
+                throw new ArgumentException("El email debe tener un formato válido.");
+            }
         }
-        if (edad > 100)
-        {
-            throw new ArgumentException("El usuario no puede ser mayor a 100 años.");
-        }
-    }
-    private static void ValidarFechaNoVacia(DateTime fechaNacimiento)
-    {
-        if (fechaNacimiento == DateTime.MinValue)
-            throw new ArgumentException("La fecha de nacimiento no puede estar vacía.");
-    }
-    
-    private static void ValidarFormatoEmail(string email)
-    {
-        if (!email.Contains(ArrobaParaEmail) || !email.Contains(PuntoParaEmail))
-        {
-            throw new ArgumentException("El email debe tener un formato valido");
-        }
-    }
 
-    private static void ValidarCamposString(string dato, string nombreCampo)
-    {
-        if (string.IsNullOrWhiteSpace(dato))
-            throw new ArgumentException($"{nombreCampo} no puede ser vacío.");
-    }
-    public List<Rol> ObtenerRoles()
-    {
-        return _roles;
-    }
-    public void AgregarRol(Rol rol)
-    {
-        if (_roles.Any(r => r.Nombre == rol.Nombre))
+        private static void ValidarFechaNoVacia(DateTime fecha)
         {
-            throw new InvalidOperationException("El usuario ya tiene este rol.");
+            if (fecha == DateTime.MinValue)
+            {
+                throw new ArgumentException("La fecha de nacimiento no puede estar vacía.");
+            }
         }
-        _roles.Add(rol);
-    }
 
-    public void EliminarRol(Rol rol)
-    {
-        if (_roles.Any(r => r.Nombre == rol.Nombre))
+        private static void ValidarFechaAnterior(DateTime fecha)
         {
-            _roles.Remove(rol);
+            if (fecha > DateTime.Now)
+            {
+                throw new ArgumentException("La fecha de nacimiento no puede ser futura.");
+            }
         }
-        else
+
+        private static void ValidarRangoEdad(DateTime fecha)
         {
-            throw new InvalidOperationException("El usuario no tiene este rol.");
+            int edad = DateTime.Now.Year - fecha.Year;
+            if (fecha > DateTime.Now.AddYears(-edad))
+            {
+                edad--;
+            }
+
+            if (edad < 18)
+            {
+                throw new ArgumentException("El usuario debe ser mayor o igual a 18 años.");
+            }
+
+            if (edad > 100)
+            {
+                throw new ArgumentException("El usuario no puede ser mayor a 100 años.");
+            }
+        }
+
+        private static void ValidarLongitudContraseña(string contraseña)
+        {
+            if (contraseña.Length < MinimoContraseña)
+            {
+                throw new ArgumentException($"La contraseña debe tener al menos {MinimoContraseña} caracteres.");
+            }
+        }
+
+        private static void ValidarContraseñaContieneMayuscula(string contraseña)
+        {
+            if (!contraseña.Any(char.IsUpper))
+            {
+                throw new ArgumentException("La contraseña debe contener al menos una mayúscula.");
+            }
+        }
+
+        private static void ValidarContraseñaContieneMinuscula(string contraseña)
+        {
+            if (!contraseña.Any(char.IsLower))
+            {
+                throw new ArgumentException("La contraseña debe contener al menos una minúscula.");
+            }
+        }
+
+        private static void ValidarContraseñaContieneNúmero(string contraseña)
+        {
+            if (!contraseña.Any(char.IsDigit))
+            {
+                throw new ArgumentException("La contraseña debe contener al menos un número.");
+            }
+        }
+
+        private static void ValidarContraseñaContieneCaracterEspecial(string contraseña)
+        {
+            const string especiales = "!@#$%&*()_+-=?/{}|:;,.<>~^";
+            if (!contraseña.Any(c => especiales.Contains(c)))
+            {
+                throw new ArgumentException("La contraseña debe contener al menos un carácter especial.");
+            }
+        }
+        public void HashearContraseña()
+        {
+            _contraseñaHash = BCrypt.Net.BCrypt.HashPassword(Contraseña);
         }
     }
 }

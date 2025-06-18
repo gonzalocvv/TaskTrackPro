@@ -1,35 +1,37 @@
-using DataAccess;
-using Dominio;
-using Servicios;
-using Dtos;
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
+using TaskTrackPro.Backend.Dominio.Interfaces;
 
-namespace Servicios;
+namespace TaskTrackPro.Backend.Servicios;
 
 public class ProyectoService
 {
     private MemoryDB _db;
-    public ProyectoService(MemoryDB db)
+    private readonly ProyectoRepository _proyectoRepository;
+    public ProyectoService(MemoryDB db, ProyectoRepository proyectoRepository)
     {
         _db = db;
+        _proyectoRepository = proyectoRepository;
     }
     
     public Proyecto CrearProyecto(CrearProyectoDto ProyectoDto )
     {
-        Usuario admin = _db.GetUsuarioPorEmail(ProyectoDto.AdministradorEmail);
+        Usuario admin = _proyectoRepository.GetUsuarioPorEmail(ProyectoDto.AdministradorEmail);
         Proyecto nuevoProyecto = new Proyecto(ProyectoDto.Nombre, ProyectoDto.Descripcion, ProyectoDto.FechaInicio, admin);
         foreach (var email in ProyectoDto.MiembroEmails)
         {
-            Usuario user = _db.GetUsuarioPorEmail(email);
+            Usuario user = _proyectoRepository.GetUsuarioPorEmail(email);
             nuevoProyecto.AgregarMiembro(user);
         }
-        _db.AgregarProyecto(nuevoProyecto);
+        _proyectoRepository.AgregarProyecto(nuevoProyecto);
         return nuevoProyecto;
     }
 
     public Proyecto GetProyectoPorNombre(string nombre)
     {
-        var proyectoParaDevolver = _db.GetListaProyectosPorNombre(nombre);
+        var proyectoParaDevolver = _proyectoRepository.GetProyectoPorNombre(nombre);
         if (proyectoParaDevolver == null)
         {
             throw new ArgumentNullException("El proyecto no existe");
@@ -40,7 +42,7 @@ public class ProyectoService
     {
         
         List<GetProyectoDto> listaProyectos = new();
-        foreach (var proyecto in _db.GetListaProyectos())
+        foreach (var proyecto in _proyectoRepository.GetListaProyectos())
         {
             GetProyectoDto proyectoDto = new GetProyectoDto
             {
@@ -56,8 +58,8 @@ public class ProyectoService
     }
     public void AgregarMiembro(string email, string nombreProyecto)
     {
-        Usuario miembro = _db.GetUsuarioPorEmail(email);
-        Proyecto proyecto = _db.GetListaProyectosPorNombre(nombreProyecto);
+        Usuario miembro = _proyectoRepository.GetUsuarioPorEmail(email);
+        Proyecto proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
         if (miembro == null)
         {
             throw new ArgumentNullException("El usuario no existe");
@@ -67,10 +69,11 @@ public class ProyectoService
             throw new ArgumentNullException("El proyecto no existe");
         }
         proyecto.AgregarMiembro(miembro);
+        _proyectoRepository.Save();
     }
     public List<GetTareaDto> GetTareasPorNombreProyecto(string nombreProyecto)
     {
-        var proyecto = _db.GetListaProyectosPorNombre(nombreProyecto);
+        var proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
         if (proyecto == null)
         {
             throw new ArgumentNullException("El proyecto no existe");
@@ -90,5 +93,29 @@ public class ProyectoService
             listaTareas.Add(tareaDto);
         }
         return listaTareas;
+    }
+    public List<String> GetTitulosTareasPorNombreProyecto(string nombreProyecto)
+    {
+        var proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
+        if (proyecto == null)
+        {
+            throw new ArgumentNullException("El proyecto no existe");
+        }
+        List<string> listaTitulos = new();
+        foreach (var tarea in proyecto.Tareas)
+        {
+            if (tarea.Estado != EstadoTarea.Completada)
+            {
+                listaTitulos.Add(tarea.Titulo);
+            }
+        }
+        return listaTitulos;
+    }
+    
+    public void ExportarProyectos(IExportadorProyectos exportador, string ruta)
+    {
+        var proyectos = _proyectoRepository.GetListaProyectos();
+        var contenido = exportador.Exportar(proyectos);
+        File.WriteAllText(ruta, contenido);
     }
 }
