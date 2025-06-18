@@ -18,7 +18,7 @@ namespace Dominio
         private string _email;
         private DateTime _fechaNacimiento;
         private string _contraseñaHash;
-        private readonly List<Rol> _roles = new();
+        private Rol _roles { get; set; } = Rol.MiembroProyecto;
 
         public Usuario()
         {
@@ -32,7 +32,7 @@ namespace Dominio
             Email = userDto.Email.ToLower();
             FechaNacimiento = userDto.FechaNacimiento;
             Contraseña = userDto.Contraseña;
-            _roles.Add(new Rol(Rol.MiembroProyecto));
+            _roles = Rol.MiembroProyecto;
         }
 
         public string Nombre
@@ -87,32 +87,26 @@ namespace Dominio
                 _contraseñaHash = value;
             }
         }
-
-        public List<Rol> ObtenerRoles()
+        public Rol Roles
         {
-            return _roles;
+            get => _roles;
+            set
+            {
+                _roles = value;
+            }
         }
+        public bool TieneRol(Rol r) => _roles.HasFlag(r);
 
-        public void AgregarRol(Rol rol)
+        public bool EsAdminSistema      => TieneRol(Rol.AdministradorSistema);
+        public bool EsAdminProyecto     => TieneRol(Rol.AdministradorProyecto);
+        public bool EsMiembroProyecto   => TieneRol(Rol.MiembroProyecto);
+        public void AgregarRol(Rol nuevoRol)
         {
-            if (_roles.Any(r => r.Nombre == rol.Nombre))
-            {
-                throw new InvalidOperationException("El usuario ya tiene este rol.");
-            }
-
-            _roles.Add(rol);
+            _roles |= nuevoRol;
         }
-
-        public void EliminarRol(Rol rol)
+        public void QuitarRol(Rol rolAEliminar)
         {
-            if (_roles.Any(r => r.Nombre == rol.Nombre))
-            {
-                _roles.Remove(rol);
-            }
-            else
-            {
-                throw new InvalidOperationException("El usuario no tiene este rol.");
-            }
+            _roles &= ~rolAEliminar;
         }
         
         private void ValidarContraseña(string contraseña)

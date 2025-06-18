@@ -12,7 +12,6 @@ public class UsuarioTests
 {
     private Usuario usuario;
     private DateTime fechaNacCorrecta ;
-    private Rol rolAdminProyecto = new Rol("Administrador del Proyecto");
     [TestInitialize]
     public void SetUp()
     {
@@ -115,62 +114,38 @@ public class UsuarioTests
         usuario.Contraseña=contraInvalida;     }
 
     [TestMethod]
-    public void UsuarioTieneRolMiembroProyectoPorDefectoTest()
+    public void UsuarioTieneMiembroProyectoPorDefecto()
     {
-        Assert.IsTrue(usuario.ObtenerRoles().Any(rol => rol.Nombre == "Miembro del Proyecto"));
+        Assert.IsTrue(usuario.TieneRol(Rol.MiembroProyecto));
+        Assert.IsFalse(usuario.TieneRol(Rol.AdministradorSistema));
     }
     
-    [TestMethod]   
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void UsuarioNoTieneRolExceptionTest()
-    {
-        if (!usuario.ObtenerRoles().Any(rol => rol.Nombre == "Administrador del Proyecto"))
-        {
-            throw new InvalidOperationException("El usuario no tiene el rol requerido.");
-        }    
-    }
 
     [TestMethod]
     public void agregarRolValidoTest( )
     {
-        usuario.AgregarRol(rolAdminProyecto);
-        Assert.IsTrue(usuario.ObtenerRoles().Any(rol => rol.Nombre == "Administrador del Proyecto"));
-    }
-    [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void agregarRolDuplicadoTest( )
-    {
-        String nombreRol = "Miembro del Proyecto";
-        Rol rol = new Rol (nombreRol);
-        usuario.AgregarRol(rol);
-        Assert.IsTrue(usuario.ObtenerRoles().Any(rol => rol.Nombre == nombreRol));
+        usuario.AgregarRol(Rol.AdministradorProyecto);
+
+        Assert.IsTrue(usuario.TieneRol(Rol.AdministradorProyecto));
+        Assert.IsTrue(usuario.TieneRol(Rol.MiembroProyecto)); 
     }
     
     [TestMethod]
-    [ExpectedException(typeof(InvalidOperationException))]
-    public void UsuarioAgregarRolDuplicadoExceptionTest()
+    public void agregarRolDuplicadoTestNoLanzaExcepcion( )
     {
-        usuario.AgregarRol(rolAdminProyecto);
-        usuario.AgregarRol(rolAdminProyecto);
+        usuario.AgregarRol(Rol.MiembroProyecto);
+        Assert.IsTrue(usuario.Roles == Rol.MiembroProyecto);
     }
+    
 
     [TestMethod]
     public void UsuarioBorrarRolTest()
     {
-        var rol = new Rol("Administrador del Proyecto");
-        usuario.AgregarRol(rol);
-        usuario.EliminarRol(rol);
-        Assert.IsFalse(usuario.ObtenerRoles().Any(r => r.Nombre == rol.Nombre));
+        usuario.AgregarRol(Rol.AdministradorProyecto);
+        usuario.QuitarRol(Rol.AdministradorProyecto);
+        Assert.IsFalse(usuario.Roles == Rol.AdministradorProyecto);
     }
-
-    [TestMethod] 
-    [ExpectedException(typeof(InvalidOperationException))]
-
-    public void UsuarioBorrarRolInvalidoTest()
-    {
-        var rol = new Rol("Administrador del Proyecto");
-        usuario.EliminarRol(rol);
-    }
+    
 
     [TestMethod]
     public void HashearContraseñaTest()

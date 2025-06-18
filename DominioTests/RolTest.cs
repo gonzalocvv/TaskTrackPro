@@ -1,82 +1,42 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Dominio;
 using TaskTrackPro.Backend.Dominio;
 
-namespace DominioTests;
-
 [TestClass]
-public class RolTest
+public class RolEnumTests
 {
     [TestMethod]
-    public void CrearRolAdminSistema()
+    public void ValorNumerico_DeCadaRol_EsPotenciaDeDos()
     {
-        String nombreRol = "Administrador del Sistema";
-        Rol rol = new Rol(nombreRol);
-        Assert.AreEqual(nombreRol, rol.Nombre);
-    }
-    
-    [TestMethod]
-    public void CrearRolAdminProyecto()
-    {
-        String nombreRol = "Administrador del Proyecto";
-        Rol rol = new Rol(nombreRol);
-        Assert.AreEqual(nombreRol, rol.Nombre);
-    }
-    
-    [TestMethod]
-    public void CrearRolMiembroProyecto()
-    {
-        String nombreRol = "Miembro del Proyecto";
-        Rol rol = new Rol(nombreRol);
-        Assert.AreEqual(nombreRol, rol.Nombre);
-    }
-    
-    [TestMethod]
-    [ExpectedException(typeof(ArgumentException))]
-    public void CrearRolVacio()
-    {
-        String nombreRol = "";
-        Rol rol = new Rol(nombreRol);
-        Assert.AreEqual(nombreRol, rol.Nombre);
+        Assert.AreEqual(1, (int)Rol.MiembroProyecto);
+        Assert.AreEqual(2, (int)Rol.AdministradorProyecto);
+        Assert.AreEqual(4, (int)Rol.AdministradorSistema);
     }
 
-    [TestMethod] 
-    [ExpectedException(typeof(ArgumentException))]
-    public void CrearRolInvalido()
-    {
-        String nombreRol = "Coordinador Tarea";
-        Rol rol = new Rol(nombreRol);
-        Assert.AreEqual(nombreRol, rol.Nombre);
-    }
-    
     [TestMethod]
-    public void CrearRolValido()
+    public void CombinarRoles_ConOr_EsperadoResultado()
     {
-        String nombreRol = "Administrador del Proyecto";
-        Rol rol = new Rol(nombreRol);
-        Assert.AreEqual(nombreRol, rol.Nombre);
-    }
-    
-    [TestMethod]
-    public void CrearRolMiembroProyectoValido()
-    {
-        String nombreRol = "Miembro del Proyecto";
-        Rol rol = new Rol(nombreRol);
-        Assert.AreEqual(nombreRol, rol.Nombre);
-    }
-    [TestMethod]
-    public void CrearRolAdminSistemaValido()
-    {
-        String nombreRol = "Administrador del Sistema";
-        Rol rol = new Rol(nombreRol);
-        Assert.AreEqual(nombreRol, rol.Nombre);
-    }
-    [TestMethod]
-    public void CrearRolAdminProyectoValido()
-    {
-        String nombreRol = "Administrador del Proyecto";
-        Rol rol = new Rol(nombreRol);
-        Assert.AreEqual(nombreRol, rol.Nombre);
+        Rol combo = Rol.MiembroProyecto | Rol.AdministradorSistema; // 1 | 4 = 5
+        Assert.AreEqual(5, (int)combo);
     }
 
- }
+    [TestMethod]
+    public void HasFlag_DetectaBanderasCorrectas()
+    {
+        Rol combo = Rol.MiembroProyecto | Rol.AdministradorSistema;
+
+        Assert.IsTrue (combo.HasFlag(Rol.MiembroProyecto));
+        Assert.IsTrue (combo.HasFlag(Rol.AdministradorSistema));
+        Assert.IsFalse(combo.HasFlag(Rol.AdministradorProyecto));
+    }
+
+    [TestMethod]
+    public void QuitarRol_ConAndComplemento_Funciona()
+    {
+        Rol combo = Rol.MiembroProyecto | Rol.AdministradorSistema;
+        combo &= ~Rol.AdministradorSistema;          // quita bandera 4
+
+        Assert.IsFalse(combo.HasFlag(Rol.AdministradorSistema));
+        Assert.IsTrue (combo.HasFlag(Rol.MiembroProyecto));
+        Assert.AreEqual(1, (int)combo);
+    }
+}
