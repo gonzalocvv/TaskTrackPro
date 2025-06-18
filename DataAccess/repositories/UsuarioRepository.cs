@@ -48,6 +48,11 @@ public class UsuarioRepository
 
     public void RestablecerContraseñaYGuardar(Usuario usuario)
     {
-        throw new NotImplementedException();
+        if (usuario == null)
+        {
+            throw new ArgumentNullException(nameof(usuario), "El usuario no puede ser nulo.");
+        }
+        _sqlContext.Entry(usuario).Property(u => u.Contraseña).IsModified = true;
+        _sqlContext.SaveChanges();
     }
 }
