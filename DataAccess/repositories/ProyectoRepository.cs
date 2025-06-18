@@ -27,7 +27,7 @@ public class ProyectoRepository
     {
         return _sqlContext.Proyectos.FirstOrDefault(p => p.Nombre == nombre);
     }
-    public List<Proyecto> GetListaProyectos()
+    public virtual List<Proyecto> GetListaProyectos()
     {
         return _sqlContext.Proyectos.ToList();
     }
