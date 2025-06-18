@@ -16,8 +16,8 @@ else
         <thead>
         <tr>
             <th>Nombre</th>
-            <th>Email</th>
-            <th>Acciones</th>
+            <th class="ps-5">Email</th> @* Added ps-5 for padding-left *@@* Added ps-5 for padding-left *@@* Added ps-5 for padding-left *@
+            <th class="ps-5">Acciones</th>
         </tr>
         </thead>
         <tbody>
@@ -25,10 +25,19 @@ else
         {
             <tr>
                 <td>@usuario.Nombre</td>
-                <td>@usuario.Email</td>
-                <td>
-                    <button class="btn btn-primary btn-sm" @onclick="() => ResetearContrasena(usuario.Email)">
-                        Modificar Contraseña
+                <td class="ps-5">@usuario.Email</td> 
+                <td class="ps-5">
+                    <button class="btn btn-primary btn-sm me-5" @onclick="() => ResetearContrasena(usuario.Email)">
+                        Restablecer Contraseña
+                    </button>
+                    <button class="btn btn-info btn-sm me-2" @onclick="() => AsignarRolAdministrador(usuario.Email)">
+                        Administrador de sistema
+                    </button>
+                    <button class="btn btn-warning btn-sm me-2 " @onclick="() => AsignarRolLiderProyecto(usuario.Email)">
+                        Lider de proyecto
+                    </button>
+                    <button class="btn btn-success btn-sm" @onclick="() => AsignarRolAdministradorProyecto(usuario.Email)">
+                        Administrador de proyecto
                     </button>
                 </td>
             </tr>
@@ -52,7 +61,7 @@ else
             var dto = new ResetearContrasenaDto
             {
                 Email = email,
-                NuevaContrasena = null 
+                NuevaContrasena = null
             };
 
             await UsuarioService.ResetearContrasenaDefecto(dto);
@@ -63,5 +72,22 @@ else
         {
             await jsRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
         }
+    }
+
+    private void AsignarRolAdministrador(string email)
+    {
+        Console.WriteLine($"Ver detalles de {email}");
+    }
+
+    private void AsignarRolLiderProyecto(string email)
+    {
+        
+        Console.WriteLine($"Editar usuario {email}");
+    }
+
+    private void AsignarRolAdministradorProyecto(string email)
+    {
+
+        Console.WriteLine($"Eliminar usuario {email}");
     }
 }

@@ -146,5 +146,10 @@ public class UsuarioService
         return Task.CompletedTask;
     }
 
+    public void AgregarRolUsuario(string email, Rol rol)
+    {
+        throw new NotImplementedException();
+    }
+
     
 }  
