@@ -130,20 +130,22 @@ public class UsuarioService
         return listaUsuarios;
     }
     
-    public Task ResetearContrasenaDefecto(ResetearContrasenaDto dto)
+    public async Task ResetearContrasenaDefecto(ResetearContrasenaDto dto)
     {
         if (SesionActual == null || !EsAdminSistema())
             throw new InvalidOperationException("Debe ser administrador del sistema para resetear contraseñas.");
 
-        var usuario = GetUsuarioPorEmail(dto.Email);
+        var usuario = GetUsuarioPorEmail(dto.Email); 
 
         if (usuario.EsAdminSistema)
             throw new InvalidOperationException("No se puede resetear la contraseña de otro administrador del sistema.");
 
         usuario.Contraseña = dto.NuevaContrasena ?? ContraseñaPorDefecto;
-        usuario.HashearContraseña();
+        usuario.HashearContraseña(); 
 
-        return Task.CompletedTask;
+        _usuarioRepository.RestablecerContraseñaYGuardar(usuario);
+
+        await Task.CompletedTask; 
     }
 
     public async Task AgregarRolUsuario(string email, Rol rol)
@@ -154,7 +156,7 @@ public class UsuarioService
             throw new ArgumentException("El usuario no existe.");
         }
         
-        usuario.AgregarRol(rol); 
+        _usuarioRepository.AgregarRolAUsuario(email, rol);
     }
 
     

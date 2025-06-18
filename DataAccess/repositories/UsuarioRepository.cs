@@ -1,4 +1,5 @@
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
 
 namespace TaskTrackPro.Backend.DataAccess.repositories;
 
@@ -33,18 +34,20 @@ public class UsuarioRepository
     }
 
 
-    public void AgregarRolAUsuario(Rol rol)
+    public void AgregarRolAUsuario(string email, Rol rol)
     {
-        if (_sqlContext.Usuarios.Any(u => u.Email == _sqlContext.Usuarios.First().Email))
+        var usuario = GetUsuarioPorEmail(email);
+        if (usuario == null)
         {
-            var usuario = _sqlContext.Usuarios.First();
-            usuario.AgregarRol(rol);
-            _sqlContext.SaveChanges();
+            throw new ArgumentException("El usuario no existe");
         }
-        else
-        {
-            throw new ArgumentException("No hay usuarios registrados para agregar un rol.");
-        }
+        usuario.AgregarRol(rol);
+        _sqlContext.SaveChanges();
         
+    }
+
+    public void RestablecerContraseñaYGuardar(Usuario usuario)
+    {
+        throw new NotImplementedException();
     }
 }

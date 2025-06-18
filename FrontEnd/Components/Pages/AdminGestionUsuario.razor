@@ -1,4 +1,5 @@
 @page "/admin/gestion-usuario"
+@using TaskTrackPro.Backend.Dominio
 @using TaskTrackPro.Backend.Dtos
 @using TaskTrackPro.Backend.Servicios
 @inject UsuarioService UsuarioService
@@ -78,7 +79,7 @@ else
     {
         try
         {
-            await UsuarioService.AgregarRolUsuario(email, 0);
+            await UsuarioService.AgregarRolUsuario(email, Rol.AdministradorSistema);
             await jsRuntime.InvokeVoidAsync("alert", $"Rol 'Administrador de sistema' asignado a {email} correctamente.");
         }
         catch (ArgumentException ex)
@@ -95,7 +96,7 @@ else
     {
         try
         {
-            await UsuarioService.AgregarRolUsuario(email, 0);
+            await UsuarioService.AgregarRolUsuario(email, Rol.LiderProyecto);
             await jsRuntime.InvokeVoidAsync("alert", $"Rol 'Líder de proyecto' asignado a {email} correctamente.");
         }
         catch (ArgumentException ex)
@@ -112,7 +113,7 @@ else
     {
         try
         {
-            await UsuarioService.AgregarRolUsuario(email, 0);
+            await UsuarioService.AgregarRolUsuario(email, Rol.AdministradorProyecto);
             await jsRuntime.InvokeVoidAsync("alert", $"Rol 'Administrador de proyecto' asignado a {email} correctamente.");
         }
         catch (ArgumentException ex)

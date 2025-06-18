@@ -86,11 +86,36 @@ public class UserRepositoryTest
     {
         _usuario = new Usuario(dto);
         _userRepository.AgregarUsuario(_usuario);
-        _userRepository.AgregarRolAUsuario(Rol.AdministradorProyecto); 
+        _userRepository.AgregarRolAUsuario(_usuario.Email, Rol.AdministradorProyecto); 
         
         var usuarioObtenido = _userRepository.GetUsuarioPorEmail(_usuario.Email);
         Assert.IsTrue(usuarioObtenido.TieneRol(Rol.AdministradorProyecto));
     }
+    [TestMethod]
+    public void RestablecerContraseñaYGuardarTest()
+    {
+        _usuario = new Usuario(dto);
+        _usuario.HashearContraseña();
+        _userRepository.AgregarUsuario(_usuario);
+        
+        string ContraseñaPorDefecto = "Valida123@";
+        
+
+        var usuarioParaActualizar = _userRepository.GetUsuarioPorEmail(_usuario.Email);
+        Assert.IsNotNull(usuarioParaActualizar);
+
+        usuarioParaActualizar.Contraseña = ContraseñaPorDefecto;
+        usuarioParaActualizar.HashearContraseña();
+
+        _userRepository.RestablecerContraseñaYGuardar(usuarioParaActualizar);
+
+        var usuarioActualizado = _userRepository.GetUsuarioPorEmail(_usuario.Email);
+        Assert.IsNotNull(usuarioActualizado);
+        
+        Assert.IsTrue(BCrypt.Net.BCrypt.Verify(ContraseñaPorDefecto, usuarioActualizado.Contraseña),
+            "La contraseña actualizada no coincide con la contraseña por defecto esperada.");
+    }
+   
 }
 
     
