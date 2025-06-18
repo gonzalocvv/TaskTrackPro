@@ -129,8 +129,7 @@ public class UsuarioService
         }
         return listaUsuarios;
     }
-    
-    public async Task ResetearContrasenaDefecto(ResetearContrasenaDto dto)
+    public Task ResetearContrasenaDefecto(ResetearContrasenaDto dto)
     {
         if (SesionActual == null || !EsAdminSistema())
             throw new InvalidOperationException("Debe ser administrador del sistema para resetear contraseñas.");
@@ -145,7 +144,7 @@ public class UsuarioService
 
         _usuarioRepository.RestablecerContraseñaYGuardar(usuario);
 
-        await Task.CompletedTask; 
+        return Task.CompletedTask; 
     }
 
     public async Task AgregarRolUsuario(string email, Rol rol)

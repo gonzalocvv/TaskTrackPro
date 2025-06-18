@@ -186,7 +186,7 @@ public class UsuarioServicesTest
         var dto = new ResetearContrasenaDto
         {
             Email = usuario.Email,
-            NuevaContrasena = "Ab123456789!" // o una contraseña por defecto, según tu implementación
+            NuevaContrasena = "Ab123456789!" 
         };
 
         Assert.ThrowsException<InvalidOperationException>(() =>
