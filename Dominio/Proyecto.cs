@@ -172,7 +172,10 @@ namespace TaskTrackPro.Backend.Dominio
                 throw new ArgumentNullException(nameof(tarea), "La tarea no puede ser nula.");
             }
         }
-
+        public override bool Equals(object? obj)
+        {
+            return obj is Proyecto other && other.Nombre == Nombre;
+        }
 
     }
 }

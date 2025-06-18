@@ -35,4 +35,9 @@ public class ProyectoRepository
                                     .AsNoTracking()
                                     .ToList();
     }
+
+    public void Save()
+    {
+        _sqlContext.SaveChanges();
+    }
 }

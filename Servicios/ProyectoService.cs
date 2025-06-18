@@ -69,6 +69,7 @@ public class ProyectoService
             throw new ArgumentNullException("El proyecto no existe");
         }
         proyecto.AgregarMiembro(miembro);
+        _proyectoRepository.Save();
     }
     public List<GetTareaDto> GetTareasPorNombreProyecto(string nombreProyecto)
     {
