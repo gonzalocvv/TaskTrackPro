@@ -44,6 +44,32 @@ public class SqlContext : DbContext{
                    j.HasKey("UsuarioEmail", "TareaTitulo");
                    j.ToTable("UsuarioTarea");
                });
+       
+       modelBuilder.Entity<Proyecto>()
+           .Metadata.FindNavigation(nameof(Proyecto.MiembrosProyecto))
+           !.SetPropertyAccessMode(PropertyAccessMode.Field);
+
+       
+       modelBuilder.Entity<Proyecto>()
+           .HasMany< Usuario >("_miembrosProyecto")
+           .WithMany()
+           .UsingEntity<Dictionary<string,object>>(
+               "ProyectoUsuario",
+               j => j.HasOne<Usuario>()
+                   .WithMany()
+                   .HasForeignKey("UsuarioEmail")
+                   .HasPrincipalKey(u => u.Email)
+                   .OnDelete(DeleteBehavior.Cascade),
+               j => j.HasOne<Proyecto>()
+                   .WithMany()
+                   .HasForeignKey("ProyectoNombre")
+                   .HasPrincipalKey(p => p.Nombre)
+                   .OnDelete(DeleteBehavior.Cascade),
+               j =>
+               {
+                   j.HasKey("ProyectoNombre","UsuarioEmail");
+                   j.ToTable("ProyectoUsuario");
+               });
    }
    
 }
