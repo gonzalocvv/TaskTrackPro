@@ -42,7 +42,7 @@ public class UsuarioService
 
     public bool EsAdminSistema()
     {
-        return _sesionActual != null && _sesionActual.Roles == Rol.AdministradorSistema;
+        return _sesionActual != null && _sesionActual.EsAdminSistema;
     }
     public void CrearUsuario(CreateUsuarioDto UsuarioDto)
     {
