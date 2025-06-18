@@ -100,6 +100,7 @@ namespace Dominio
         public bool EsAdminSistema      => TieneRol(Rol.AdministradorSistema);
         public bool EsAdminProyecto     => TieneRol(Rol.AdministradorProyecto);
         public bool EsMiembroProyecto   => TieneRol(Rol.MiembroProyecto);
+        public bool EsLiderProyecto => TieneRol(Rol.LiderProyecto);
         public void AgregarRol(Rol nuevoRol)
         {
             _roles |= nuevoRol;

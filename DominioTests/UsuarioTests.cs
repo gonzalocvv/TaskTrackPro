@@ -116,25 +116,36 @@ public class UsuarioTests
     [TestMethod]
     public void UsuarioTieneMiembroProyectoPorDefecto()
     {
-        Assert.IsTrue(usuario.TieneRol(Rol.MiembroProyecto));
-        Assert.IsFalse(usuario.TieneRol(Rol.AdministradorSistema));
+        Assert.IsTrue(usuario.EsMiembroProyecto);
+        Assert.IsFalse(usuario.EsAdminSistema);
+    }
+    [TestMethod]
+    public void UsuarioNoTieneLiderProyectoPorDefecto()
+    {
+        Assert.IsFalse(usuario.TieneRol(Rol.LiderProyecto));
     }
     
-
+    [TestMethod]
+    public void AgregarRolLiderProyectoTest()
+    {
+        usuario.AgregarRol(Rol.LiderProyecto);
+        Assert.IsTrue(usuario.TieneRol(Rol.LiderProyecto));
+    }
+    
     [TestMethod]
     public void agregarRolValidoTest( )
     {
         usuario.AgregarRol(Rol.AdministradorProyecto);
 
-        Assert.IsTrue(usuario.TieneRol(Rol.AdministradorProyecto));
-        Assert.IsTrue(usuario.TieneRol(Rol.MiembroProyecto)); 
+        Assert.IsTrue(usuario.EsAdminProyecto);
+        Assert.IsTrue(usuario.EsAdminProyecto); 
     }
     
     [TestMethod]
     public void agregarRolDuplicadoTestNoLanzaExcepcion( )
     {
         usuario.AgregarRol(Rol.MiembroProyecto);
-        Assert.IsTrue(usuario.Roles == Rol.MiembroProyecto);
+        Assert.IsTrue(usuario.EsMiembroProyecto);
     }
     
 
@@ -143,7 +154,7 @@ public class UsuarioTests
     {
         usuario.AgregarRol(Rol.AdministradorProyecto);
         usuario.QuitarRol(Rol.AdministradorProyecto);
-        Assert.IsFalse(usuario.Roles == Rol.AdministradorProyecto);
+        Assert.IsFalse(usuario.EsAdminProyecto);
     }
     
 
