@@ -1,5 +1,6 @@
 @page "/"
 @using TaskTrackPro.Backend.Dtos
+@inject NavigationManager NavigationManager
 @using TaskTrackPro.Backend.Servicios
 
 <PageTitle>Task Track Pro</PageTitle>
@@ -80,6 +81,7 @@
             user = new LoginDto();
             showSuccessMessage = true;
             errorMessage = null;
+            NavigationManager.NavigateTo("/MisTareas");
         }
         catch (ArgumentNullException)
         {

@@ -9,7 +9,7 @@ public class UsuarioService
 {
     private MemoryDB _db;
     private readonly UsuarioRepository _usuarioRepository;
-    const string ContraseñaPorDefecto = "Valida123@";
+    const string ContraseñaPorDefecto = "Default123@";
 
     public UsuarioService(MemoryDB db, UsuarioRepository usuarioRepository)
     {
@@ -129,19 +129,33 @@ public class UsuarioService
         }
         return listaUsuarios;
     }
-    
-    public void ResetearContrasenaDefecto(ResetearContrasenaDto dto)
+    public Task ResetearContrasenaDefecto(ResetearContrasenaDto dto)
     {
         if (SesionActual == null || !EsAdminSistema())
             throw new InvalidOperationException("Debe ser administrador del sistema para resetear contraseñas.");
 
-        var usuario = GetUsuarioPorEmail(dto.Email);
+        var usuario = GetUsuarioPorEmail(dto.Email); 
 
         if (usuario.EsAdminSistema)
             throw new InvalidOperationException("No se puede resetear la contraseña de otro administrador del sistema.");
 
         usuario.Contraseña = dto.NuevaContrasena ?? ContraseñaPorDefecto;
-        usuario.HashearContraseña();
+        usuario.HashearContraseña(); 
+
+        _usuarioRepository.RestablecerContraseñaYGuardar(usuario);
+
+        return Task.CompletedTask; 
+    }
+
+    public async Task AgregarRolUsuario(string email, Rol rol)
+    {
+        var usuario = GetUsuarioPorEmail(email); 
+        if (usuario == null)
+        {
+            throw new ArgumentException("El usuario no existe.");
+        }
+        
+        _usuarioRepository.AgregarRolAUsuario(email, rol);
     }
 
     
