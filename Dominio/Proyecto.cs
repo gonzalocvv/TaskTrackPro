@@ -26,7 +26,7 @@ namespace TaskTrackPro.Backend.Dominio
             AdministradorP = administradorP;
 
             
-            _miembrosProyecto.Add(administradorP);
+            MiembrosProyecto.Add(administradorP);
         }
 
         [Key]
@@ -76,7 +76,8 @@ namespace TaskTrackPro.Backend.Dominio
             }
         }
 
-        public List<Usuario> MiembrosProyecto => _miembrosProyecto;
+        public List<Usuario> MiembrosProyecto { get; private set; } = new();
+
         public List<Tarea> Tareas => _tareas;
 
         public void AgregarMiembro(Usuario usuario)
@@ -86,9 +87,9 @@ namespace TaskTrackPro.Backend.Dominio
                 throw new ArgumentNullException(nameof(usuario), "El usuario no puede ser nulo.");
             }
 
-            if (!_miembrosProyecto.Contains(usuario))
+            if (!MiembrosProyecto.Contains(usuario))
             {
-                _miembrosProyecto.Add(usuario);
+                MiembrosProyecto.Add(usuario);
             }
         }
 
@@ -104,12 +105,12 @@ namespace TaskTrackPro.Backend.Dominio
                 throw new InvalidOperationException("No se puede remover al administrador del proyecto.");
             }
 
-            _miembrosProyecto.Remove(usuario);
+            MiembrosProyecto.Remove(usuario);
         }
 
         public void ValidarAdministrador()
         {
-            if (_administradorP == null || !_miembrosProyecto.Contains(_administradorP))
+            if (_administradorP == null || !MiembrosProyecto.Contains(_administradorP))
             {
                 throw new InvalidOperationException("El administrador no es válido o no pertenece al proyecto.");
             }

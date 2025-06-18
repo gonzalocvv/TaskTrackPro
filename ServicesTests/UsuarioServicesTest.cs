@@ -186,7 +186,7 @@ public class UsuarioServicesTest
         var dto = new ResetearContrasenaDto
         {
             Email = usuario.Email,
-            NuevaContrasena = "Ab123456789!" // o una contraseña por defecto, según tu implementación
+            NuevaContrasena = "Ab123456789!" 
         };
 
         Assert.ThrowsException<InvalidOperationException>(() =>
@@ -260,11 +260,26 @@ public class UsuarioServicesTest
         var resetDto = new ResetearContrasenaDto
         {
             Email = usuarioDto.Email,
-            NuevaContrasena = "NuevaContraseña123!" // puede ser la contraseña por defecto también
+            NuevaContrasena = "NuevaContraseña123!" 
         };
         service.ResetearContrasenaDefecto(resetDto);
         
     }
 
+    [TestMethod]
+    public void AgregarRolUsuarioTest() 
+    {
+        service.IniciarSesion(loginDtoAdmin);
+        service.CrearUsuario(UsuarioDto);
+        var usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
+        
+        Assert.IsFalse(usuario.TieneRol(Rol.AdministradorSistema));
+        
+        service.AgregarRolUsuario(usuario.Email, Rol.AdministradorSistema);
+        
+        usuario = service.GetUsuarioPorEmail(UsuarioDto.Email);
+        Assert.IsTrue(usuario.TieneRol(Rol.AdministradorSistema));
+        
+    }
 
 }

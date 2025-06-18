@@ -2,6 +2,7 @@ using TaskTrackPro.Backend.DataAccess;
 using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
 using TaskTrackPro.Backend.Dtos;
+using TaskTrackPro.Backend.Dominio.Interfaces;
 
 namespace TaskTrackPro.Backend.Servicios;
 
@@ -108,5 +109,12 @@ public class ProyectoService
             }
         }
         return listaTitulos;
+    }
+    
+    public void ExportarProyectos(IExportadorProyectos exportador, string ruta)
+    {
+        var proyectos = _proyectoRepository.GetListaProyectos();
+        var contenido = exportador.Exportar(proyectos);
+        File.WriteAllText(ruta, contenido);
     }
 }

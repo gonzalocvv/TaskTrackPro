@@ -1,6 +1,10 @@
 using TaskTrackPro.Backend.DataAccess;
 using TaskTrackPro.Backend.DataAccess.repositories;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Servicios;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dominio.Interfaces;
 using TaskTrackPro.Backend.Dtos;
 using TaskTrackPro.Backend.Servicios;
 
@@ -293,6 +297,39 @@ public class ProyectoServicesTest
         
     }
 
+    [TestMethod]
+    public void ExportarProyectos_GeneraArchivoConContenidoCorrecto()
+    {
+        
+        var ruta = "export_test.txt";
+
+        var proyectoFalso = new Proyecto("Proyecto Test", "Descripción", new DateTime(2026, 1, 1), new Usuario(new CreateUsuarioDto
+        {
+            Nombre = "Admin",
+            Apellido = "Admin",
+            Email = "admin@gmail.com",
+            FechaNacimiento = new DateTime(1990, 1, 1),
+            Contraseña = "Admin123!"
+        }));
+
+        var mockRepo = new Mock<ProyectoRepository>(null); 
+        mockRepo.Setup(r => r.GetListaProyectos()).Returns(new List<Proyecto> { proyectoFalso });
+
+        var mockExportador = new Mock<IExportadorProyectos>();
+        mockExportador.Setup(e => e.Exportar(It.IsAny<List<Proyecto>>())).Returns("contenido exportado");
+
+        var servicio = new ProyectoService(null, mockRepo.Object);
+
+        
+        servicio.ExportarProyectos(mockExportador.Object, ruta);
+        
+        Assert.IsTrue(File.Exists(ruta), "El archivo no fue creado.");
+        var contenido = File.ReadAllText(ruta);
+        Assert.AreEqual("contenido exportado", contenido);
+
+        
+        File.Delete(ruta);
+    }
 
     
 }
