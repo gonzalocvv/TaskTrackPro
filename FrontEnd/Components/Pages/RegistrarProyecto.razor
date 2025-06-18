@@ -108,7 +108,7 @@
             ProyectoService.CrearProyecto(nuevoProyecto);
             
             nuevoProyecto = new();
-            nuevoProyecto.FechaInicio = DateTime.Now;
+            nuevoProyecto.FechaInicio = DateTime.Today;
             emailsSeleccionados = Array.Empty<string>();
             showSuccessMessage = true;
         }
