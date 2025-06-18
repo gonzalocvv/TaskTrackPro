@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using Dtos;
-using BCrypt.Net;
-using TaskTrackPro.Backend.Dominio;
+﻿using System.ComponentModel.DataAnnotations;
+using TaskTrackPro.Backend.Dtos;
 
-namespace Dominio
+namespace TaskTrackPro.Backend.Dominio
 {
     public class Usuario
     {

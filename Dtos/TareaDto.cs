@@ -1,4 +1,4 @@
-namespace Dtos;
+namespace TaskTrackPro.Backend.Dtos;
 
 
 public class CrearTareaDto 

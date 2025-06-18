@@ -1,8 +1,7 @@
-using Dominio;
-using Dtos;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
 
-namespace DominioTests;
+namespace TaskTrackPro.Backend.DominioTests;
 
 [TestClass]
 public class ProyectoTests

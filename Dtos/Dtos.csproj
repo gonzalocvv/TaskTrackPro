@@ -7,6 +7,12 @@
         <RootNamespace>TaskTrackPro.Backend.Dtos</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Reference Include="Dominio">
+        <HintPath>..\FrontEnd\bin\Debug\net8.0\Dominio.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 
 
 </Project>

@@ -1,11 +1,7 @@
-using DataAccess;
-using Dominio;
-using Dtos;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Servicios;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
 
-namespace DominioTests;
+namespace TaskTrackPro.Backend.DominioTests;
 
 [TestClass]
 public class UsuarioTests
@@ -122,14 +118,14 @@ public class UsuarioTests
     [TestMethod]
     public void UsuarioNoTieneLiderProyectoPorDefecto()
     {
-        Assert.IsFalse(usuario.TieneRol(Rol.LiderProyecto));
+        Assert.IsFalse(usuario.EsLiderProyecto);
     }
     
     [TestMethod]
     public void AgregarRolLiderProyectoTest()
     {
         usuario.AgregarRol(Rol.LiderProyecto);
-        Assert.IsTrue(usuario.TieneRol(Rol.LiderProyecto));
+        Assert.IsTrue(usuario.EsLiderProyecto);
     }
     
     [TestMethod]

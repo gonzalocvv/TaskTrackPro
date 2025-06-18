@@ -1,11 +1,9 @@
-using DataAccess;
-using DataAccess.repositories;
-using Dominio;
-using Servicios;
-using Dtos;
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
+using TaskTrackPro.Backend.Dtos;
 
-namespace Servicios;
+namespace TaskTrackPro.Backend.Servicios;
 
 public class ProyectoService
 {

@@ -1,4 +1,3 @@
-using Dominio;
 using TaskTrackPro.Backend.Dominio;
 
 [TestClass]
