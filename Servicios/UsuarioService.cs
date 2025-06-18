@@ -60,13 +60,13 @@ public class UsuarioService
 
     public bool EsAdminProyecto()
     {
-        return _sesionActual != null && _sesionActual.Roles == Rol.AdministradorProyecto;
+        return _sesionActual != null && _sesionActual.EsAdminProyecto;
     }
 
     public bool EsRolNullOAdmin()
     {
         return _sesionActual == null || 
-               _sesionActual.Roles == Rol.AdministradorSistema;
+               _sesionActual.EsAdminSistema;
     }
     public Usuario GetUsuarioPorNombre(string nombre)
     {
