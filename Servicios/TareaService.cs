@@ -32,6 +32,13 @@ public class TareaService
 
             nuevaTarea.AsignarUsuario(usuario);
         }
+        foreach (var titulo in crearTareaDto.TareasQueYoDependoTitulos ?? Enumerable.Empty<string>())
+        {
+            var dependiente = _tareaRepository.GetTareaPorProyectoYTitulo(crearTareaDto.ProyectoNombre, titulo)
+                              ?? throw new ArgumentException($"No existe la tarea dependiente '{titulo}'");
+
+            nuevaTarea.AgregarDependencia(dependiente);
+        }
         proyecto.AgregarTarea(nuevaTarea);
         _tareaRepository.AgregarTarea(nuevaTarea);
     }
@@ -71,6 +78,13 @@ public class TareaService
             throw new ArgumentException("Tarea inexistente");
         Usuario usuarioParaCompletar = _tareaRepository.GetUsuarioPorEmail(usuario);
         tarea.CompletarTarea(usuarioParaCompletar);
+    }
+    public Tarea GetTareaPorTitulo(string titulo)
+    {
+        var tarea = _tareaRepository.GetTareaPorTitulo(titulo);
+        if (tarea == null)
+            throw new ArgumentException("Tarea inexistente");
+        return tarea;
     }
     
 }

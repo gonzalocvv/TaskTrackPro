@@ -19,9 +19,32 @@ public class SqlContext : DbContext{
    protected override void OnModelCreating(ModelBuilder modelBuilder)
    {
        base.OnModelCreating(modelBuilder);
+
        modelBuilder.Entity<Tarea>()
            .Property(t => t.ProyectoNombre)
            .HasField("_tituloProyecto")
-           .IsRequired(); 
+           .IsRequired();
+
+       modelBuilder.Entity<Tarea>()
+           .HasMany(t => t.UsuariosAsignados)
+           .WithMany()
+           .UsingEntity<Dictionary<string, object>>(
+               "UsuarioTarea",
+               j => j.HasOne<Usuario>()
+                   .WithMany()
+                   .HasForeignKey("UsuarioEmail")
+                   .HasPrincipalKey(u => u.Email)
+                   .OnDelete(DeleteBehavior.Cascade),
+               j => j.HasOne<Tarea>()
+                   .WithMany()
+                   .HasForeignKey("TareaTitulo")
+                   .HasPrincipalKey(t => t.Titulo)
+                   .OnDelete(DeleteBehavior.Cascade),
+               j =>
+               {
+                   j.HasKey("UsuarioEmail", "TareaTitulo");
+                   j.ToTable("UsuarioTarea");
+               });
    }
+   
 }
