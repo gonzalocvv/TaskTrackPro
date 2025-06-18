@@ -98,7 +98,7 @@ public class UserRepositoryTest
         _usuario.HashearContraseña();
         _userRepository.AgregarUsuario(_usuario);
         
-        string ContraseñaPorDefecto = "Valida123@";
+        string ContraseñaPorDefecto = "Default123@";
         
 
         var usuarioParaActualizar = _userRepository.GetUsuarioPorEmail(_usuario.Email);

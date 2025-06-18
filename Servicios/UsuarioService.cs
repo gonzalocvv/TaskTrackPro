@@ -9,7 +9,7 @@ public class UsuarioService
 {
     private MemoryDB _db;
     private readonly UsuarioRepository _usuarioRepository;
-    const string ContraseñaPorDefecto = "Valida123@";
+    const string ContraseñaPorDefecto = "Default123@";
 
     public UsuarioService(MemoryDB db, UsuarioRepository usuarioRepository)
     {
