@@ -33,8 +33,18 @@ public class UsuarioRepository
     }
 
 
-    public void AgregarRol(Rol rol)
+    public void AgregarRolAUsuario(Rol rol)
     {
-        throw new NotImplementedException();
+        if (_sqlContext.Usuarios.Any(u => u.Email == _sqlContext.Usuarios.First().Email))
+        {
+            var usuario = _sqlContext.Usuarios.First();
+            usuario.AgregarRol(rol);
+            _sqlContext.SaveChanges();
+        }
+        else
+        {
+            throw new ArgumentException("No hay usuarios registrados para agregar un rol.");
+        }
+        
     }
 }
