@@ -1,5 +1,4 @@
-﻿using TaskTrackPro.Backend.Dominio;
-
+﻿
 namespace TaskTrackPro.Backend.Dtos;
 
 public class CreateUsuarioDto
@@ -9,7 +8,7 @@ public class CreateUsuarioDto
     public string Email;
     public DateTime FechaNacimiento;
     public string Contraseña;
-    public Rol Roles { get; set; } = Rol.MiembroProyecto;
+    public int Roles { get; set; } = 1;
 }
 
 public class LoginDto

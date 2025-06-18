@@ -47,7 +47,6 @@ public class UsuarioServicesTest
             Email = "admin@admin.com",
             FechaNacimiento = new DateTime(1990, 1, 1),
             Contraseña = "Admin123@",
-            Roles = Rol.AdministradorSistema | Rol.AdministradorProyecto
         };
         loginDtoAdmin = new LoginDto
         {
