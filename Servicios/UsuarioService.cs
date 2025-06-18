@@ -146,15 +146,15 @@ public class UsuarioService
         return Task.CompletedTask;
     }
 
-    public void AgregarRolUsuario(string email, Rol rol)
+    public async Task AgregarRolUsuario(string email, Rol rol)
     {
-        var usuario = GetUsuarioPorEmail(email);
+        var usuario = GetUsuarioPorEmail(email); 
         if (usuario == null)
         {
             throw new ArgumentException("El usuario no existe.");
         }
         
-        usuario.AgregarRol(rol);
+        usuario.AgregarRol(rol); 
     }
 
     

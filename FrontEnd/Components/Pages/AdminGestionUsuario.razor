@@ -16,7 +16,7 @@ else
         <thead>
         <tr>
             <th>Nombre</th>
-            <th class="ps-5">Email</th> @* Added ps-5 for padding-left *@@* Added ps-5 for padding-left *@@* Added ps-5 for padding-left *@
+            <th class="ps-5">Email</th>
             <th class="ps-5">Acciones</th>
         </tr>
         </thead>
@@ -25,7 +25,7 @@ else
         {
             <tr>
                 <td>@usuario.Nombre</td>
-                <td class="ps-5">@usuario.Email</td> 
+                <td class="ps-5">@usuario.Email</td>
                 <td class="ps-5">
                     <button class="btn btn-primary btn-sm me-5" @onclick="() => ResetearContrasena(usuario.Email)">
                         Restablecer Contraseña
@@ -70,24 +70,58 @@ else
         }
         catch (Exception ex)
         {
-            await jsRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+            await jsRuntime.InvokeVoidAsync("alert", $"Error al restablecer contraseña: {ex.Message}");
         }
     }
 
-    private void AsignarRolAdministrador(string email)
+    private async Task AsignarRolAdministrador(string email)
     {
-        Console.WriteLine($"Ver detalles de {email}");
+        try
+        {
+            await UsuarioService.AgregarRolUsuario(email, 0);
+            await jsRuntime.InvokeVoidAsync("alert", $"Rol 'Administrador de sistema' asignado a {email} correctamente.");
+        }
+        catch (ArgumentException ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error al asignar rol de 'Administrador de sistema' a {email}: {ex.Message}");
+        }
     }
 
-    private void AsignarRolLiderProyecto(string email)
+    private async Task AsignarRolLiderProyecto(string email)
     {
-        
-        Console.WriteLine($"Editar usuario {email}");
+        try
+        {
+            await UsuarioService.AgregarRolUsuario(email, 0);
+            await jsRuntime.InvokeVoidAsync("alert", $"Rol 'Líder de proyecto' asignado a {email} correctamente.");
+        }
+        catch (ArgumentException ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error al asignar rol de 'Líder de proyecto' a {email}: {ex.Message}");
+        }
     }
 
-    private void AsignarRolAdministradorProyecto(string email)
+    private async Task AsignarRolAdministradorProyecto(string email)
     {
-
-        Console.WriteLine($"Eliminar usuario {email}");
+        try
+        {
+            await UsuarioService.AgregarRolUsuario(email, 0);
+            await jsRuntime.InvokeVoidAsync("alert", $"Rol 'Administrador de proyecto' asignado a {email} correctamente.");
+        }
+        catch (ArgumentException ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            await jsRuntime.InvokeVoidAsync("alert", $"Error al asignar rol de 'Administrador de proyecto' a {email}: {ex.Message}");
+        }
     }
 }
