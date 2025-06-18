@@ -176,7 +176,6 @@ public class ProyectoServicesTest
     [TestMethod]
     public void GetListaProyectosRetornaTodosLosProyectosConSusMiembrosTest()
     {
-
         var proyectoDto1 = new CrearProyectoDto
         {
             Nombre = "P1",
@@ -216,27 +215,24 @@ public class ProyectoServicesTest
         Assert.AreEqual(proyectoDto1.FechaInicio, dto1.FechaInicio);
         Assert.AreEqual(proyectoDto1.AdministradorEmail, dto1.AdministradorEmail);
         CollectionAssert.Contains(dto1.MiembroEmails, miembro.Email);
+        CollectionAssert.Contains(dto1.MiembroEmails, proyectoDto1.AdministradorEmail);
 
         var dto2 = lista.Single(d => d.Nombre == proyectoDto2.Nombre);
         Assert.AreEqual(proyectoDto2.Descripcion, dto2.Descripcion);
         Assert.AreEqual(proyectoDto2.FechaInicio, dto2.FechaInicio);
         Assert.AreEqual(proyectoDto2.AdministradorEmail, dto2.AdministradorEmail);
         Assert.AreEqual(1, dto2.MiembroEmails.Count);
+        CollectionAssert.Contains(dto2.MiembroEmails, proyectoDto2.AdministradorEmail);
     }
     
     [TestMethod]
     public void GetTareasPorNombreProyectoConTareasRetornaDtosCorrectosTest()
     {
         var user = _serviceUser.GetUsuarioPorEmail(_administradorP.Email);
-        var proyecto = new Proyecto(
-            _proyectoDto.Nombre,
-            _proyectoDto.Descripcion,
-            _proyectoDto.FechaInicio,
-            user
-        );
+        var proyecto = _serviceProj.CrearProyecto(_proyectoDto);
         proyecto.Tareas.Add(tarea1);
         proyecto.Tareas.Add(tarea2);
-        _db.AgregarProyecto(proyecto);
+        
 
         var lista = _serviceProj.GetTareasPorNombreProyecto(proyecto.Nombre);
 

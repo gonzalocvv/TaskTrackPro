@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TaskTrackPro.Backend.Dominio;
 
 namespace TaskTrackPro.Backend.DataAccess.repositories;
@@ -29,6 +30,14 @@ public class ProyectoRepository
     }
     public virtual List<Proyecto> GetListaProyectos()
     {
-        return _sqlContext.Proyectos.ToList();
+        return _sqlContext.Proyectos.Include(p => p.MiembrosProyecto)
+                                    .Include(p => p.AdministradorP) 
+                                    .AsNoTracking()
+                                    .ToList();
+    }
+
+    public void Save()
+    {
+        _sqlContext.SaveChanges();
     }
 }

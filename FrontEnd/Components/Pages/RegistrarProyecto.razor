@@ -72,7 +72,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        nuevoProyecto.FechaInicio = DateTime.Now;
+        nuevoProyecto.FechaInicio = DateTime.Today;
         if (UsuarioService.SesionActual == null)
         {
             NavigationManager.NavigateTo("/iniciarSesion", true);

@@ -10,6 +10,7 @@ namespace TaskTrackPro.Backend.Dominio
         private string _descripcion;
         private DateTime _fechaInicio;
         private Usuario _administradorP;
+        private readonly List<Usuario> _miembrosProyecto = new();
         private readonly List<Tarea> _tareas = new();
 
         public Proyecto()
@@ -158,7 +159,7 @@ namespace TaskTrackPro.Backend.Dominio
 
         private static void ValidarFechaDeInicioValida(DateTime fechaInicio)
         {
-            if (fechaInicio.Date < DateTime.Now.Date)
+            if (fechaInicio < DateTime.Today)
             {
                 throw new ArgumentException("La fecha de inicio tiene que ser mayor o igual a la actual.");
             }
@@ -171,7 +172,10 @@ namespace TaskTrackPro.Backend.Dominio
                 throw new ArgumentNullException(nameof(tarea), "La tarea no puede ser nula.");
             }
         }
-
+        public override bool Equals(object? obj)
+        {
+            return obj is Proyecto other && other.Nombre == Nombre;
+        }
 
     }
 }

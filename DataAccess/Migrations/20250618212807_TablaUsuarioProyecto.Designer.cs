@@ -12,8 +12,8 @@ using TaskTrackPro.Backend.DataAccess;
 namespace TaskTrackPro.Backend.DataAccess.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    [Migration("20250618202852_TablaRelacionUsuarioProyecto")]
-    partial class TablaRelacionUsuarioProyecto
+    [Migration("20250618212807_TablaUsuarioProyecto")]
+    partial class TablaUsuarioProyecto
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
