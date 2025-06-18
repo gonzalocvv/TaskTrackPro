@@ -130,7 +130,7 @@ public class UsuarioService
         return listaUsuarios;
     }
     
-    public void ResetearContrasenaDefecto(ResetearContrasenaDto dto)
+    public Task ResetearContrasenaDefecto(ResetearContrasenaDto dto)
     {
         if (SesionActual == null || !EsAdminSistema())
             throw new InvalidOperationException("Debe ser administrador del sistema para resetear contraseñas.");
@@ -142,6 +142,8 @@ public class UsuarioService
 
         usuario.Contraseña = dto.NuevaContrasena ?? ContraseñaPorDefecto;
         usuario.HashearContraseña();
+
+        return Task.CompletedTask;
     }
 
     
