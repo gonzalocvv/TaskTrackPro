@@ -300,10 +300,10 @@ public class ProyectoServicesTest
     [TestMethod]
     public void ExportarProyectos_GeneraArchivoConContenidoCorrecto()
     {
-        // Arrange
+        
         var ruta = "export_test.txt";
 
-        var proyectoFalso = new Proyecto("Proyecto Test", "Descripción", new DateTime(2024, 1, 1), new Usuario(new CreateUsuarioDto
+        var proyectoFalso = new Proyecto("Proyecto Test", "Descripción", new DateTime(2026, 1, 1), new Usuario(new CreateUsuarioDto
         {
             Nombre = "Admin",
             Apellido = "Admin",
@@ -312,7 +312,7 @@ public class ProyectoServicesTest
             Contraseña = "Admin123!"
         }));
 
-        var mockRepo = new Mock<ProyectoRepository>(null); // o el constructor real con null si no usa nada
+        var mockRepo = new Mock<ProyectoRepository>(null); 
         mockRepo.Setup(r => r.GetListaProyectos()).Returns(new List<Proyecto> { proyectoFalso });
 
         var mockExportador = new Mock<IExportadorProyectos>();
@@ -320,15 +320,14 @@ public class ProyectoServicesTest
 
         var servicio = new ProyectoService(null, mockRepo.Object);
 
-        // Act
+        
         servicio.ExportarProyectos(mockExportador.Object, ruta);
-
-        // Assert
+        
         Assert.IsTrue(File.Exists(ruta), "El archivo no fue creado.");
         var contenido = File.ReadAllText(ruta);
         Assert.AreEqual("contenido exportado", contenido);
 
-        // Cleanup
+        
         File.Delete(ruta);
     }
 
