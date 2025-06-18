@@ -148,7 +148,13 @@ public class UsuarioService
 
     public void AgregarRolUsuario(string email, Rol rol)
     {
-        throw new NotImplementedException();
+        var usuario = GetUsuarioPorEmail(email);
+        if (usuario == null)
+        {
+            throw new ArgumentException("El usuario no existe.");
+        }
+        
+        usuario.AgregarRol(rol);
     }
 
     
