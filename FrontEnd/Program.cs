@@ -1,10 +1,10 @@
 using FrontEnd.Components;
-using Servicios;
-using DataAccess;
-using DataAccess.repositories;
 using Microsoft.EntityFrameworkCore;
 using Syncfusion.Licensing;
 using Syncfusion.Blazor;
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
+using TaskTrackPro.Backend.Servicios;
 
 var builder = WebApplication.CreateBuilder(args);
 

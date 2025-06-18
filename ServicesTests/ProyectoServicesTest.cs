@@ -1,14 +1,14 @@
+using TaskTrackPro.Backend.DataAccess;
+using TaskTrackPro.Backend.DataAccess.repositories;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using DataAccess;
-using DataAccess.repositories;
-using Dominio;
-using Dtos;
 using Servicios;
 using TaskTrackPro.Backend.Dominio;
 using TaskTrackPro.Backend.Dominio.Interfaces;
+using TaskTrackPro.Backend.Dtos;
+using TaskTrackPro.Backend.Servicios;
 
-namespace ServicesTests;
+namespace TaskTrackPro.Backend.ServicesTests;
 
 [TestClass]
 public class ProyectoServicesTest

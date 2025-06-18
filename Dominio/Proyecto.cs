@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Dominio;
 
 namespace TaskTrackPro.Backend.Dominio
 {

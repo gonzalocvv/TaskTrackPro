@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using TaskTrackPro.Backend.DataAccess;
 
 #nullable disable
 
 namespace TaskTrackPro.Backend.DataAccess.Migrations
 {
     [DbContext(typeof(SqlContext))]
-    [Migration("20250604215915_PrimeraMigracion")]
-    partial class PrimeraMigracion
+    [Migration("20250618112159_MigracionPostRefactorClaseRol")]
+    partial class MigracionPostRefactorClaseRol
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,41 +24,6 @@ namespace TaskTrackPro.Backend.DataAccess.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Dominio.Usuario", b =>
-                {
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Apellido")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Contraseña")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("FechaNacimiento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Nombre")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProyectoNombre")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TareaTitulo")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Email");
-
-                    b.HasIndex("ProyectoNombre");
-
-                    b.HasIndex("TareaTitulo");
-
-                    b.ToTable("Usuarios");
-                });
 
             modelBuilder.Entity("TareaTarea", b =>
                 {
@@ -126,15 +92,52 @@ namespace TaskTrackPro.Backend.DataAccess.Migrations
                     b.ToTable("Tareas");
                 });
 
-            modelBuilder.Entity("Dominio.Usuario", b =>
+            modelBuilder.Entity("TaskTrackPro.Backend.Dominio.Usuario", b =>
                 {
-                    b.HasOne("TaskTrackPro.Backend.Dominio.Proyecto", null)
-                        .WithMany("MiembrosProyecto")
-                        .HasForeignKey("ProyectoNombre");
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasOne("TaskTrackPro.Backend.Dominio.Tarea", null)
-                        .WithMany("UsuariosAsignados")
-                        .HasForeignKey("TareaTitulo");
+                    b.Property<string>("Apellido")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Contraseña")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaNacimiento")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProyectoNombre")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Roles")
+                        .HasColumnType("int");
+
+                    b.HasKey("Email");
+
+                    b.HasIndex("ProyectoNombre");
+
+                    b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("UsuarioTarea", b =>
+                {
+                    b.Property<string>("UsuarioEmail")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TareaTitulo")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UsuarioEmail", "TareaTitulo");
+
+                    b.HasIndex("TareaTitulo");
+
+                    b.ToTable("UsuarioTarea", (string)null);
                 });
 
             modelBuilder.Entity("TareaTarea", b =>
@@ -154,7 +157,7 @@ namespace TaskTrackPro.Backend.DataAccess.Migrations
 
             modelBuilder.Entity("TaskTrackPro.Backend.Dominio.Proyecto", b =>
                 {
-                    b.HasOne("Dominio.Usuario", "AdministradorP")
+                    b.HasOne("TaskTrackPro.Backend.Dominio.Usuario", "AdministradorP")
                         .WithMany()
                         .HasForeignKey("AdministradorPEmail")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -165,9 +168,33 @@ namespace TaskTrackPro.Backend.DataAccess.Migrations
 
             modelBuilder.Entity("TaskTrackPro.Backend.Dominio.Tarea", b =>
                 {
-                    b.HasOne("TaskTrackPro.Backend.Dominio.Proyecto", null)
+                    b.HasOne("TaskTrackPro.Backend.Dominio.Proyecto", "Proyecto")
                         .WithMany("Tareas")
                         .HasForeignKey("ProyectoNombre")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Proyecto");
+                });
+
+            modelBuilder.Entity("TaskTrackPro.Backend.Dominio.Usuario", b =>
+                {
+                    b.HasOne("TaskTrackPro.Backend.Dominio.Proyecto", null)
+                        .WithMany("MiembrosProyecto")
+                        .HasForeignKey("ProyectoNombre");
+                });
+
+            modelBuilder.Entity("UsuarioTarea", b =>
+                {
+                    b.HasOne("TaskTrackPro.Backend.Dominio.Tarea", null)
+                        .WithMany()
+                        .HasForeignKey("TareaTitulo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TaskTrackPro.Backend.Dominio.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioEmail")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -177,11 +204,6 @@ namespace TaskTrackPro.Backend.DataAccess.Migrations
                     b.Navigation("MiembrosProyecto");
 
                     b.Navigation("Tareas");
-                });
-
-            modelBuilder.Entity("TaskTrackPro.Backend.Dominio.Tarea", b =>
-                {
-                    b.Navigation("UsuariosAsignados");
                 });
 #pragma warning restore 612, 618
         }

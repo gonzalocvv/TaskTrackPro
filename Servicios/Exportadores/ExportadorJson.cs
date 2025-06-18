@@ -1,4 +1,3 @@
-using Dominio;
 using System.Text.Json;
 using TaskTrackPro.Backend.Dominio;
 using TaskTrackPro.Backend.Dominio.Interfaces;
