@@ -107,9 +107,9 @@ public class ProyectoTests
         var tarea = new Tarea(dto);
         _proyecto.AgregarTarea(tarea);
         Assert.IsTrue(_proyecto.Tareas.Contains(tarea)); 
-        
+    
         _proyecto.RemoverTarea(tarea);
-        
+    
         Assert.IsFalse(_proyecto.Tareas.Contains(tarea));
     }
     
@@ -175,9 +175,9 @@ public class ProyectoTests
             Estado = "Pendiente",
         };
         var tarea2 = new Tarea(dto2);
-        
+
         _proyecto.AgregarTarea(tarea1);
-        
+
         _proyecto.AgregarTarea(tarea2);
     }
 
