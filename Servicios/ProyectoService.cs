@@ -1,3 +1,4 @@
+using Servicios.Exportadores;
 using TaskTrackPro.Backend.DataAccess;
 using TaskTrackPro.Backend.DataAccess.repositories;
 using TaskTrackPro.Backend.Dominio;
@@ -117,5 +118,16 @@ public class ProyectoService
         var proyectos = _proyectoRepository.GetListaProyectos();
         var contenido = exportador.Exportar(proyectos);
         File.WriteAllText(ruta, contenido);
+    }
+    public string ExportarCsvComoTexto()
+    {
+        var exportador = new ExportadorCsv();
+        return exportador.Exportar(_proyectoRepository.GetListaProyectos());
+    }
+
+    public string ExportarJsonComoTexto()
+    {
+        var exportador = new ExportadorJson();
+        return exportador.Exportar(_proyectoRepository.GetListaProyectos());
     }
 }
