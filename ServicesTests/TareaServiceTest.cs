@@ -64,7 +64,7 @@ public class TareaServiceTest
         _proyecto = new Proyecto(
             _proyectoNombre,
             "Descripción del proyecto",
-            new DateTime(2025, 10, 1),
+            DateTime.Today.AddDays(1),
             _administradorP
         );
         _proyectoRepository.AgregarProyecto(_proyecto);
@@ -105,7 +105,7 @@ public class TareaServiceTest
             Contraseña = "Gonzalo9@"
         };
          responsable = new Usuario(responsableDto);    
-         proyectoPrueba = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", new DateTime(2025, 10, 1), responsable);
+         proyectoPrueba = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", DateTime.Today.AddDays(1), responsable);
 
     }
 
