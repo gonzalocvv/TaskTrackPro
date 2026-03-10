@@ -73,7 +73,7 @@ else
                 TaskName = tarea.Titulo,
                 StartDate = start,
                 EndDate = start.AddHours(tarea.Duracion),
-                Duration = tarea.Duracion.ToString(),
+                Duration = Math.Max(1, (int)Math.Ceiling(tarea.Duracion / 8.0)).ToString(),
                 Progress = tarea.Estado == "Completada" ? 100 : 0,
                 Predecessor = null,
                 ParentId = null
