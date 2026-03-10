@@ -28,14 +28,16 @@ else
 
     @if (taskCollection.Any())
     {
-        <SfGantt DataSource="@taskCollection" Height="300px" Width="100%" TreeColumnIndex="1">
-            <GanttTaskFields Id="TaskId" Name="TaskName" StartDate="StartDate" EndDate="EndDate"
-                             Duration="Duration" Progress="Progress" ParentID="ParentId" Dependency="Predecessor" />
-            <GanttColumns>
-                <GanttColumn Field="TaskId" HeaderText="ID" Width="100"></GanttColumn>
-                <GanttColumn Field="TaskName" HeaderText="Nombre de la Tarea" Width="250"></GanttColumn>
-            </GanttColumns>
-        </SfGantt>
+        <div style="overflow-x:auto; max-width:100%;">
+            <SfGantt DataSource="@taskCollection" Height="300px" Width="900px" TreeColumnIndex="1">
+                <GanttTaskFields Id="TaskId" Name="TaskName" StartDate="StartDate" EndDate="EndDate"
+                                 Duration="Duration" Progress="Progress" ParentID="ParentId" Dependency="Predecessor" />
+                <GanttColumns>
+                    <GanttColumn Field="TaskId" HeaderText="ID" Width="100"></GanttColumn>
+                    <GanttColumn Field="TaskName" HeaderText="Nombre de la Tarea" Width="250"></GanttColumn>
+                </GanttColumns>
+            </SfGantt>
+        </div>
     }
 }
 

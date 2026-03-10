@@ -69,7 +69,7 @@
         <div class="mb-3">
             <label class="form-label">Depende de</label>
             <select multiple class="form-select" style="height:180px"
-                    @bind="tareaForm.TareasQueYoDependoTitulos">
+                    @bind="titulosSeleccionados">
                 @foreach (var t in tareasDelProyecto.Where(t => t.Estado != "Completada"))
                 {
                     <option value="@t.Titulo">@t.Titulo (@t.Estado) (@t.Duracion)</option>
@@ -104,7 +104,8 @@
     private List<GetTareaDto>    tareasDelProyecto = new(); 
     private List<GetUsuarioDto> usuarios  = new();
     private string[] emailsSeleccionados  = Array.Empty<string>();
-
+    private string[] titulosSeleccionados = Array.Empty<string>();
+    
     private string errorMessage;
     private bool showSuccessMessage = false;
     
@@ -170,12 +171,14 @@
         tareaForm.UsuariosAsignadosEmails = emailsSeleccionados.ToList();
         try
         {
+            tareaForm.TareasQueYoDependoTitulos = titulosSeleccionados.ToList();
             TareaService.CrearTarea(tareaForm);
             showSuccessMessage = true;
             
             tareaForm = new();
             tareaForm.FechaInicio = DateTime.Today;
             emailsSeleccionados = Array.Empty<string>();
+            titulosSeleccionados = Array.Empty<string>();
         }
         catch (Exception ex)
         {
