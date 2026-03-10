@@ -26,7 +26,7 @@ builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProyectoService>();
 builder.Services.AddScoped<TareaService>();
 builder.Services.AddSyncfusionBlazor();
-SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NNaF1cWWhOYVJxWmFZfVtgfV9CZVZQQGY/P1ZhSXxWdkNiXn1fdHFQTmJVV0B9XUs=");
+SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JGaF1cXmhNYVtpR2NbeU5xdF9EYVZSRWY/P1ZhSXxVdkZjUH1ccnBRR2NaVU19XEA=");
 
 
 

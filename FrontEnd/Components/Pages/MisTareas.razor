@@ -39,7 +39,7 @@ else
                         @if (tarea.FechaInicio.HasValue)
                         {
                             <br />
-                            <small class="text-muted">Inicio: @tarea.FechaInicio:dd/MM/yyyy</small>
+                            <small class="text-muted">Inicio: @tarea.FechaInicio?.ToString("dd/MM/yyyy")</small>
                         }
 
                         @if (tarea.Estado == "Completada" && tarea.FechaInicio.HasValue)

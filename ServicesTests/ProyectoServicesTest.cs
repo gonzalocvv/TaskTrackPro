@@ -52,7 +52,7 @@ public class ProyectoServicesTest
         {
             Nombre = "Proyecto 1",
             Descripcion = "Descripcion del proyecto 1",
-            FechaInicio = new DateTime(2025, 10, 1),
+            FechaInicio = DateTime.Today.AddDays(1),
             AdministradorEmail = "admin@admin.com"
         };
         
@@ -180,14 +180,14 @@ public class ProyectoServicesTest
         {
             Nombre = "P1",
             Descripcion = "Desc1",
-            FechaInicio = new DateTime(2025, 9, 1),
+            FechaInicio = DateTime.Today.AddDays(1),
             AdministradorEmail = _administradorP.Email
         };
         var proyectoDto2 = new CrearProyectoDto
         {
             Nombre = "P2",
             Descripcion = "Desc2",
-            FechaInicio = new DateTime(2025, 9, 2),
+            FechaInicio = DateTime.Today.AddDays(1),
             AdministradorEmail = _administradorP.Email
         };
         _serviceProj.CrearProyecto(proyectoDto1);
@@ -299,7 +299,7 @@ public class ProyectoServicesTest
         
         var ruta = "export_test.txt";
 
-        var proyectoFalso = new Proyecto("Proyecto Test", "Descripción", new DateTime(2026, 1, 1), new Usuario(new CreateUsuarioDto
+        var proyectoFalso = new Proyecto("Proyecto Test", "Descripción", DateTime.Today.AddDays(1), new Usuario(new CreateUsuarioDto
         {
             Nombre = "Admin",
             Apellido = "Admin",
