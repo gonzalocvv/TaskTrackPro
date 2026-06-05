@@ -115,8 +115,17 @@ public class ProyectoService
     
     public CaminoCriticoDto GetCaminoCritico(string nombreProyecto)
     {
-        // Esqueleto: se implementa en el paso GREEN.
-        return new CaminoCriticoDto();
+        var proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
+        if (proyecto == null)
+        {
+            throw new ArgumentNullException("El proyecto no existe");
+        }
+        var resultado = new CalculadoraCaminoCritico().Calcular(proyecto.Tareas);
+        return new CaminoCriticoDto
+        {
+            DuracionTotal = resultado.DuracionTotal,
+            TitulosCriticos = resultado.TitulosCriticos.ToList()
+        };
     }
 
     public void ExportarProyectos(IExportadorProyectos exportador, string ruta)

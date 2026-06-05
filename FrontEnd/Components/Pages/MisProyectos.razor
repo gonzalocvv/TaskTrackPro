@@ -28,6 +28,7 @@ else
 
     @if (taskCollection.Any())
     {
+        <p class="fw-semibold">Duración total (camino crítico): @duracionTotalProyecto horas</p>
         <div style="overflow-x:auto; max-width:100%;">
             <SfGantt DataSource="@taskCollection" Height="300px" Width="900px" TreeColumnIndex="1">
                 <GanttTaskFields Id="TaskId" Name="TaskName" StartDate="StartDate" EndDate="EndDate"
@@ -35,6 +36,7 @@ else
                 <GanttColumns>
                     <GanttColumn Field="TaskId" HeaderText="ID" Width="100"></GanttColumn>
                     <GanttColumn Field="TaskName" HeaderText="Nombre de la Tarea" Width="250"></GanttColumn>
+                    <GanttColumn Field="Critica" HeaderText="Crítica" Width="120"></GanttColumn>
                 </GanttColumns>
             </SfGantt>
         </div>
@@ -45,6 +47,7 @@ else
     private List<GetProyectoDto> proyectos = new();
     private List<TaskData> taskCollection = new();
     private string proyectoNombreSeleccionado = "PrimeraFila";
+    private int duracionTotalProyecto;
 
     protected override void OnInitialized()
     {
@@ -57,11 +60,16 @@ else
     private void ProyectoCambio()
     {
         taskCollection.Clear();
+        duracionTotalProyecto = 0;
 
         if (string.IsNullOrWhiteSpace(proyectoNombreSeleccionado) || proyectoNombreSeleccionado == "PrimeraFila")
             return;
 
         var tareasDto = ProyectoServicio.GetTareasPorNombreProyecto(proyectoNombreSeleccionado);
+
+        var cpm = ProyectoServicio.GetCaminoCritico(proyectoNombreSeleccionado);
+        duracionTotalProyecto = cpm.DuracionTotal;
+        var criticos = cpm.TitulosCriticos.ToHashSet();
 
         // El Gantt referencia dependencias por TaskId, no por titulo:
         // primero asignamos un Id a cada tarea y luego armamos los predecesores.
@@ -88,7 +96,8 @@ else
                 Duration = Math.Max(1, (int)Math.Ceiling(tarea.Duracion / 8.0)).ToString(),
                 Progress = tarea.Estado == "Completada" ? 100 : 0,
                 Predecessor = string.IsNullOrEmpty(predecessor) ? null : predecessor,
-                ParentId = null
+                ParentId = null,
+                Critica = criticos.Contains(tarea.Titulo) ? "Sí" : "No"
             });
         }
     }
@@ -103,5 +112,6 @@ else
         public int Progress { get; set; }
         public string Predecessor { get; set; }
         public int? ParentId { get; set; }
+        public string Critica { get; set; }
     }
 }

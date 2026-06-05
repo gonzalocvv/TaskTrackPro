@@ -8,6 +8,9 @@ namespace Servicios.Exportadores
     {
         public string Exportar(List<Proyecto> proyectos)
         {
+            foreach (var proyecto in proyectos)
+                new CalculadoraCaminoCritico().Calcular(proyecto.Tareas);
+
             var proyectosOrdenados = proyectos
                 .OrderBy(p => p.FechaInicio)
                 .Select(p => new
@@ -18,8 +21,7 @@ namespace Servicios.Exportadores
                     {
                         Titulo = t.Titulo,
                         FechaInicio = t.FechaDeInicio,
-                       // CaminoCritico = t.EstaEnCaminoCritico ? "S" : "N",
-                        //Recursos = t.Recursos.Select(r => r.Nombre).ToList()
+                        CaminoCritico = t.EstaEnCaminoCritico ? "S" : "N"
                     }).ToList()
                 });
 

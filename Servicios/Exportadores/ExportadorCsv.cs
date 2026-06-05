@@ -13,6 +13,7 @@ namespace Servicios.Exportadores
 
             foreach (var proyecto in proyectosOrdenados)
             {
+                new CalculadoraCaminoCritico().Calcular(proyecto.Tareas);
                 sb.AppendLine($"{proyecto.Nombre},{proyecto.FechaInicio:dd/MM/yyyy}");
 
                 var tareasOrdenadas = proyecto.Tareas
@@ -20,13 +21,8 @@ namespace Servicios.Exportadores
 
                 foreach (var tarea in tareasOrdenadas)
                 {
-                    //string critico = tarea.EstaEnCaminoCritico ? "S" : "N";
-                    sb.AppendLine($"{tarea.Titulo},{tarea.FechaDeInicio:dd/MM/yyyy}");
-
-                    /*foreach (var recurso in tarea.Recursos)
-                    {
-                        sb.AppendLine(recurso.Nombre);
-                    }*/
+                    string critico = tarea.EstaEnCaminoCritico ? "S" : "N";
+                    sb.AppendLine($"{tarea.Titulo},{tarea.FechaDeInicio:dd/MM/yyyy},{critico}");
                 }
             }
 
