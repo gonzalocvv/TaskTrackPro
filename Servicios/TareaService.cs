@@ -7,11 +7,9 @@ namespace TaskTrackPro.Backend.Servicios;
 
 public class TareaService
 {
-    private MemoryDB _db = new ();
     private readonly TareaRepository _tareaRepository;
-    public TareaService(MemoryDB db, TareaRepository tareaRepository)
+    public TareaService(TareaRepository tareaRepository)
     {
-        _db = db;
         _tareaRepository = tareaRepository;
     }
 

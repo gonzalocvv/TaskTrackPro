@@ -9,11 +9,9 @@ namespace TaskTrackPro.Backend.Servicios;
 
 public class ProyectoService
 {
-    private MemoryDB _db;
     private readonly ProyectoRepository _proyectoRepository;
-    public ProyectoService(MemoryDB db, ProyectoRepository proyectoRepository)
+    public ProyectoService(ProyectoRepository proyectoRepository)
     {
-        _db = db;
         _proyectoRepository = proyectoRepository;
     }
     

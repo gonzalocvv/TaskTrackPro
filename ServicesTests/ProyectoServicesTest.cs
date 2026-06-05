@@ -13,7 +13,6 @@ namespace TaskTrackPro.Backend.ServicesTests;
 [TestClass]
 public class ProyectoServicesTest
 {
-    private MemoryDB _db;
     private ProyectoService _serviceProj;
     private UsuarioService _serviceUser;
     private CreateUsuarioDto _administradorP;
@@ -27,7 +26,6 @@ public class ProyectoServicesTest
     [TestInitialize]
     public void SetUp()
     {
-        _db = new MemoryDB();
         _contextFactory = new MemoryAppContextFactory();
         _context = _contextFactory.CreateDbContext();
         _proyectoRepository = new ProyectoRepository(_context);
@@ -36,8 +34,8 @@ public class ProyectoServicesTest
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
         
-        _serviceUser = new UsuarioService(_db, _usuarioRepository);
-        _serviceProj = new ProyectoService(_db, _proyectoRepository);
+        _serviceUser = new UsuarioService(_usuarioRepository);
+        _serviceProj = new ProyectoService(_proyectoRepository);
         
         _administradorP = new CreateUsuarioDto
         {
@@ -314,7 +312,7 @@ public class ProyectoServicesTest
         var mockExportador = new Mock<IExportadorProyectos>();
         mockExportador.Setup(e => e.Exportar(It.IsAny<List<Proyecto>>())).Returns("contenido exportado");
 
-        var servicio = new ProyectoService(null, mockRepo.Object);
+        var servicio = new ProyectoService(mockRepo.Object);
 
         
         servicio.ExportarProyectos(mockExportador.Object, ruta);
@@ -331,7 +329,7 @@ public class ProyectoServicesTest
     public void GetTareasPorNombreProyectoIncluyeDependenciasTest()
     {
         var tareaRepo = new TareaRepository(_context);
-        var tareaService = new TareaService(_db, tareaRepo);
+        var tareaService = new TareaService(tareaRepo);
 
         // admin@admin.com ya existe (seed del ctor de UsuarioService).
         _serviceProj.CrearProyecto(_proyectoDto);

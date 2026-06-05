@@ -9,7 +9,6 @@ namespace TaskTrackPro.Backend.ServicesTests;
 [TestClass]
 public class TareaServiceTest
 {
-    private MemoryDB _db;
     private TareaService _tareaService;
     private ProyectoService _projService;
     private UsuarioService _userService;
@@ -30,15 +29,14 @@ public class TareaServiceTest
     [TestInitialize]
     public void SetUp()
     {
-        _db = new MemoryDB();
         contextFactory = new MemoryAppContextFactory();
         _context = contextFactory.CreateDbContext();
         _usuarioRepository = new UsuarioRepository(_context);
         _tareaRepository = new TareaRepository(_context);
         _proyectoRepository = new ProyectoRepository(_context);
-        _tareaService = new TareaService(_db, _tareaRepository);
-        _projService = new ProyectoService(_db, _proyectoRepository);
-        _userService = new UsuarioService(_db, _usuarioRepository);
+        _tareaService = new TareaService(_tareaRepository);
+        _projService = new ProyectoService(_proyectoRepository);
+        _userService = new UsuarioService(_usuarioRepository);
         
 
         _context.Database.EnsureDeleted();    

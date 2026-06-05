@@ -9,7 +9,6 @@ namespace TaskTrackPro.Backend.ServicesTests;
 [TestClass]
 public class UsuarioServicesTest
 {
-    private MemoryDB db;
     private MemoryAppContextFactory contextFactory;
     private UsuarioRepository usuarioRepository;
     private UsuarioService service;
@@ -22,7 +21,6 @@ public class UsuarioServicesTest
     [TestInitialize]
     public void setUp()
     {
-        db = new MemoryDB();
         contextFactory = new MemoryAppContextFactory();
         _context = contextFactory.CreateDbContext();
         usuarioRepository = new UsuarioRepository(_context);
@@ -31,7 +29,7 @@ public class UsuarioServicesTest
         _context.Database.EnsureCreated();
         
         
-        service = new UsuarioService(db, usuarioRepository);
+        service = new UsuarioService(usuarioRepository);
         UsuarioDto = new CreateUsuarioDto
         {
             Nombre = "Gonzalo",
