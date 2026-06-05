@@ -14,7 +14,7 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<MemoryDB>();
 
-builder.Services.AddDbContextFactory<SqlContext>(
+builder.Services.AddDbContext<SqlContext>(
     options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         providerOptions => providerOptions.EnableRetryOnFailure())
