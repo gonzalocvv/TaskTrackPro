@@ -15,7 +15,18 @@ namespace TaskTrackPro.Backend.Dominio
             var conjunto = new HashSet<Tarea>(lista);
             var orden = OrdenTopologico(lista, conjunto);
 
-            // Pasada adelante: earliest start (ES) y earliest finish (EF).
+            var (es, ef) = CalcularEarliest(orden, conjunto);
+            int duracionTotal = ef.Values.Max();
+            var ls = CalcularLatest(orden, conjunto, duracionTotal);
+
+            return ConstruirResultado(lista, es, ls, duracionTotal);
+        }
+
+        // Pasada adelante: earliest start (ES) = max(EF de las predecesoras);
+        // earliest finish (EF) = ES + duracion.
+        private static (Dictionary<Tarea, int> es, Dictionary<Tarea, int> ef) CalcularEarliest(
+            List<Tarea> orden, HashSet<Tarea> conjunto)
+        {
             var es = new Dictionary<Tarea, int>();
             var ef = new Dictionary<Tarea, int>();
             foreach (var t in orden)
@@ -28,11 +39,14 @@ namespace TaskTrackPro.Backend.Dominio
                 es[t] = inicio;
                 ef[t] = inicio + t.Duracion;
             }
+            return (es, ef);
+        }
 
-            int duracionTotal = ef.Values.Max();
-
-            // Pasada atras: latest finish (LF) y latest start (LS).
-            var lf = new Dictionary<Tarea, int>();
+        // Pasada atras: latest finish (LF) = min(LS de las sucesoras), o la
+        // duracion total si no tiene sucesoras; latest start (LS) = LF - duracion.
+        private static Dictionary<Tarea, int> CalcularLatest(
+            List<Tarea> orden, HashSet<Tarea> conjunto, int duracionTotal)
+        {
             var ls = new Dictionary<Tarea, int>();
             foreach (var t in Enumerable.Reverse(orden))
             {
@@ -41,11 +55,15 @@ namespace TaskTrackPro.Backend.Dominio
                     .Select(s => ls[s])
                     .DefaultIfEmpty(duracionTotal)
                     .Min();
-                lf[t] = fin;
                 ls[t] = fin - t.Duracion;
             }
+            return ls;
+        }
 
-            // Holgura = LS - ES. Una tarea es critica si su holgura es 0.
+        // Holgura = LS - ES. Una tarea es critica si su holgura es 0.
+        private static ResultadoCaminoCritico ConstruirResultado(
+            List<Tarea> lista, Dictionary<Tarea, int> es, Dictionary<Tarea, int> ls, int duracionTotal)
+        {
             var holgura = new Dictionary<string, int>();
             var criticos = new HashSet<string>();
             foreach (var t in lista)
@@ -56,7 +74,6 @@ namespace TaskTrackPro.Backend.Dominio
                 if (t.EstaEnCaminoCritico)
                     criticos.Add(t.Titulo);
             }
-
             return new ResultadoCaminoCritico(duracionTotal, criticos, holgura);
         }
 
