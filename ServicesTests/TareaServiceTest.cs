@@ -316,6 +316,59 @@ public class TareaServiceTest
         Assert.AreEqual(0, dtoDep.TareasQueDependenDeMiTitulos.Count);
     }
 
+    [TestMethod]
+    public void CompletarTareaPersisteEstadoEnNuevaLecturaTest()
+    {
+        var usuarioDto = new CreateUsuarioDto
+        {
+            Nombre = "Resp", Apellido = "Able",
+            Email = "resp@correo.com",
+            FechaNacimiento = new DateTime(1990, 5, 5),
+            Contraseña = "Resp123!"
+        };
+        _userService.CrearUsuario(usuarioDto);
 
+        _projService.CrearProyecto(new CrearProyectoDto
+        {
+            Nombre = "ProyectoPersistencia",
+            Descripcion = "Proyecto de prueba",
+            FechaInicio = DateTime.Now.AddHours(2),
+            AdministradorEmail = _administradorP.Email
+        });
 
+        _tareaService.CrearTarea(new CrearTareaDto
+        {
+            Titulo = "Tarea A",
+            Descripcion = "Primera tarea",
+            ProyectoNombre = "ProyectoPersistencia",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [ usuarioDto.Email ],
+            Estado = "Pendiente"
+        });
+
+        _tareaService.CrearTarea(new CrearTareaDto
+        {
+            Titulo = "Tarea B",
+            Descripcion = "Depende de A",
+            ProyectoNombre = "ProyectoPersistencia",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [ usuarioDto.Email ],
+            TareasQueYoDependoTitulos = [ "Tarea A" ],
+            Estado = "Pendiente"
+        });
+
+        // Forzar relectura real desde el store (sin identity map en memoria).
+        _context.ChangeTracker.Clear();
+
+        _tareaService.CompletarTarea("ProyectoPersistencia", "Tarea A", usuarioDto.Email);
+
+        // Tras nueva relectura: A quedó Completada y B se desbloqueó (Pendiente).
+        _context.ChangeTracker.Clear();
+        var aRecargada = _tareaService.GetTareaPorTitulo("Tarea A");
+        var bRecargada = _tareaService.GetTareaPorTitulo("Tarea B");
+        Assert.AreEqual(EstadoTarea.Completada, aRecargada.Estado, "El estado Completada no se persistió.");
+        Assert.AreEqual(EstadoTarea.Pendiente, bRecargada.Estado, "La tarea dependiente no se desbloqueó tras completar su dependencia.");
+    }
 }
