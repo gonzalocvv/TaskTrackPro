@@ -323,8 +323,47 @@ public class ProyectoServicesTest
         var contenido = File.ReadAllText(ruta);
         Assert.AreEqual("contenido exportado", contenido);
 
-        
+
         File.Delete(ruta);
     }
-  
+
+    [TestMethod]
+    public void GetTareasPorNombreProyectoIncluyeDependenciasTest()
+    {
+        var tareaRepo = new TareaRepository(_context);
+        var tareaService = new TareaService(_db, tareaRepo);
+
+        // admin@admin.com ya existe (seed del ctor de UsuarioService).
+        _serviceProj.CrearProyecto(_proyectoDto);
+
+        tareaService.CrearTarea(new CrearTareaDto
+        {
+            Titulo = "Tarea A",
+            Descripcion = "Primera",
+            ProyectoNombre = _proyectoDto.Nombre,
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [ "admin@admin.com" ],
+            Estado = "Pendiente"
+        });
+        tareaService.CrearTarea(new CrearTareaDto
+        {
+            Titulo = "Tarea B",
+            Descripcion = "Depende de A",
+            ProyectoNombre = _proyectoDto.Nombre,
+            FechaInicio = DateTime.Now,
+            Duracion = 3,
+            UsuariosAsignadosEmails = [ "admin@admin.com" ],
+            TareasQueYoDependoTitulos = [ "Tarea A" ],
+            Estado = "Pendiente"
+        });
+
+        // Forzar relectura real desde el store (sin identity map en memoria).
+        _context.ChangeTracker.Clear();
+
+        var lista = _serviceProj.GetTareasPorNombreProyecto(_proyectoDto.Nombre);
+
+        var dtoB = lista.Single(d => d.Titulo == "Tarea B");
+        CollectionAssert.Contains(dtoB.TareasQueYoDependoTitulos, "Tarea A");
+    }
 }
