@@ -38,6 +38,9 @@ namespace TaskTrackPro.Backend.Dominio
         public List<Tarea> TareasQueDependenDeMi => _tareasDependenDeMi;
         public List<Usuario> UsuariosAsignados => _usuariosAsignados;
 
+        private readonly List<Recurso> _recursos = new List<Recurso>();
+        public List<Recurso> Recursos => _recursos;
+
         public Tarea()
         {
             Estado = EstadoTarea.Pendiente;
@@ -198,6 +201,14 @@ namespace TaskTrackPro.Backend.Dominio
         private bool UsuarioEstaAsignado(Usuario usuario)
         {
             return _usuariosAsignados.Contains(usuario);
+        }
+
+        public void AsignarRecurso(Recurso recurso)
+        {
+        }
+
+        public void QuitarRecurso(Recurso recurso)
+        {
         }
 
         private static void ValidarDuracion(int value)
