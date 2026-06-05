@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContext<SqlContext>(
+builder.Services.AddDbContextFactory<SqlContext>(
     options => options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         providerOptions => providerOptions.EnableRetryOnFailure())
