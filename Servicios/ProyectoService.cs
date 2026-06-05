@@ -57,10 +57,19 @@ public class ProyectoService
     }
     public void EliminarProyecto(string nombre)
     {
+        _proyectoRepository.Eliminar(nombre);
     }
 
     public void RemoverMiembro(string email, string nombreProyecto)
     {
+        Usuario miembro = _proyectoRepository.GetUsuarioPorEmail(email);
+        Proyecto proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
+        if (proyecto == null)
+        {
+            throw new ArgumentNullException("El proyecto no existe");
+        }
+        proyecto.RemoverMiembro(miembro);
+        _proyectoRepository.Save();
     }
 
     public void AgregarMiembro(string email, string nombreProyecto)

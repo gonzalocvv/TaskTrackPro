@@ -26,6 +26,32 @@ else
         </select>
     </div>
 
+    @if (proyectoNombreSeleccionado != "PrimeraFila" && !string.IsNullOrWhiteSpace(proyectoNombreSeleccionado))
+    {
+        <div class="mb-3">
+            <button class="btn btn-outline-danger btn-sm" @onclick="BorrarProyecto">Borrar proyecto</button>
+        </div>
+
+        @if (MiembrosSeleccionado().Any())
+        {
+            <h5>Miembros</h5>
+            <ul class="list-group mb-3">
+                @foreach (var m in MiembrosSeleccionado())
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @m
+                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => QuitarMiembro(m)">Quitar</button>
+                    </li>
+                }
+            </ul>
+        }
+    }
+
+    @if (!string.IsNullOrEmpty(errorProyecto))
+    {
+        <div class="alert alert-danger">@errorProyecto</div>
+    }
+
     @if (taskCollection.Any())
     {
         <p class="fw-semibold">Duración total (camino crítico): @duracionTotalProyecto horas</p>
@@ -48,13 +74,53 @@ else
     private List<TaskData> taskCollection = new();
     private string proyectoNombreSeleccionado = "PrimeraFila";
     private int duracionTotalProyecto;
+    private string errorProyecto = string.Empty;
 
     protected override void OnInitialized()
+    {
+        RecargarProyectos();
+    }
+
+    private void RecargarProyectos()
     {
         var email = UsuarioService.SesionActual?.Email;
         proyectos = ProyectoServicio.GetListaProyectos()
             .Where(p => p.MiembroEmails.Contains(email))
             .ToList();
+    }
+
+    private List<string> MiembrosSeleccionado() =>
+        proyectos.FirstOrDefault(p => p.Nombre == proyectoNombreSeleccionado)?.MiembroEmails ?? new();
+
+    private void BorrarProyecto()
+    {
+        try
+        {
+            ProyectoServicio.EliminarProyecto(proyectoNombreSeleccionado);
+            errorProyecto = string.Empty;
+            proyectoNombreSeleccionado = "PrimeraFila";
+            taskCollection.Clear();
+            duracionTotalProyecto = 0;
+            RecargarProyectos();
+        }
+        catch (Exception ex)
+        {
+            errorProyecto = ex.Message;
+        }
+    }
+
+    private void QuitarMiembro(string email)
+    {
+        try
+        {
+            ProyectoServicio.RemoverMiembro(email, proyectoNombreSeleccionado);
+            errorProyecto = string.Empty;
+            RecargarProyectos();
+        }
+        catch (Exception ex)
+        {
+            errorProyecto = ex.Message;
+        }
     }
 
     private void ProyectoCambio()

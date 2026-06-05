@@ -27,6 +27,7 @@ public class ProyectoRepository
     public Proyecto GetProyectoPorNombre(string nombre)
     {
         return _sqlContext.Proyectos
+            .Include(p => p.MiembrosProyecto)
             .Include(p => p.Tareas).ThenInclude(t => t.TareasQueYoDependo)
             .Include(p => p.Tareas).ThenInclude(t => t.TareasQueDependenDeMi)
             .Include(p => p.Tareas).ThenInclude(t => t.UsuariosAsignados)
@@ -49,5 +50,29 @@ public class ProyectoRepository
 
     public void Eliminar(string nombre)
     {
+        var proyecto = _sqlContext.Proyectos
+            .Include(p => p.MiembrosProyecto)
+            .Include(p => p.Tareas).ThenInclude(t => t.TareasQueYoDependo)
+            .Include(p => p.Tareas).ThenInclude(t => t.TareasQueDependenDeMi)
+            .Include(p => p.Tareas).ThenInclude(t => t.UsuariosAsignados)
+            .Include(p => p.Tareas).ThenInclude(t => t.Recursos)
+            .FirstOrDefault(p => p.Nombre == nombre);
+        if (proyecto == null)
+            throw new ArgumentException($"No existe el proyecto '{nombre}'.");
+
+        // Limpiar relaciones de cada tarea y borrarlas explicitamente antes de
+        // borrar el proyecto, para no violar las FKs Restrict de las joins.
+        foreach (var tarea in proyecto.Tareas.ToList())
+        {
+            tarea.TareasQueYoDependo.Clear();
+            tarea.TareasQueDependenDeMi.Clear();
+            tarea.UsuariosAsignados.Clear();
+            tarea.Recursos.Clear();
+            _sqlContext.Tareas.Remove(tarea);
+        }
+        proyecto.MiembrosProyecto.Clear();
+
+        _sqlContext.Proyectos.Remove(proyecto);
+        _sqlContext.SaveChanges();
     }
 }

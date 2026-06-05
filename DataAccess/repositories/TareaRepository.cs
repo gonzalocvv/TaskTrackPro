@@ -38,6 +38,20 @@ public class TareaRepository
 
     public void Eliminar(string proyectoNombre, string titulo)
     {
+        var tarea = TareasConDependencias()
+            .FirstOrDefault(t => t.Proyecto.Nombre == proyectoNombre && t.Titulo == titulo);
+        if (tarea == null)
+            throw new ArgumentException($"No existe la tarea '{titulo}' en el proyecto '{proyectoNombre}'.");
+
+        // Limpiar relaciones m2m antes de borrar para no violar las FKs Restrict
+        // de las tablas join (UsuarioTarea, TareaTarea, TareaRecurso).
+        tarea.TareasQueYoDependo.Clear();
+        tarea.TareasQueDependenDeMi.Clear();
+        tarea.UsuariosAsignados.Clear();
+        tarea.Recursos.Clear();
+
+        _sqlContext.Tareas.Remove(tarea);
+        _sqlContext.SaveChanges();
     }
 
     // Carga tareas con sus dependencias (ambos sentidos) y usuarios asignados,

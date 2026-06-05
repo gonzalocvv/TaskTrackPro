@@ -205,6 +205,17 @@ namespace TaskTrackPro.Backend.Dominio
 
         public void QuitarUsuario(Usuario usuario)
         {
+            if (usuario == null)
+            {
+                throw new ArgumentNullException(nameof(usuario));
+            }
+
+            if (!UsuarioEstaAsignado(usuario))
+            {
+                throw new InvalidOperationException("El usuario no está asignado a esta tarea.");
+            }
+
+            _usuariosAsignados.Remove(usuario);
         }
 
         public void AsignarRecurso(Recurso recurso)

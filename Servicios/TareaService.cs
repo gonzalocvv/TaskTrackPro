@@ -87,6 +87,7 @@ public class TareaService
 
     public void EliminarTarea(string proyectoNombre, string titulo)
     {
+        _tareaRepository.Eliminar(proyectoNombre, titulo);
     }
     
 }
