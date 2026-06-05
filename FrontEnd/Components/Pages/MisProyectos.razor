@@ -3,6 +3,7 @@
 @using TaskTrackPro.Backend.Servicios
 @inject UsuarioService UsuarioService
 @inject ProyectoService ProyectoServicio
+@inject NavigationManager NavigationManager
 
 <h3>Mis proyectos</h3>
 
@@ -78,6 +79,11 @@ else
 
     protected override void OnInitialized()
     {
+        if (UsuarioService.SesionActual is null)
+        {
+            NavigationManager.NavigateTo("/", true);
+            return;
+        }
         RecargarProyectos();
     }
 

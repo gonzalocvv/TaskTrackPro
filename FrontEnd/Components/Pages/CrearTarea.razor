@@ -6,6 +6,7 @@
 @inject UsuarioService UsuarioService
 @inject TareaService   TareaService
 @inject RecursoService RecursoService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Crear tarea</PageTitle>
 
@@ -165,6 +166,11 @@
 
     protected override void OnInitialized()
     {
+        if (UsuarioService.SesionActual is null)
+        {
+            NavigationManager.NavigateTo("/", true);
+            return;
+        }
         proyectos = ProyectoService.GetListaProyectos();
         usuarios  = new();
         recursosDisponibles = RecursoService.GetListaRecursos();
