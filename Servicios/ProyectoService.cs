@@ -79,23 +79,23 @@ public class ProyectoService
         {
             throw new ArgumentNullException("El proyecto no existe");
         }
-        List<GetTareaDto> listaTareas = new();
-        foreach (var tarea in proyecto.Tareas)
+        return proyecto.Tareas.Select(MapearTareaADto).ToList();
+    }
+
+    private static GetTareaDto MapearTareaADto(Tarea tarea)
+    {
+        return new GetTareaDto
         {
-            GetTareaDto tareaDto = new GetTareaDto
-            {
-                Titulo = tarea.Titulo,
-                Descripcion = tarea.Descripcion,
-                FechaInicio = tarea.FechaDeInicio,
-                Duracion = tarea.Duracion,
-                Estado = tarea.Estado.ToString(),
-                UsuariosAsignadosEmails = tarea.UsuariosAsignados.Select(u => u.Email).ToList(),
-                TareasQueYoDependoTitulos = tarea.TareasQueYoDependo.Select(t => t.Titulo).ToList(),
-                TareasQueDependenDeMiTitulos = tarea.TareasQueDependenDeMi.Select(t => t.Titulo).ToList()
-            };
-            listaTareas.Add(tareaDto);
-        }
-        return listaTareas;
+            Titulo = tarea.Titulo,
+            Descripcion = tarea.Descripcion,
+            FechaInicio = tarea.FechaDeInicio,
+            Duracion = tarea.Duracion,
+            ProyectoNombre = tarea.ProyectoNombre,
+            Estado = tarea.Estado.ToString(),
+            UsuariosAsignadosEmails = tarea.UsuariosAsignados.Select(u => u.Email).ToList(),
+            TareasQueYoDependoTitulos = tarea.TareasQueYoDependo.Select(t => t.Titulo).ToList(),
+            TareasQueDependenDeMiTitulos = tarea.TareasQueDependenDeMi.Select(t => t.Titulo).ToList()
+        };
     }
     public List<String> GetTitulosTareasPorNombreProyecto(string nombreProyecto)
     {
