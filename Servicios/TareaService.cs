@@ -77,6 +77,7 @@ public class TareaService
             throw new ArgumentException("Tarea inexistente");
         Usuario usuarioParaCompletar = _tareaRepository.GetUsuarioPorEmail(usuario);
         tarea.CompletarTarea(usuarioParaCompletar);
+        _tareaRepository.Actualizar(tarea);
     }
     public Tarea GetTareaPorTitulo(string titulo)
     {

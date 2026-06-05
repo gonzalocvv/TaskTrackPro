@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TaskTrackPro.Backend.Dominio;
 
 namespace TaskTrackPro.Backend.DataAccess.repositories;
@@ -28,11 +29,20 @@ public class TareaRepository
         _sqlContext.SaveChanges();
     }
 
-
+    public void Actualizar(Tarea tarea)
+    {
+        // La tarea proviene del mismo contexto (tracked); SaveChanges persiste
+        // sus cambios y los de su grafo (estado de dependientes, joins).
+        _sqlContext.SaveChanges();
+    }
 
     public Tarea GetTareaPorTitulo(string tareaTitulo)
     {
-        return _sqlContext.Tareas.FirstOrDefault(t => t.Titulo == tareaTitulo);
+        return _sqlContext.Tareas
+            .Include(t => t.TareasQueYoDependo)
+            .Include(t => t.TareasQueDependenDeMi)
+            .Include(t => t.UsuariosAsignados)
+            .FirstOrDefault(t => t.Titulo == tareaTitulo);
     }
 
     public List<Tarea> GetTareasPorProyecto(string proyectoNombre)
@@ -55,7 +65,11 @@ public class TareaRepository
         {
             throw new ArgumentNullException(nameof(proyecto), "El proyecto no puede ser nulo.");
         }
-        return _sqlContext.Tareas.FirstOrDefault(t => t.Proyecto.Nombre == proyectoNombre && t.Titulo == tareaTitulo);
+        return _sqlContext.Tareas
+            .Include(t => t.TareasQueYoDependo)
+            .Include(t => t.TareasQueDependenDeMi)
+            .Include(t => t.UsuariosAsignados)
+            .FirstOrDefault(t => t.Proyecto.Nombre == proyectoNombre && t.Titulo == tareaTitulo);
     }
     public Usuario GetUsuarioPorEmail(string email)
     {
