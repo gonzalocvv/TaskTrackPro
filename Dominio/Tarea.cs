@@ -203,6 +203,10 @@ namespace TaskTrackPro.Backend.Dominio
             return _usuariosAsignados.Contains(usuario);
         }
 
+        public void QuitarUsuario(Usuario usuario)
+        {
+        }
+
         public void AsignarRecurso(Recurso recurso)
         {
             if (recurso == null)

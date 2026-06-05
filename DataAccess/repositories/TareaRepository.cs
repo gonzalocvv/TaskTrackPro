@@ -36,6 +36,10 @@ public class TareaRepository
         _sqlContext.SaveChanges();
     }
 
+    public void Eliminar(string proyectoNombre, string titulo)
+    {
+    }
+
     // Carga tareas con sus dependencias (ambos sentidos) y usuarios asignados,
     // para que la logica de dominio opere sobre el grafo completo tras leer.
     private IQueryable<Tarea> TareasConDependencias()

@@ -84,5 +84,9 @@ public class TareaService
             throw new ArgumentException("Tarea inexistente");
         return tarea;
     }
+
+    public void EliminarTarea(string proyectoNombre, string titulo)
+    {
+    }
     
 }

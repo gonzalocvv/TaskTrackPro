@@ -55,6 +55,14 @@ public class ProyectoService
         }
         return listaProyectos;
     }
+    public void EliminarProyecto(string nombre)
+    {
+    }
+
+    public void RemoverMiembro(string email, string nombreProyecto)
+    {
+    }
+
     public void AgregarMiembro(string email, string nombreProyecto)
     {
         Usuario miembro = _proyectoRepository.GetUsuarioPorEmail(email);

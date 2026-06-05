@@ -46,4 +46,8 @@ public class ProyectoRepository
     {
         _sqlContext.SaveChanges();
     }
+
+    public void Eliminar(string nombre)
+    {
+    }
 }

@@ -369,4 +369,19 @@ public class TareaServiceTest
         Assert.AreEqual(EstadoTarea.Completada, aRecargada.Estado, "El estado Completada no se persistió.");
         Assert.AreEqual(EstadoTarea.Pendiente, bRecargada.Estado, "La tarea dependiente no se desbloqueó tras completar su dependencia.");
     }
+
+    [TestMethod]
+    public void EliminarTareaQuitaLaTareaTest()
+    {
+        var usuarioDto = new CreateUsuarioDto { Nombre = "U", Apellido = "P", Email = "u@e.com", FechaNacimiento = new DateTime(1990, 1, 1), Contraseña = "User123!" };
+        _userService.CrearUsuario(usuarioDto);
+        _projService.CrearProyecto(new CrearProyectoDto { Nombre = "PE", Descripcion = "d", FechaInicio = DateTime.Now.AddHours(2), AdministradorEmail = _administradorP.Email });
+        _tareaService.CrearTarea(new CrearTareaDto { Titulo = "TE", Descripcion = "d", ProyectoNombre = "PE", Duracion = 2, UsuariosAsignadosEmails = [usuarioDto.Email], Estado = "Pendiente" });
+
+        _tareaService.EliminarTarea("PE", "TE");
+
+        _context.ChangeTracker.Clear();
+        var ex = Assert.ThrowsException<ArgumentException>(() => _tareaService.GetTareaPorTitulo("TE"));
+        Assert.AreEqual("Tarea inexistente", ex.Message);
+    }
 }

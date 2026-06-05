@@ -449,4 +449,30 @@ public class ProyectoServicesTest
         proyecto.Tareas.Add(c);
         return proyecto;
     }
+
+    [TestMethod]
+    public void EliminarProyectoQuitaElProyectoTest()
+    {
+        _serviceProj.CrearProyecto(_proyectoDto);
+
+        _serviceProj.EliminarProyecto(_proyectoDto.Nombre);
+
+        _context.ChangeTracker.Clear();
+        Assert.ThrowsException<ArgumentNullException>(() => _serviceProj.GetProyectoPorNombre(_proyectoDto.Nombre));
+    }
+
+    [TestMethod]
+    public void RemoverMiembroQuitaElMiembroDelProyectoTest()
+    {
+        _serviceProj.CrearProyecto(_proyectoDto);
+        var miembro = new CreateUsuarioDto { Nombre = "M", Apellido = "X", Email = "m@e.com", FechaNacimiento = new DateTime(1995, 5, 5), Contraseña = "Miemb123!" };
+        _serviceUser.CrearUsuario(miembro);
+        _serviceProj.AgregarMiembro(miembro.Email, _proyectoDto.Nombre);
+
+        _serviceProj.RemoverMiembro(miembro.Email, _proyectoDto.Nombre);
+
+        _context.ChangeTracker.Clear();
+        var dto = _serviceProj.GetListaProyectos().First(p => p.Nombre == _proyectoDto.Nombre);
+        Assert.IsFalse(dto.MiembroEmails.Contains(miembro.Email));
+    }
 }
