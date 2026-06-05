@@ -36,13 +36,19 @@ public class TareaRepository
         _sqlContext.SaveChanges();
     }
 
-    public Tarea GetTareaPorTitulo(string tareaTitulo)
+    // Carga tareas con sus dependencias (ambos sentidos) y usuarios asignados,
+    // para que la logica de dominio opere sobre el grafo completo tras leer.
+    private IQueryable<Tarea> TareasConDependencias()
     {
         return _sqlContext.Tareas
             .Include(t => t.TareasQueYoDependo)
             .Include(t => t.TareasQueDependenDeMi)
-            .Include(t => t.UsuariosAsignados)
-            .FirstOrDefault(t => t.Titulo == tareaTitulo);
+            .Include(t => t.UsuariosAsignados);
+    }
+
+    public Tarea GetTareaPorTitulo(string tareaTitulo)
+    {
+        return TareasConDependencias().FirstOrDefault(t => t.Titulo == tareaTitulo);
     }
 
     public List<Tarea> GetTareasPorProyecto(string proyectoNombre)
@@ -65,10 +71,7 @@ public class TareaRepository
         {
             throw new ArgumentNullException(nameof(proyecto), "El proyecto no puede ser nulo.");
         }
-        return _sqlContext.Tareas
-            .Include(t => t.TareasQueYoDependo)
-            .Include(t => t.TareasQueDependenDeMi)
-            .Include(t => t.UsuariosAsignados)
+        return TareasConDependencias()
             .FirstOrDefault(t => t.Proyecto.Nombre == proyectoNombre && t.Titulo == tareaTitulo);
     }
     public Usuario GetUsuarioPorEmail(string email)
