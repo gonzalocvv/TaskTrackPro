@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using TaskTrackPro.Backend.Dtos;
 
 namespace TaskTrackPro.Backend.Dominio
@@ -23,6 +24,11 @@ namespace TaskTrackPro.Backend.Dominio
         public Proyecto Proyecto { get; set; }
 
         public EstadoTarea Estado { get; private set; }
+
+        // Marca transitoria (no persistida) que setea CalculadoraCaminoCritico
+        // para que la UI y los exportadores sepan si la tarea es critica.
+        [NotMapped]
+        public bool EstaEnCaminoCritico { get; set; }
 
         private readonly List<Tarea> _tareasYoDependo = new List<Tarea>();
         private readonly List<Tarea> _tareasDependenDeMi = new List<Tarea>();
