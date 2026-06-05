@@ -205,10 +205,32 @@ namespace TaskTrackPro.Backend.Dominio
 
         public void AsignarRecurso(Recurso recurso)
         {
+            if (recurso == null)
+            {
+                throw new ArgumentNullException(nameof(recurso));
+            }
+
+            if (_recursos.Contains(recurso))
+            {
+                throw new InvalidOperationException("El recurso ya está asignado a esta tarea.");
+            }
+
+            _recursos.Add(recurso);
         }
 
         public void QuitarRecurso(Recurso recurso)
         {
+            if (recurso == null)
+            {
+                throw new ArgumentNullException(nameof(recurso));
+            }
+
+            if (!_recursos.Contains(recurso))
+            {
+                throw new InvalidOperationException("El recurso no está asignado a esta tarea.");
+            }
+
+            _recursos.Remove(recurso);
         }
 
         private static void ValidarDuracion(int value)
