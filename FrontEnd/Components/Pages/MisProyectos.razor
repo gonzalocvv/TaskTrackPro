@@ -63,19 +63,31 @@ else
 
         var tareasDto = ProyectoServicio.GetTareasPorNombreProyecto(proyectoNombreSeleccionado);
 
+        // El Gantt referencia dependencias por TaskId, no por titulo:
+        // primero asignamos un Id a cada tarea y luego armamos los predecesores.
+        var idPorTitulo = new Dictionary<string, int>();
         int id = 1;
+        foreach (var tarea in tareasDto)
+            idPorTitulo[tarea.Titulo] = id++;
+
         foreach (var tarea in tareasDto)
         {
             var start = tarea.FechaInicio ?? DateTime.Today;
+
+            var predecesores = tarea.TareasQueYoDependoTitulos
+                .Where(idPorTitulo.ContainsKey)
+                .Select(t => $"{idPorTitulo[t]}FS");
+            var predecessor = string.Join(",", predecesores);
+
             taskCollection.Add(new TaskData
             {
-                TaskId = id++,
+                TaskId = idPorTitulo[tarea.Titulo],
                 TaskName = tarea.Titulo,
                 StartDate = start,
                 EndDate = start.AddHours(tarea.Duracion),
                 Duration = Math.Max(1, (int)Math.Ceiling(tarea.Duracion / 8.0)).ToString(),
                 Progress = tarea.Estado == "Completada" ? 100 : 0,
-                Predecessor = null,
+                Predecessor = string.IsNullOrEmpty(predecessor) ? null : predecessor,
                 ParentId = null
             });
         }

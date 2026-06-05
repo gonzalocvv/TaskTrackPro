@@ -26,7 +26,11 @@ public class ProyectoRepository
     }
     public Proyecto GetProyectoPorNombre(string nombre)
     {
-        return _sqlContext.Proyectos.FirstOrDefault(p => p.Nombre == nombre);
+        return _sqlContext.Proyectos
+            .Include(p => p.Tareas).ThenInclude(t => t.TareasQueYoDependo)
+            .Include(p => p.Tareas).ThenInclude(t => t.TareasQueDependenDeMi)
+            .Include(p => p.Tareas).ThenInclude(t => t.UsuariosAsignados)
+            .FirstOrDefault(p => p.Nombre == nombre);
     }
     public virtual List<Proyecto> GetListaProyectos()
     {

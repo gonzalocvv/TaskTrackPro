@@ -88,8 +88,10 @@ public class ProyectoService
                 Descripcion = tarea.Descripcion,
                 FechaInicio = tarea.FechaDeInicio,
                 Duracion = tarea.Duracion,
-                Estado = tarea.Estado.ToString()
-                
+                Estado = tarea.Estado.ToString(),
+                UsuariosAsignadosEmails = tarea.UsuariosAsignados.Select(u => u.Email).ToList(),
+                TareasQueYoDependoTitulos = tarea.TareasQueYoDependo.Select(t => t.Titulo).ToList(),
+                TareasQueDependenDeMiTitulos = tarea.TareasQueDependenDeMi.Select(t => t.Titulo).ToList()
             };
             listaTareas.Add(tareaDto);
         }
