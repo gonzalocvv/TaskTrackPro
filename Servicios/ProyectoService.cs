@@ -113,6 +113,12 @@ public class ProyectoService
         return listaTitulos;
     }
     
+    public CaminoCriticoDto GetCaminoCritico(string nombreProyecto)
+    {
+        // Esqueleto: se implementa en el paso GREEN.
+        return new CaminoCriticoDto();
+    }
+
     public void ExportarProyectos(IExportadorProyectos exportador, string ruta)
     {
         var proyectos = _proyectoRepository.GetListaProyectos();

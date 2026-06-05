@@ -3,6 +3,7 @@ using TaskTrackPro.Backend.DataAccess.repositories;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Servicios;
+using Servicios.Exportadores;
 using TaskTrackPro.Backend.Dominio;
 using TaskTrackPro.Backend.Dominio.Interfaces;
 using TaskTrackPro.Backend.Dtos;
@@ -363,5 +364,66 @@ public class ProyectoServicesTest
 
         var dtoB = lista.Single(d => d.Titulo == "Tarea B");
         CollectionAssert.Contains(dtoB.TareasQueYoDependoTitulos, "Tarea A");
+    }
+
+    [TestMethod]
+    public void GetCaminoCriticoDevuelveDuracionTotalYTareasCriticasTest()
+    {
+        var tareaRepo = new TareaRepository(_context);
+        var tareaService = new TareaService(tareaRepo);
+        _serviceProj.CrearProyecto(_proyectoDto);
+
+        tareaService.CrearTarea(new CrearTareaDto { Titulo = "A", Descripcion = "d", ProyectoNombre = _proyectoDto.Nombre, Duracion = 5, UsuariosAsignadosEmails = ["admin@admin.com"], Estado = "Pendiente" });
+        tareaService.CrearTarea(new CrearTareaDto { Titulo = "B", Descripcion = "d", ProyectoNombre = _proyectoDto.Nombre, Duracion = 2, UsuariosAsignadosEmails = ["admin@admin.com"], Estado = "Pendiente" });
+        tareaService.CrearTarea(new CrearTareaDto { Titulo = "C", Descripcion = "d", ProyectoNombre = _proyectoDto.Nombre, Duracion = 1, UsuariosAsignadosEmails = ["admin@admin.com"], TareasQueYoDependoTitulos = ["A", "B"], Estado = "Pendiente" });
+
+        _context.ChangeTracker.Clear();
+        var dto = _serviceProj.GetCaminoCritico(_proyectoDto.Nombre);
+
+        Assert.AreEqual(6, dto.DuracionTotal);
+        CollectionAssert.Contains(dto.TitulosCriticos, "A");
+        CollectionAssert.Contains(dto.TitulosCriticos, "C");
+        CollectionAssert.DoesNotContain(dto.TitulosCriticos, "B");
+    }
+
+    [TestMethod]
+    public void ExportadorCsvIncluyeFlagDeCaminoCriticoTest()
+    {
+        var proyecto = ProyectoConCaminoCritico("PCrit");
+
+        var csv = new ExportadorCsv().Exportar(new List<Proyecto> { proyecto });
+
+        var lineas = csv.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(l => l.Trim()).ToList();
+        var lineaA = lineas.First(l => l.StartsWith("A,"));
+        var lineaB = lineas.First(l => l.StartsWith("B,"));
+        Assert.IsTrue(lineaA.EndsWith(",S"), $"A deberia ser critica: {lineaA}");
+        Assert.IsTrue(lineaB.EndsWith(",N"), $"B no deberia ser critica: {lineaB}");
+    }
+
+    [TestMethod]
+    public void ExportadorJsonIncluyeFlagDeCaminoCriticoTest()
+    {
+        var proyecto = ProyectoConCaminoCritico("PCrit");
+
+        var json = new ExportadorJson().Exportar(new List<Proyecto> { proyecto });
+
+        Assert.IsTrue(json.Contains("CaminoCritico"), "El JSON deberia incluir CaminoCritico");
+        Assert.IsTrue(json.Contains("\"S\""), "Deberia haber al menos una tarea critica (S)");
+        Assert.IsTrue(json.Contains("\"N\""), "Deberia haber al menos una tarea no critica (N)");
+    }
+
+    private Proyecto ProyectoConCaminoCritico(string nombre)
+    {
+        var admin = _serviceUser.GetUsuarioPorEmail("admin@admin.com");
+        var proyecto = new Proyecto(nombre, "desc", DateTime.Today.AddDays(1), admin);
+        var a = new Tarea(new CrearTareaDto { Titulo = "A", Descripcion = "d", ProyectoNombre = nombre, Duracion = 5, Estado = "Pendiente" });
+        var b = new Tarea(new CrearTareaDto { Titulo = "B", Descripcion = "d", ProyectoNombre = nombre, Duracion = 2, Estado = "Pendiente" });
+        var c = new Tarea(new CrearTareaDto { Titulo = "C", Descripcion = "d", ProyectoNombre = nombre, Duracion = 1, Estado = "Pendiente" });
+        c.AgregarDependencia(a);
+        c.AgregarDependencia(b);
+        proyecto.Tareas.Add(a);
+        proyecto.Tareas.Add(b);
+        proyecto.Tareas.Add(c);
+        return proyecto;
     }
 }
