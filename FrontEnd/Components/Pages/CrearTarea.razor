@@ -5,6 +5,7 @@
 @inject ProyectoService ProyectoService
 @inject UsuarioService UsuarioService
 @inject TareaService   TareaService
+@inject RecursoService RecursoService
 
 <PageTitle>Crear tarea</PageTitle>
 
@@ -79,6 +80,20 @@
         </div>
     }
 
+    @if (recursosDisponibles.Any())
+    {
+        <div class="mb-3">
+            <label class="form-label">Recursos</label>
+            <select multiple class="form-select" style="height:150px" @bind="recursosSeleccionados">
+                @foreach (var r in recursosDisponibles)
+                {
+                    <option value="@r.Nombre">@r.Nombre (@r.Tipo) - cap. @r.Cantidad</option>
+                }
+            </select>
+            <div class="form-text">Ctrl/⌘ para seleccionar varios.</div>
+        </div>
+    }
+
     <button type="submit" class="btn btn-primary w-100">Crear tarea</button>
 </EditForm>
 
@@ -105,6 +120,8 @@
     private List<GetUsuarioDto> usuarios  = new();
     private string[] emailsSeleccionados  = Array.Empty<string>();
     private string[] titulosSeleccionados = Array.Empty<string>();
+    private List<GetRecursoDto> recursosDisponibles = new();
+    private string[] recursosSeleccionados = Array.Empty<string>();
     
     private string errorMessage;
     private bool showSuccessMessage = false;
@@ -150,6 +167,7 @@
     {
         proyectos = ProyectoService.GetListaProyectos();
         usuarios  = new();
+        recursosDisponibles = RecursoService.GetListaRecursos();
     }
 
     private void GuardarTarea()
@@ -172,13 +190,21 @@
         try
         {
             tareaForm.TareasQueYoDependoTitulos = titulosSeleccionados.ToList();
+            var tituloCreado = tareaForm.Titulo;
             TareaService.CrearTarea(tareaForm);
+
+            foreach (var nombreRecurso in recursosSeleccionados)
+            {
+                RecursoService.AsignarRecursoATarea(tituloCreado, nombreRecurso);
+            }
+
             showSuccessMessage = true;
-            
+
             tareaForm = new();
             tareaForm.FechaInicio = DateTime.Today;
             emailsSeleccionados = Array.Empty<string>();
             titulosSeleccionados = Array.Empty<string>();
+            recursosSeleccionados = Array.Empty<string>();
         }
         catch (Exception ex)
         {

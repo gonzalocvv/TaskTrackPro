@@ -20,9 +20,11 @@ builder.Services.AddDbContextFactory<SqlContext>(
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<ProyectoRepository>();
 builder.Services.AddScoped<TareaRepository>();
+builder.Services.AddScoped<RecursoRepository>();
 builder.Services.AddScoped<UsuarioService>();
 builder.Services.AddScoped<ProyectoService>();
 builder.Services.AddScoped<TareaService>();
+builder.Services.AddScoped<RecursoService>();
 builder.Services.AddSyncfusionBlazor();
 SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JGaF1cXmhNYVtpR2NbeU5xdF9EYVZSRWY/P1ZhSXxVdkZjUH1ccnBRR2NaVU19XEA=");
 

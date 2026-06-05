@@ -23,6 +23,11 @@ namespace Servicios.Exportadores
                 {
                     string critico = tarea.EstaEnCaminoCritico ? "S" : "N";
                     sb.AppendLine($"{tarea.Titulo},{tarea.FechaDeInicio:dd/MM/yyyy},{critico}");
+
+                    foreach (var recurso in tarea.Recursos)
+                    {
+                        sb.AppendLine($"  Recurso: {recurso.Nombre}");
+                    }
                 }
             }
 

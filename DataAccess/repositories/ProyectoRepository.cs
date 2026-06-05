@@ -35,7 +35,9 @@ public class ProyectoRepository
     public virtual List<Proyecto> GetListaProyectos()
     {
         return _sqlContext.Proyectos.Include(p => p.MiembrosProyecto)
-                                    .Include(p => p.AdministradorP) 
+                                    .Include(p => p.AdministradorP)
+                                    .Include(p => p.Tareas).ThenInclude(t => t.TareasQueYoDependo)
+                                    .Include(p => p.Tareas).ThenInclude(t => t.Recursos)
                                     .AsNoTracking()
                                     .ToList();
     }

@@ -45,4 +45,13 @@ public class RecursoRepository
         _sqlContext.Recursos.Remove(recurso);
         _sqlContext.SaveChanges();
     }
+
+    // Cuenta cuantas tareas activas (no completadas) usan el recurso, para
+    // detectar sobreasignacion respecto de su capacidad (Cantidad).
+    public int ContarTareasActivasUsando(string nombreRecurso)
+    {
+        return _sqlContext.Tareas
+            .Count(t => t.Estado != EstadoTarea.Completada
+                        && t.Recursos.Any(r => r.Nombre == nombreRecurso));
+    }
 }

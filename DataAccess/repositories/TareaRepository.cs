@@ -43,7 +43,8 @@ public class TareaRepository
         return _sqlContext.Tareas
             .Include(t => t.TareasQueYoDependo)
             .Include(t => t.TareasQueDependenDeMi)
-            .Include(t => t.UsuariosAsignados);
+            .Include(t => t.UsuariosAsignados)
+            .Include(t => t.Recursos);
     }
 
     public Tarea GetTareaPorTitulo(string tareaTitulo)

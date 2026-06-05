@@ -21,7 +21,8 @@ namespace Servicios.Exportadores
                     {
                         Titulo = t.Titulo,
                         FechaInicio = t.FechaDeInicio,
-                        CaminoCritico = t.EstaEnCaminoCritico ? "S" : "N"
+                        CaminoCritico = t.EstaEnCaminoCritico ? "S" : "N",
+                        Recursos = t.Recursos.Select(r => r.Nombre).ToList()
                     }).ToList()
                 });
 

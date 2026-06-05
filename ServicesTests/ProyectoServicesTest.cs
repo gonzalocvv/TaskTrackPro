@@ -412,6 +412,29 @@ public class ProyectoServicesTest
         Assert.IsTrue(json.Contains("\"N\""), "Deberia haber al menos una tarea no critica (N)");
     }
 
+    [TestMethod]
+    public void ExportadorCsvIncluyeRecursosTest()
+    {
+        var proyecto = ProyectoConCaminoCritico("PCrit");
+        proyecto.Tareas.First(t => t.Titulo == "A").AsignarRecurso(new Recurso("Dev", "Humano", "d", 2));
+
+        var csv = new ExportadorCsv().Exportar(new List<Proyecto> { proyecto });
+
+        Assert.IsTrue(csv.Contains("Recurso: Dev"), "El CSV deberia listar el recurso Dev");
+    }
+
+    [TestMethod]
+    public void ExportadorJsonIncluyeRecursosTest()
+    {
+        var proyecto = ProyectoConCaminoCritico("PCrit");
+        proyecto.Tareas.First(t => t.Titulo == "A").AsignarRecurso(new Recurso("Dev", "Humano", "d", 2));
+
+        var json = new ExportadorJson().Exportar(new List<Proyecto> { proyecto });
+
+        Assert.IsTrue(json.Contains("Recursos"), "El JSON deberia incluir Recursos");
+        Assert.IsTrue(json.Contains("Dev"), "El JSON deberia listar el recurso Dev");
+    }
+
     private Proyecto ProyectoConCaminoCritico(string nombre)
     {
         var admin = _serviceUser.GetUsuarioPorEmail("admin@admin.com");

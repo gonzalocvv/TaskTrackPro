@@ -1,0 +1,119 @@
+@page "/admin/gestion-recursos"
+@using TaskTrackPro.Backend.Dtos
+@using TaskTrackPro.Backend.Servicios
+@inject RecursoService RecursoService
+@inject UsuarioService UsuarioService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Gestión de recursos</PageTitle>
+
+<h1 class="mb-4">Gestión de recursos</h1>
+
+<EditForm Model="@form" OnValidSubmit="CrearRecurso">
+    <div class="row g-2 align-items-end mb-4">
+        <div class="col">
+            <label class="form-label">Nombre</label>
+            <InputText class="form-control" @bind-Value="form.Nombre" />
+        </div>
+        <div class="col">
+            <label class="form-label">Tipo</label>
+            <InputText class="form-control" @bind-Value="form.Tipo" />
+        </div>
+        <div class="col">
+            <label class="form-label">Descripción</label>
+            <InputText class="form-control" @bind-Value="form.Descripcion" />
+        </div>
+        <div class="col-2">
+            <label class="form-label">Cantidad</label>
+            <InputNumber class="form-control" @bind-Value="form.Cantidad" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Crear</button>
+        </div>
+    </div>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div class="alert alert-info">@mensaje</div>
+}
+
+@if (recursos.Count == 0)
+{
+    <p>No hay recursos cargados.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th>Cantidad</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var r in recursos)
+        {
+            <tr>
+                <td>@r.Nombre</td>
+                <td>@r.Tipo</td>
+                <td>@r.Descripcion</td>
+                <td>@r.Cantidad</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" @onclick="() => Eliminar(r.Nombre)">Eliminar</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private CrearRecursoDto form = new() { Cantidad = 1 };
+    private List<GetRecursoDto> recursos = new();
+    private string mensaje = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (UsuarioService.SesionActual is null || !UsuarioService.EsAdminSistema())
+        {
+            NavigationManager.NavigateTo("/", true);
+            return;
+        }
+        Cargar();
+    }
+
+    private void Cargar() => recursos = RecursoService.GetListaRecursos();
+
+    private void CrearRecurso()
+    {
+        try
+        {
+            RecursoService.CrearRecurso(form);
+            mensaje = $"Recurso '{form.Nombre}' creado con éxito.";
+            form = new() { Cantidad = 1 };
+            Cargar();
+        }
+        catch (Exception ex)
+        {
+            mensaje = ex.Message;
+        }
+    }
+
+    private void Eliminar(string nombre)
+    {
+        try
+        {
+            RecursoService.EliminarRecurso(nombre);
+            mensaje = $"Recurso '{nombre}' eliminado.";
+            Cargar();
+        }
+        catch (Exception ex)
+        {
+            mensaje = ex.Message;
+        }
+    }
+}
