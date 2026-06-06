@@ -7,13 +7,11 @@ namespace TaskTrackPro.Backend.Servicios;
 
 public class UsuarioService
 {
-    private MemoryDB _db;
     private readonly UsuarioRepository _usuarioRepository;
     const string ContraseñaPorDefecto = "Default123@";
 
-    public UsuarioService(MemoryDB db, UsuarioRepository usuarioRepository)
+    public UsuarioService(UsuarioRepository usuarioRepository)
     {
-        _db = db;
         _usuarioRepository = usuarioRepository;
         
        

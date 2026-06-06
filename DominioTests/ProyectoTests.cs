@@ -16,7 +16,7 @@ public class ProyectoTests
     [TestInitialize]
     public void SetUp()
     {
-        _fechaInicioCorrecta = new DateTime(2025, 09, 08);
+        _fechaInicioCorrecta = DateTime.Today.AddDays(1);
         _fechaNac = new DateTime(2004, 9, 7);
         _admin = new Usuario(new CreateUsuarioDto
         {

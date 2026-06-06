@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TaskTrackPro.Backend.Dominio;
 
 namespace TaskTrackPro.Backend.DataAccess.repositories;
@@ -28,11 +29,45 @@ public class TareaRepository
         _sqlContext.SaveChanges();
     }
 
+    public void Actualizar(Tarea tarea)
+    {
+        // La tarea proviene del mismo contexto (tracked); SaveChanges persiste
+        // sus cambios y los de su grafo (estado de dependientes, joins).
+        _sqlContext.SaveChanges();
+    }
 
+    public void Eliminar(string proyectoNombre, string titulo)
+    {
+        var tarea = TareasConDependencias()
+            .FirstOrDefault(t => t.Proyecto.Nombre == proyectoNombre && t.Titulo == titulo);
+        if (tarea == null)
+            throw new ArgumentException($"No existe la tarea '{titulo}' en el proyecto '{proyectoNombre}'.");
+
+        // Limpiar relaciones m2m antes de borrar para no violar las FKs Restrict
+        // de las tablas join (UsuarioTarea, TareaTarea, TareaRecurso).
+        tarea.TareasQueYoDependo.Clear();
+        tarea.TareasQueDependenDeMi.Clear();
+        tarea.UsuariosAsignados.Clear();
+        tarea.Recursos.Clear();
+
+        _sqlContext.Tareas.Remove(tarea);
+        _sqlContext.SaveChanges();
+    }
+
+    // Carga tareas con sus dependencias (ambos sentidos) y usuarios asignados,
+    // para que la logica de dominio opere sobre el grafo completo tras leer.
+    private IQueryable<Tarea> TareasConDependencias()
+    {
+        return _sqlContext.Tareas
+            .Include(t => t.TareasQueYoDependo)
+            .Include(t => t.TareasQueDependenDeMi)
+            .Include(t => t.UsuariosAsignados)
+            .Include(t => t.Recursos);
+    }
 
     public Tarea GetTareaPorTitulo(string tareaTitulo)
     {
-        return _sqlContext.Tareas.FirstOrDefault(t => t.Titulo == tareaTitulo);
+        return TareasConDependencias().FirstOrDefault(t => t.Titulo == tareaTitulo);
     }
 
     public List<Tarea> GetTareasPorProyecto(string proyectoNombre)
@@ -55,7 +90,8 @@ public class TareaRepository
         {
             throw new ArgumentNullException(nameof(proyecto), "El proyecto no puede ser nulo.");
         }
-        return _sqlContext.Tareas.FirstOrDefault(t => t.Proyecto.Nombre == proyectoNombre && t.Titulo == tareaTitulo);
+        return TareasConDependencias()
+            .FirstOrDefault(t => t.Proyecto.Nombre == proyectoNombre && t.Titulo == tareaTitulo);
     }
     public Usuario GetUsuarioPorEmail(string email)
     {

@@ -7,11 +7,9 @@ namespace TaskTrackPro.Backend.Servicios;
 
 public class TareaService
 {
-    private MemoryDB _db = new ();
     private readonly TareaRepository _tareaRepository;
-    public TareaService(MemoryDB db, TareaRepository tareaRepository)
+    public TareaService(TareaRepository tareaRepository)
     {
-        _db = db;
         _tareaRepository = tareaRepository;
     }
 
@@ -77,6 +75,7 @@ public class TareaService
             throw new ArgumentException("Tarea inexistente");
         Usuario usuarioParaCompletar = _tareaRepository.GetUsuarioPorEmail(usuario);
         tarea.CompletarTarea(usuarioParaCompletar);
+        _tareaRepository.Actualizar(tarea);
     }
     public Tarea GetTareaPorTitulo(string titulo)
     {
@@ -84,6 +83,11 @@ public class TareaService
         if (tarea == null)
             throw new ArgumentException("Tarea inexistente");
         return tarea;
+    }
+
+    public void EliminarTarea(string proyectoNombre, string titulo)
+    {
+        _tareaRepository.Eliminar(proyectoNombre, titulo);
     }
     
 }

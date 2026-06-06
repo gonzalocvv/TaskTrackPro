@@ -3,6 +3,7 @@ using TaskTrackPro.Backend.DataAccess.repositories;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Servicios;
+using Servicios.Exportadores;
 using TaskTrackPro.Backend.Dominio;
 using TaskTrackPro.Backend.Dominio.Interfaces;
 using TaskTrackPro.Backend.Dtos;
@@ -13,7 +14,6 @@ namespace TaskTrackPro.Backend.ServicesTests;
 [TestClass]
 public class ProyectoServicesTest
 {
-    private MemoryDB _db;
     private ProyectoService _serviceProj;
     private UsuarioService _serviceUser;
     private CreateUsuarioDto _administradorP;
@@ -27,7 +27,6 @@ public class ProyectoServicesTest
     [TestInitialize]
     public void SetUp()
     {
-        _db = new MemoryDB();
         _contextFactory = new MemoryAppContextFactory();
         _context = _contextFactory.CreateDbContext();
         _proyectoRepository = new ProyectoRepository(_context);
@@ -36,8 +35,8 @@ public class ProyectoServicesTest
         _context.Database.EnsureDeleted();
         _context.Database.EnsureCreated();
         
-        _serviceUser = new UsuarioService(_db, _usuarioRepository);
-        _serviceProj = new ProyectoService(_db, _proyectoRepository);
+        _serviceUser = new UsuarioService(_usuarioRepository);
+        _serviceProj = new ProyectoService(_proyectoRepository);
         
         _administradorP = new CreateUsuarioDto
         {
@@ -52,7 +51,7 @@ public class ProyectoServicesTest
         {
             Nombre = "Proyecto 1",
             Descripcion = "Descripcion del proyecto 1",
-            FechaInicio = new DateTime(2025, 10, 1),
+            FechaInicio = DateTime.Today.AddDays(1),
             AdministradorEmail = "admin@admin.com"
         };
         
@@ -180,14 +179,14 @@ public class ProyectoServicesTest
         {
             Nombre = "P1",
             Descripcion = "Desc1",
-            FechaInicio = new DateTime(2025, 9, 1),
+            FechaInicio = DateTime.Today.AddDays(1),
             AdministradorEmail = _administradorP.Email
         };
         var proyectoDto2 = new CrearProyectoDto
         {
             Nombre = "P2",
             Descripcion = "Desc2",
-            FechaInicio = new DateTime(2025, 9, 2),
+            FechaInicio = DateTime.Today.AddDays(1),
             AdministradorEmail = _administradorP.Email
         };
         _serviceProj.CrearProyecto(proyectoDto1);
@@ -299,7 +298,7 @@ public class ProyectoServicesTest
         
         var ruta = "export_test.txt";
 
-        var proyectoFalso = new Proyecto("Proyecto Test", "Descripción", new DateTime(2026, 1, 1), new Usuario(new CreateUsuarioDto
+        var proyectoFalso = new Proyecto("Proyecto Test", "Descripción", DateTime.Today.AddDays(1), new Usuario(new CreateUsuarioDto
         {
             Nombre = "Admin",
             Apellido = "Admin",
@@ -314,7 +313,7 @@ public class ProyectoServicesTest
         var mockExportador = new Mock<IExportadorProyectos>();
         mockExportador.Setup(e => e.Exportar(It.IsAny<List<Proyecto>>())).Returns("contenido exportado");
 
-        var servicio = new ProyectoService(null, mockRepo.Object);
+        var servicio = new ProyectoService(mockRepo.Object);
 
         
         servicio.ExportarProyectos(mockExportador.Object, ruta);
@@ -323,8 +322,157 @@ public class ProyectoServicesTest
         var contenido = File.ReadAllText(ruta);
         Assert.AreEqual("contenido exportado", contenido);
 
-        
+
         File.Delete(ruta);
     }
-  
+
+    [TestMethod]
+    public void GetTareasPorNombreProyectoIncluyeDependenciasTest()
+    {
+        var tareaRepo = new TareaRepository(_context);
+        var tareaService = new TareaService(tareaRepo);
+
+        // admin@admin.com ya existe (seed del ctor de UsuarioService).
+        _serviceProj.CrearProyecto(_proyectoDto);
+
+        tareaService.CrearTarea(new CrearTareaDto
+        {
+            Titulo = "Tarea A",
+            Descripcion = "Primera",
+            ProyectoNombre = _proyectoDto.Nombre,
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [ "admin@admin.com" ],
+            Estado = "Pendiente"
+        });
+        tareaService.CrearTarea(new CrearTareaDto
+        {
+            Titulo = "Tarea B",
+            Descripcion = "Depende de A",
+            ProyectoNombre = _proyectoDto.Nombre,
+            FechaInicio = DateTime.Now,
+            Duracion = 3,
+            UsuariosAsignadosEmails = [ "admin@admin.com" ],
+            TareasQueYoDependoTitulos = [ "Tarea A" ],
+            Estado = "Pendiente"
+        });
+
+        // Forzar relectura real desde el store (sin identity map en memoria).
+        _context.ChangeTracker.Clear();
+
+        var lista = _serviceProj.GetTareasPorNombreProyecto(_proyectoDto.Nombre);
+
+        var dtoB = lista.Single(d => d.Titulo == "Tarea B");
+        CollectionAssert.Contains(dtoB.TareasQueYoDependoTitulos, "Tarea A");
+    }
+
+    [TestMethod]
+    public void GetCaminoCriticoDevuelveDuracionTotalYTareasCriticasTest()
+    {
+        var tareaRepo = new TareaRepository(_context);
+        var tareaService = new TareaService(tareaRepo);
+        _serviceProj.CrearProyecto(_proyectoDto);
+
+        tareaService.CrearTarea(new CrearTareaDto { Titulo = "A", Descripcion = "d", ProyectoNombre = _proyectoDto.Nombre, Duracion = 5, UsuariosAsignadosEmails = ["admin@admin.com"], Estado = "Pendiente" });
+        tareaService.CrearTarea(new CrearTareaDto { Titulo = "B", Descripcion = "d", ProyectoNombre = _proyectoDto.Nombre, Duracion = 2, UsuariosAsignadosEmails = ["admin@admin.com"], Estado = "Pendiente" });
+        tareaService.CrearTarea(new CrearTareaDto { Titulo = "C", Descripcion = "d", ProyectoNombre = _proyectoDto.Nombre, Duracion = 1, UsuariosAsignadosEmails = ["admin@admin.com"], TareasQueYoDependoTitulos = ["A", "B"], Estado = "Pendiente" });
+
+        _context.ChangeTracker.Clear();
+        var dto = _serviceProj.GetCaminoCritico(_proyectoDto.Nombre);
+
+        Assert.AreEqual(6, dto.DuracionTotal);
+        CollectionAssert.Contains(dto.TitulosCriticos, "A");
+        CollectionAssert.Contains(dto.TitulosCriticos, "C");
+        CollectionAssert.DoesNotContain(dto.TitulosCriticos, "B");
+    }
+
+    [TestMethod]
+    public void ExportadorCsvIncluyeFlagDeCaminoCriticoTest()
+    {
+        var proyecto = ProyectoConCaminoCritico("PCrit");
+
+        var csv = new ExportadorCsv().Exportar(new List<Proyecto> { proyecto });
+
+        var lineas = csv.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(l => l.Trim()).ToList();
+        var lineaA = lineas.First(l => l.StartsWith("A,"));
+        var lineaB = lineas.First(l => l.StartsWith("B,"));
+        Assert.IsTrue(lineaA.EndsWith(",S"), $"A deberia ser critica: {lineaA}");
+        Assert.IsTrue(lineaB.EndsWith(",N"), $"B no deberia ser critica: {lineaB}");
+    }
+
+    [TestMethod]
+    public void ExportadorJsonIncluyeFlagDeCaminoCriticoTest()
+    {
+        var proyecto = ProyectoConCaminoCritico("PCrit");
+
+        var json = new ExportadorJson().Exportar(new List<Proyecto> { proyecto });
+
+        Assert.IsTrue(json.Contains("CaminoCritico"), "El JSON deberia incluir CaminoCritico");
+        Assert.IsTrue(json.Contains("\"S\""), "Deberia haber al menos una tarea critica (S)");
+        Assert.IsTrue(json.Contains("\"N\""), "Deberia haber al menos una tarea no critica (N)");
+    }
+
+    [TestMethod]
+    public void ExportadorCsvIncluyeRecursosTest()
+    {
+        var proyecto = ProyectoConCaminoCritico("PCrit");
+        proyecto.Tareas.First(t => t.Titulo == "A").AsignarRecurso(new Recurso("Dev", "Humano", "d", 2));
+
+        var csv = new ExportadorCsv().Exportar(new List<Proyecto> { proyecto });
+
+        Assert.IsTrue(csv.Contains("Recurso: Dev"), "El CSV deberia listar el recurso Dev");
+    }
+
+    [TestMethod]
+    public void ExportadorJsonIncluyeRecursosTest()
+    {
+        var proyecto = ProyectoConCaminoCritico("PCrit");
+        proyecto.Tareas.First(t => t.Titulo == "A").AsignarRecurso(new Recurso("Dev", "Humano", "d", 2));
+
+        var json = new ExportadorJson().Exportar(new List<Proyecto> { proyecto });
+
+        Assert.IsTrue(json.Contains("Recursos"), "El JSON deberia incluir Recursos");
+        Assert.IsTrue(json.Contains("Dev"), "El JSON deberia listar el recurso Dev");
+    }
+
+    private Proyecto ProyectoConCaminoCritico(string nombre)
+    {
+        var admin = _serviceUser.GetUsuarioPorEmail("admin@admin.com");
+        var proyecto = new Proyecto(nombre, "desc", DateTime.Today.AddDays(1), admin);
+        var a = new Tarea(new CrearTareaDto { Titulo = "A", Descripcion = "d", ProyectoNombre = nombre, Duracion = 5, Estado = "Pendiente" });
+        var b = new Tarea(new CrearTareaDto { Titulo = "B", Descripcion = "d", ProyectoNombre = nombre, Duracion = 2, Estado = "Pendiente" });
+        var c = new Tarea(new CrearTareaDto { Titulo = "C", Descripcion = "d", ProyectoNombre = nombre, Duracion = 1, Estado = "Pendiente" });
+        c.AgregarDependencia(a);
+        c.AgregarDependencia(b);
+        proyecto.Tareas.Add(a);
+        proyecto.Tareas.Add(b);
+        proyecto.Tareas.Add(c);
+        return proyecto;
+    }
+
+    [TestMethod]
+    public void EliminarProyectoQuitaElProyectoTest()
+    {
+        _serviceProj.CrearProyecto(_proyectoDto);
+
+        _serviceProj.EliminarProyecto(_proyectoDto.Nombre);
+
+        _context.ChangeTracker.Clear();
+        Assert.ThrowsException<ArgumentNullException>(() => _serviceProj.GetProyectoPorNombre(_proyectoDto.Nombre));
+    }
+
+    [TestMethod]
+    public void RemoverMiembroQuitaElMiembroDelProyectoTest()
+    {
+        _serviceProj.CrearProyecto(_proyectoDto);
+        var miembro = new CreateUsuarioDto { Nombre = "M", Apellido = "X", Email = "m@e.com", FechaNacimiento = new DateTime(1995, 5, 5), Contraseña = "Miemb123!" };
+        _serviceUser.CrearUsuario(miembro);
+        _serviceProj.AgregarMiembro(miembro.Email, _proyectoDto.Nombre);
+
+        _serviceProj.RemoverMiembro(miembro.Email, _proyectoDto.Nombre);
+
+        _context.ChangeTracker.Clear();
+        var dto = _serviceProj.GetListaProyectos().First(p => p.Nombre == _proyectoDto.Nombre);
+        Assert.IsFalse(dto.MiembroEmails.Contains(miembro.Email));
+    }
 }

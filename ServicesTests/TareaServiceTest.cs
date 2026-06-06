@@ -9,7 +9,6 @@ namespace TaskTrackPro.Backend.ServicesTests;
 [TestClass]
 public class TareaServiceTest
 {
-    private MemoryDB _db;
     private TareaService _tareaService;
     private ProyectoService _projService;
     private UsuarioService _userService;
@@ -30,15 +29,14 @@ public class TareaServiceTest
     [TestInitialize]
     public void SetUp()
     {
-        _db = new MemoryDB();
         contextFactory = new MemoryAppContextFactory();
         _context = contextFactory.CreateDbContext();
         _usuarioRepository = new UsuarioRepository(_context);
         _tareaRepository = new TareaRepository(_context);
         _proyectoRepository = new ProyectoRepository(_context);
-        _tareaService = new TareaService(_db, _tareaRepository);
-        _projService = new ProyectoService(_db, _proyectoRepository);
-        _userService = new UsuarioService(_db, _usuarioRepository);
+        _tareaService = new TareaService(_tareaRepository);
+        _projService = new ProyectoService(_proyectoRepository);
+        _userService = new UsuarioService(_usuarioRepository);
         
 
         _context.Database.EnsureDeleted();    
@@ -64,7 +62,7 @@ public class TareaServiceTest
         _proyecto = new Proyecto(
             _proyectoNombre,
             "Descripción del proyecto",
-            new DateTime(2025, 10, 1),
+            DateTime.Today.AddDays(1),
             _administradorP
         );
         _proyectoRepository.AgregarProyecto(_proyecto);
@@ -105,7 +103,7 @@ public class TareaServiceTest
             Contraseña = "Gonzalo9@"
         };
          responsable = new Usuario(responsableDto);    
-         proyectoPrueba = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", new DateTime(2025, 10, 1), responsable);
+         proyectoPrueba = new Proyecto("Proyecto 1", "Descripcion del proyecto 1", DateTime.Today.AddDays(1), responsable);
 
     }
 
@@ -316,6 +314,74 @@ public class TareaServiceTest
         Assert.AreEqual(0, dtoDep.TareasQueDependenDeMiTitulos.Count);
     }
 
+    [TestMethod]
+    public void CompletarTareaPersisteEstadoEnNuevaLecturaTest()
+    {
+        var usuarioDto = new CreateUsuarioDto
+        {
+            Nombre = "Resp", Apellido = "Able",
+            Email = "resp@correo.com",
+            FechaNacimiento = new DateTime(1990, 5, 5),
+            Contraseña = "Resp123!"
+        };
+        _userService.CrearUsuario(usuarioDto);
 
+        _projService.CrearProyecto(new CrearProyectoDto
+        {
+            Nombre = "ProyectoPersistencia",
+            Descripcion = "Proyecto de prueba",
+            FechaInicio = DateTime.Now.AddHours(2),
+            AdministradorEmail = _administradorP.Email
+        });
 
+        _tareaService.CrearTarea(new CrearTareaDto
+        {
+            Titulo = "Tarea A",
+            Descripcion = "Primera tarea",
+            ProyectoNombre = "ProyectoPersistencia",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [ usuarioDto.Email ],
+            Estado = "Pendiente"
+        });
+
+        _tareaService.CrearTarea(new CrearTareaDto
+        {
+            Titulo = "Tarea B",
+            Descripcion = "Depende de A",
+            ProyectoNombre = "ProyectoPersistencia",
+            FechaInicio = DateTime.Now,
+            Duracion = 2,
+            UsuariosAsignadosEmails = [ usuarioDto.Email ],
+            TareasQueYoDependoTitulos = [ "Tarea A" ],
+            Estado = "Pendiente"
+        });
+
+        // Forzar relectura real desde el store (sin identity map en memoria).
+        _context.ChangeTracker.Clear();
+
+        _tareaService.CompletarTarea("ProyectoPersistencia", "Tarea A", usuarioDto.Email);
+
+        // Tras nueva relectura: A quedó Completada y B se desbloqueó (Pendiente).
+        _context.ChangeTracker.Clear();
+        var aRecargada = _tareaService.GetTareaPorTitulo("Tarea A");
+        var bRecargada = _tareaService.GetTareaPorTitulo("Tarea B");
+        Assert.AreEqual(EstadoTarea.Completada, aRecargada.Estado, "El estado Completada no se persistió.");
+        Assert.AreEqual(EstadoTarea.Pendiente, bRecargada.Estado, "La tarea dependiente no se desbloqueó tras completar su dependencia.");
+    }
+
+    [TestMethod]
+    public void EliminarTareaQuitaLaTareaTest()
+    {
+        var usuarioDto = new CreateUsuarioDto { Nombre = "U", Apellido = "P", Email = "u@e.com", FechaNacimiento = new DateTime(1990, 1, 1), Contraseña = "User123!" };
+        _userService.CrearUsuario(usuarioDto);
+        _projService.CrearProyecto(new CrearProyectoDto { Nombre = "PE", Descripcion = "d", FechaInicio = DateTime.Now.AddHours(2), AdministradorEmail = _administradorP.Email });
+        _tareaService.CrearTarea(new CrearTareaDto { Titulo = "TE", Descripcion = "d", ProyectoNombre = "PE", Duracion = 2, UsuariosAsignadosEmails = [usuarioDto.Email], Estado = "Pendiente" });
+
+        _tareaService.EliminarTarea("PE", "TE");
+
+        _context.ChangeTracker.Clear();
+        var ex = Assert.ThrowsException<ArgumentException>(() => _tareaService.GetTareaPorTitulo("TE"));
+        Assert.AreEqual("Tarea inexistente", ex.Message);
+    }
 }

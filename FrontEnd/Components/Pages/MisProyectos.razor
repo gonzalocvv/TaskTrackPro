@@ -3,6 +3,7 @@
 @using TaskTrackPro.Backend.Servicios
 @inject UsuarioService UsuarioService
 @inject ProyectoService ProyectoServicio
+@inject NavigationManager NavigationManager
 
 <h3>Mis proyectos</h3>
 
@@ -26,16 +27,46 @@ else
         </select>
     </div>
 
+    @if (proyectoNombreSeleccionado != "PrimeraFila" && !string.IsNullOrWhiteSpace(proyectoNombreSeleccionado))
+    {
+        <div class="mb-3">
+            <button class="btn btn-outline-danger btn-sm" @onclick="BorrarProyecto">Borrar proyecto</button>
+        </div>
+
+        @if (MiembrosSeleccionado().Any())
+        {
+            <h5>Miembros</h5>
+            <ul class="list-group mb-3">
+                @foreach (var m in MiembrosSeleccionado())
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        @m
+                        <button class="btn btn-sm btn-outline-secondary" @onclick="() => QuitarMiembro(m)">Quitar</button>
+                    </li>
+                }
+            </ul>
+        }
+    }
+
+    @if (!string.IsNullOrEmpty(errorProyecto))
+    {
+        <div class="alert alert-danger">@errorProyecto</div>
+    }
+
     @if (taskCollection.Any())
     {
-        <SfGantt DataSource="@taskCollection" Height="300px" Width="100%" TreeColumnIndex="1">
-            <GanttTaskFields Id="TaskId" Name="TaskName" StartDate="StartDate" EndDate="EndDate"
-                             Duration="Duration" Progress="Progress" ParentID="ParentId" Dependency="Predecessor" />
-            <GanttColumns>
-                <GanttColumn Field="TaskId" HeaderText="ID" Width="100"></GanttColumn>
-                <GanttColumn Field="TaskName" HeaderText="Nombre de la Tarea" Width="250"></GanttColumn>
-            </GanttColumns>
-        </SfGantt>
+        <p class="fw-semibold">Duración total (camino crítico): @duracionTotalProyecto horas</p>
+        <div style="overflow-x:auto; max-width:100%;">
+            <SfGantt DataSource="@taskCollection" Height="300px" Width="900px" TreeColumnIndex="1">
+                <GanttTaskFields Id="TaskId" Name="TaskName" StartDate="StartDate" EndDate="EndDate"
+                                 Duration="Duration" Progress="Progress" ParentID="ParentId" Dependency="Predecessor" />
+                <GanttColumns>
+                    <GanttColumn Field="TaskId" HeaderText="ID" Width="100"></GanttColumn>
+                    <GanttColumn Field="TaskName" HeaderText="Nombre de la Tarea" Width="250"></GanttColumn>
+                    <GanttColumn Field="Critica" HeaderText="Crítica" Width="120"></GanttColumn>
+                </GanttColumns>
+            </SfGantt>
+        </div>
     }
 }
 
@@ -43,8 +74,20 @@ else
     private List<GetProyectoDto> proyectos = new();
     private List<TaskData> taskCollection = new();
     private string proyectoNombreSeleccionado = "PrimeraFila";
+    private int duracionTotalProyecto;
+    private string errorProyecto = string.Empty;
 
     protected override void OnInitialized()
+    {
+        if (UsuarioService.SesionActual is null)
+        {
+            NavigationManager.NavigateTo("/", true);
+            return;
+        }
+        RecargarProyectos();
+    }
+
+    private void RecargarProyectos()
     {
         var email = UsuarioService.SesionActual?.Email;
         proyectos = ProyectoServicio.GetListaProyectos()
@@ -52,29 +95,81 @@ else
             .ToList();
     }
 
+    private List<string> MiembrosSeleccionado() =>
+        proyectos.FirstOrDefault(p => p.Nombre == proyectoNombreSeleccionado)?.MiembroEmails ?? new();
+
+    private void BorrarProyecto()
+    {
+        try
+        {
+            ProyectoServicio.EliminarProyecto(proyectoNombreSeleccionado);
+            errorProyecto = string.Empty;
+            proyectoNombreSeleccionado = "PrimeraFila";
+            taskCollection.Clear();
+            duracionTotalProyecto = 0;
+            RecargarProyectos();
+        }
+        catch (Exception ex)
+        {
+            errorProyecto = ex.Message;
+        }
+    }
+
+    private void QuitarMiembro(string email)
+    {
+        try
+        {
+            ProyectoServicio.RemoverMiembro(email, proyectoNombreSeleccionado);
+            errorProyecto = string.Empty;
+            RecargarProyectos();
+        }
+        catch (Exception ex)
+        {
+            errorProyecto = ex.Message;
+        }
+    }
+
     private void ProyectoCambio()
     {
         taskCollection.Clear();
+        duracionTotalProyecto = 0;
 
         if (string.IsNullOrWhiteSpace(proyectoNombreSeleccionado) || proyectoNombreSeleccionado == "PrimeraFila")
             return;
 
         var tareasDto = ProyectoServicio.GetTareasPorNombreProyecto(proyectoNombreSeleccionado);
 
+        var cpm = ProyectoServicio.GetCaminoCritico(proyectoNombreSeleccionado);
+        duracionTotalProyecto = cpm.DuracionTotal;
+        var criticos = cpm.TitulosCriticos.ToHashSet();
+
+        // El Gantt referencia dependencias por TaskId, no por titulo:
+        // primero asignamos un Id a cada tarea y luego armamos los predecesores.
+        var idPorTitulo = new Dictionary<string, int>();
         int id = 1;
+        foreach (var tarea in tareasDto)
+            idPorTitulo[tarea.Titulo] = id++;
+
         foreach (var tarea in tareasDto)
         {
             var start = tarea.FechaInicio ?? DateTime.Today;
+
+            var predecesores = tarea.TareasQueYoDependoTitulos
+                .Where(idPorTitulo.ContainsKey)
+                .Select(t => $"{idPorTitulo[t]}FS");
+            var predecessor = string.Join(",", predecesores);
+
             taskCollection.Add(new TaskData
             {
-                TaskId = id++,
+                TaskId = idPorTitulo[tarea.Titulo],
                 TaskName = tarea.Titulo,
                 StartDate = start,
                 EndDate = start.AddHours(tarea.Duracion),
-                Duration = tarea.Duracion.ToString(),
+                Duration = Math.Max(1, (int)Math.Ceiling(tarea.Duracion / 8.0)).ToString(),
                 Progress = tarea.Estado == "Completada" ? 100 : 0,
-                Predecessor = null,
-                ParentId = null
+                Predecessor = string.IsNullOrEmpty(predecessor) ? null : predecessor,
+                ParentId = null,
+                Critica = criticos.Contains(tarea.Titulo) ? "Sí" : "No"
             });
         }
     }
@@ -89,5 +184,6 @@ else
         public int Progress { get; set; }
         public string Predecessor { get; set; }
         public int? ParentId { get; set; }
+        public string Critica { get; set; }
     }
 }
