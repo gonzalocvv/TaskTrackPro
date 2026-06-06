@@ -6,6 +6,7 @@ public class SqlContext : DbContext{
    public DbSet<Usuario> Usuarios { get; set; }
    public DbSet<Proyecto> Proyectos { get; set; }
    public DbSet<Tarea> Tareas { get; set; }
+   public DbSet<Recurso> Recursos { get; set; }
 
    public SqlContext(DbContextOptions<SqlContext> options) : base(options){
        if (!Database.IsInMemory())
@@ -78,6 +79,33 @@ public class SqlContext : DbContext{
                     j.Property<string>("UsuarioEmail");
                     j.HasKey("ProyectoNombre", "UsuarioEmail");
                     j.ToTable("ProyectoUsuario");
+                });
+
+        modelBuilder.Entity<Recurso>()
+                    .Property(r => r.Nombre)
+                    .HasMaxLength(450);
+
+        modelBuilder.Entity<Tarea>()
+            .HasMany(t => t.Recursos)
+            .WithMany()
+            .UsingEntity<Dictionary<string, object>>(
+                "TareaRecurso",
+                j => j.HasOne<Recurso>()
+                      .WithMany()
+                      .HasForeignKey("RecursoNombre")
+                      .HasPrincipalKey(r => r.Nombre)
+                      .OnDelete(DeleteBehavior.Restrict),
+                j => j.HasOne<Tarea>()
+                      .WithMany()
+                      .HasForeignKey("TareaTitulo")
+                      .HasPrincipalKey(t => t.Titulo)
+                      .OnDelete(DeleteBehavior.Restrict),
+                j =>
+                {
+                    j.Property<string>("TareaTitulo");
+                    j.Property<string>("RecursoNombre");
+                    j.HasKey("TareaTitulo", "RecursoNombre");
+                    j.ToTable("TareaRecurso");
                 });
    }
    

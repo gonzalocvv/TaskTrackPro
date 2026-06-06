@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using TaskTrackPro.Backend.Dtos;
 
 namespace TaskTrackPro.Backend.Dominio
@@ -24,6 +25,11 @@ namespace TaskTrackPro.Backend.Dominio
 
         public EstadoTarea Estado { get; private set; }
 
+        // Marca transitoria (no persistida) que setea CalculadoraCaminoCritico
+        // para que la UI y los exportadores sepan si la tarea es critica.
+        [NotMapped]
+        public bool EstaEnCaminoCritico { get; set; }
+
         private readonly List<Tarea> _tareasYoDependo = new List<Tarea>();
         private readonly List<Tarea> _tareasDependenDeMi = new List<Tarea>();
         private readonly List<Usuario> _usuariosAsignados = new List<Usuario>();
@@ -31,6 +37,9 @@ namespace TaskTrackPro.Backend.Dominio
         public List<Tarea> TareasQueYoDependo => _tareasYoDependo;
         public List<Tarea> TareasQueDependenDeMi => _tareasDependenDeMi;
         public List<Usuario> UsuariosAsignados => _usuariosAsignados;
+
+        private readonly List<Recurso> _recursos = new List<Recurso>();
+        public List<Recurso> Recursos => _recursos;
 
         public Tarea()
         {
@@ -192,6 +201,51 @@ namespace TaskTrackPro.Backend.Dominio
         private bool UsuarioEstaAsignado(Usuario usuario)
         {
             return _usuariosAsignados.Contains(usuario);
+        }
+
+        public void QuitarUsuario(Usuario usuario)
+        {
+            if (usuario == null)
+            {
+                throw new ArgumentNullException(nameof(usuario));
+            }
+
+            if (!UsuarioEstaAsignado(usuario))
+            {
+                throw new InvalidOperationException("El usuario no está asignado a esta tarea.");
+            }
+
+            _usuariosAsignados.Remove(usuario);
+        }
+
+        public void AsignarRecurso(Recurso recurso)
+        {
+            if (recurso == null)
+            {
+                throw new ArgumentNullException(nameof(recurso));
+            }
+
+            if (_recursos.Contains(recurso))
+            {
+                throw new InvalidOperationException("El recurso ya está asignado a esta tarea.");
+            }
+
+            _recursos.Add(recurso);
+        }
+
+        public void QuitarRecurso(Recurso recurso)
+        {
+            if (recurso == null)
+            {
+                throw new ArgumentNullException(nameof(recurso));
+            }
+
+            if (!_recursos.Contains(recurso))
+            {
+                throw new InvalidOperationException("El recurso no está asignado a esta tarea.");
+            }
+
+            _recursos.Remove(recurso);
         }
 
         private static void ValidarDuracion(int value)

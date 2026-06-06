@@ -4,6 +4,7 @@
 @using TaskTrackPro.Backend.Servicios
 @inject UsuarioService UsuarioService
 @inject IJSRuntime jsRuntime
+@inject NavigationManager NavigationManager
 
 <h1>Gestión de Usuarios</h1>
 
@@ -52,6 +53,11 @@ else
 
     protected override void OnInitialized()
     {
+        if (UsuarioService.SesionActual is null || !UsuarioService.EsAdminSistema())
+        {
+            NavigationManager.NavigateTo("/", true);
+            return;
+        }
         usuariosRegistrados = UsuarioService.GetListaUsuariosRegistrados();
     }
 

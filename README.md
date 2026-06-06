@@ -1,122 +1,112 @@
 # TaskTrackPro
 
-Descripción general
+**TaskTrackPro** es una aplicación web de gestión de proyectos y tareas construida con **.NET 8 / Blazor Server**. Permite a un equipo organizar proyectos, crear tareas con dependencias, asignar usuarios y recursos, calcular el **camino crítico** del proyecto y visualizarlo en un **diagrama de Gantt**.
 
-**TaskTrackPro** es un proyecto realizado para la materia **Diseño de Aplicaciones 1 (Universidad ORT Uruguay)**.
-El objetivo fue construir una aplicación aplicando **TDD, arquitectura en capas y persistencia con base de datos**, siguiendo buenas prácticas de ingeniería.
+Nació como proyecto de la materia **Diseño de Aplicaciones 1 (Universidad ORT Uruguay)** y se completó aplicando **TDD, arquitectura en capas, GitFlow e integración continua**.
 
-El proyecto no está finalizado, pero cuenta con una base sólida de dominio, servicios, acceso a datos y pruebas automatizadas.
+## Estado del proyecto
 
-**Objetivos del proyecto**
-El proyecto se desarrolló con el objetivo de aplicar:
-	•	TDD (Test-Driven Development)
-	•	Arquitectura en capas (Dominio, Servicios, DataAccess, FrontEnd)
-	•	Buenas prácticas de ingeniería
-	•	GitFlow
-	•	Testing con enfoque en cobertura
-	•	Integración continua
-	•	Persistencia con base de datos
+**Terminado y funcional.** Se verificaron de punta a punta todas las funcionalidades: login y roles, creación/borrado de proyectos y tareas, dependencias con bloqueo y desbloqueo automático, cálculo de camino crítico, gestión de recursos con detección de sobreasignación y exportación. Cuenta con **161 pruebas automatizadas en verde** e integración continua en GitHub Actions.
 
-**Testing (TDD) y cobertura**
+## Características
 
-TaskTrackPro fue construido siguiendo el ciclo TDD:
-🟥 Red → 🟩 Green → ♻️ Refactor
-Se desarrollaron pruebas en:
-	•	Dominio
-	•	Servicios
-	•	DataAccess
-	•	Pruebas de integración puntuales
+- **Usuarios y roles**: registro, login (contraseñas hasheadas con BCrypt) y roles con permisos por flags (Miembro de proyecto, Líder de proyecto, Administrador de proyecto, Administrador de sistema).
+- **Proyectos**: crear proyectos, administrar miembros (agregar / quitar), editar y eliminar.
+- **Tareas**: crear tareas con descripción, duración, fecha de inicio y estado (Pendiente / Bloqueada / Completada). Eliminar tareas.
+- **Dependencias entre tareas**: una tarea puede depender de otras; al agregar una dependencia la tarea se bloquea automáticamente y se desbloquea cuando sus dependencias se completan. Se previenen las dependencias cíclicas.
+- **Camino crítico (CPM)**: cálculo de la duración total del proyecto y de las tareas críticas (holgura cero) a partir de duraciones y dependencias. Se muestra en el Gantt y en los exportadores.
+- **Gestión de recursos**: recursos globales (humano, material, etc.) con una capacidad; se asignan a tareas y el sistema **detecta sobreasignación** (no permite usar un recurso en más tareas activas que su capacidad).
+- **Diagrama de Gantt** (Syncfusion) con dependencias y marcado de tareas críticas.
+- **Exportación** de proyectos a **CSV** y **JSON** (incluye flag de camino crítico y recursos por tarea).
 
-Además:
-	•	Se buscó asegurar **alta cobertura**, especialmente en lógica de negocio.
-	•	Se utilizaron múltiples test suites (DominioTests, ServicesTests, DataAccessTest, etc.).
-	•	Se integraron pipelines de **GitHub Actions** para ejecutar los tests automáticamente.
+## Tecnologías
 
-**Base de datos y persistencia**
+- C# / .NET 8
+- ASP.NET Core Blazor Server (render interactivo en servidor)
+- Entity Framework Core 8 (SQL Server / Azure SQL Edge)
+- Syncfusion Blazor (Gantt)
+- BCrypt.Net (hash de contraseñas)
+- MSTest + Moq (testing)
+- Docker / docker-compose (base de datos)
+- GitHub Actions (CI)
 
-El proyecto utiliza:
-	•	Repositorios para acceder a datos
-	•	SQL como motor principal
-	•	Archivo docker-compose.yml para levantar la base en un contenedor
-	•	Configuración de entorno (data/config, appsettings.json)
-	•	Arquitectura desacoplada para permitir testeo y cambios futuros sin romper capas
+## Arquitectura
 
-**Tecnologías utilizadas**
-	•	C#
-	•	.NET 8
-	•	MSTest (testing)
-	•	SQL
-	•	Docker / docker-compose
-	•	GitHub Actions
-	•	Git + GitFlow
-	•	Arquitectura en capas
+Arquitectura en capas, con dependencias hacia adentro:
 
-**Estado actual del proyecto**
+```
+FrontEnd (Blazor)  ->  Servicios  ->  DataAccess (repos + EF Core)  ->  Dominio
+        \                  \                                              /
+         \------------------\------------- Dtos --------------------------
+```
 
-El proyecto no está finalizado, pero incluye:
-	•	Arquitectura definida
-	•	Tests en todas las capas principales
-	•	Alta cobertura en módulos clave
-	•	Persistencia funcional
-	•	Front-end preliminar
-	•	Infraestructura de CI configurada
+- **Dominio**: entidades con su lógica de negocio y validaciones (Usuario, Proyecto, Tarea, Recurso, Rol) y la `CalculadoraCaminoCritico`.
+- **DataAccess**: `SqlContext` (EF Core) y repositorios.
+- **Servicios**: casos de uso y orquestación (incluye la sesión de usuario y la detección de sobreasignación de recursos).
+- **Dtos**: objetos de transferencia entre capas.
+- **FrontEnd**: páginas Blazor.
 
-La base está lista para continuar construcción de funcionalidades futuras.
+**Nota técnica (limitación conocida):** la sesión de usuario y el `DbContext` viven a nivel del circuito de Blazor Server (scoped por conexión). Es un patrón simple y suficiente para esta app; una evolución natural sería usar `IDbContextFactory` con contextos por operación y autenticación basada en `AuthenticationStateProvider`.
 
-**Próximos pasos**
-	•	Completar las funcionalidades del front-end
-	•	Refinar reglas de negocio y casos de uso
-	•	Expandir pruebas de integración
-	•	Documentación técnica adicional
-	•	Mejorar experiencia de usuario
-	•	Finalizar capa de servicios con todas las operaciones previstas
+## Cómo ejecutar
 
-## **Cómo ejecutar el proyecto**
+**Requisitos:** Docker Desktop y .NET 8 SDK.
 
-**1. Requisitos previos**
+1. Levantar la base de datos (SQL Server / Azure SQL Edge) en Docker:
+   ```bash
+   docker compose up -d
+   ```
+   Expone SQL en `localhost:1433` (usuario `sa`, contraseña `Passw1rd`, definidos en `docker-compose.yml`).
 
-Asegurate de tener instalado:
-	•	Docker Desktop
-	•	.NET 8 SDK
+2. Ejecutar la aplicación:
+   ```bash
+   dotnet run --project FrontEnd
+   ```
+   La primera ejecución aplica automáticamente las migraciones de EF Core. Abrir: **http://localhost:5163**
 
-**2. Iniciar la base de datos con Docker**
+3. Iniciar sesión con el usuario administrador semilla:
+   - **Email:** `admin@admin.com`
+   - **Contraseña:** `Admin123@`
 
-Desde la raíz del proyecto:
- docker compose up -d
-Esto va a:
-	•	Crear el contenedor de la base de datos
-	•	Exponer los puertos configurados
-	•	Levantar el servicio en segundo plano
+4. Apagar la base de datos cuando termines:
+   ```bash
+   docker compose down
+   ```
 
-Podés verificar que está corriendo con:
- docker ps
+## Ejecutar los tests
 
-**3. Configurar la cadena de conexión**
-
-La conexión se define en archivos de configuración como:
-	•	appsettings.json
-	•	archivos dentro de /data/config
-
-Con Docker, normalmente el host es localhost y el puerto el que figura en docker-compose.yml.
-
-Ejemplo típico:
-Server=localhost;Port=5432;Database=tasktrackpro;User Id=postgres;Password=Passw1rd;
-
-**4. Ejecutar la aplicación (.NET)**
-
-dotnet build
-dotnet run
-
-
-**5. Ejecutar tests**
+```bash
 dotnet test
+```
 
-**6. Apagar los contenedores**
-docker compose down
+El proyecto se construyó siguiendo **TDD** (🟥 Red → 🟩 Green → ♻️ Refactor), con suites por capa:
+`DominioTests`, `DataAccessTest` y `ServicesTests`. La CI de GitHub Actions corre los tests en cada push/PR.
 
-**Autores / Integrantes del equipo**
+## Configuración y seguridad
 
-Proyecto realizado dentro del curso Diseño de Aplicaciones 1 - Universidad ORT Uruguay.
+`FrontEnd/appsettings.json` contiene la cadena de conexión y la license key de Syncfusion **como valores por defecto de desarrollo local** (la base es un contenedor descartable). La key de Syncfusion se lee desde configuración (`Syncfusion:LicenseKey`), no está hardcodeada en el código.
+
+Para un repositorio público o un entorno productivo, conviene moverlos a *user-secrets* o variables de entorno y no commitearlos:
+
+```bash
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<tu-cadena>" --project FrontEnd
+dotnet user-secrets set "Syncfusion:LicenseKey" "<tu-key>" --project FrontEnd
+```
+
+La license key de Syncfusion es de tipo **Community** (gratuita). Si vas a publicar el repo, generá la tuya en el portal de Syncfusion y, si la anterior quedó expuesta en el historial de git, rotala.
+
+## Capturas
+
+### Diagrama de Gantt con camino crítico
+
+Vista de un proyecto: el diagrama de Gantt muestra las dependencias entre tareas (flechas), las tareas críticas y la duración total del proyecto calculada por el método del camino crítico (CPM).
+
+![Diagrama de Gantt con camino crítico](docs/gantt-camino-critico.png)
+
+## Autores
+
+Proyecto del curso Diseño de Aplicaciones 1 - Universidad ORT Uruguay.
+
 - Gonzalo Cabrera
 - Nicolás RLL
 - Juan Bautista Rey

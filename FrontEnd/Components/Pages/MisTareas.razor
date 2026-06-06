@@ -49,21 +49,27 @@ else
                         }
                     </div>
                     
-                    @if (tarea.Estado == "Pendiente")
-                    {
-                        <button class="btn btn-sm btn-success"
-                                @onclick="() => Completar(tarea.ProyectoNombre, tarea.Titulo)">
-                            Completar
+                    <div class="d-flex align-items-center gap-2">
+                        @if (tarea.Estado == "Pendiente")
+                        {
+                            <button class="btn btn-sm btn-success"
+                                    @onclick="() => Completar(tarea.ProyectoNombre, tarea.Titulo)">
+                                Completar
+                            </button>
+                        }
+                        else if (tarea.Estado == "Bloqueada")
+                        {
+                            <span class="badge bg-warning text-dark">Bloqueada</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Hecha</span>
+                        }
+                        <button class="btn btn-sm btn-outline-danger"
+                                @onclick="() => Borrar(tarea.ProyectoNombre, tarea.Titulo)">
+                            Borrar
                         </button>
-                    }
-                    else if (tarea.Estado == "Bloqueada")
-                    {
-                        <span class="badge bg-warning text-dark">Bloqueada</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">Hecha</span>
-                    }
+                    </div>
                 </li>
             }
         </ul>
@@ -90,6 +96,20 @@ else
         try
         {
             TareaService.CompletarTarea(proyecto, titulo, UsuarioService.SesionActual!.Email);
+            CargarTareas();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+    }
+
+    private void Borrar(string proyecto, string titulo)
+    {
+        try
+        {
+            TareaService.EliminarTarea(proyecto, titulo);
+            error = string.Empty;
             CargarTareas();
         }
         catch (Exception ex)

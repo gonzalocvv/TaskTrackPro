@@ -9,11 +9,9 @@ namespace TaskTrackPro.Backend.Servicios;
 
 public class ProyectoService
 {
-    private MemoryDB _db;
     private readonly ProyectoRepository _proyectoRepository;
-    public ProyectoService(MemoryDB db, ProyectoRepository proyectoRepository)
+    public ProyectoService(ProyectoRepository proyectoRepository)
     {
-        _db = db;
         _proyectoRepository = proyectoRepository;
     }
     
@@ -57,6 +55,23 @@ public class ProyectoService
         }
         return listaProyectos;
     }
+    public void EliminarProyecto(string nombre)
+    {
+        _proyectoRepository.Eliminar(nombre);
+    }
+
+    public void RemoverMiembro(string email, string nombreProyecto)
+    {
+        Usuario miembro = _proyectoRepository.GetUsuarioPorEmail(email);
+        Proyecto proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
+        if (proyecto == null)
+        {
+            throw new ArgumentNullException("El proyecto no existe");
+        }
+        proyecto.RemoverMiembro(miembro);
+        _proyectoRepository.Save();
+    }
+
     public void AgregarMiembro(string email, string nombreProyecto)
     {
         Usuario miembro = _proyectoRepository.GetUsuarioPorEmail(email);
@@ -79,21 +94,23 @@ public class ProyectoService
         {
             throw new ArgumentNullException("El proyecto no existe");
         }
-        List<GetTareaDto> listaTareas = new();
-        foreach (var tarea in proyecto.Tareas)
+        return proyecto.Tareas.Select(MapearTareaADto).ToList();
+    }
+
+    private static GetTareaDto MapearTareaADto(Tarea tarea)
+    {
+        return new GetTareaDto
         {
-            GetTareaDto tareaDto = new GetTareaDto
-            {
-                Titulo = tarea.Titulo,
-                Descripcion = tarea.Descripcion,
-                FechaInicio = tarea.FechaDeInicio,
-                Duracion = tarea.Duracion,
-                Estado = tarea.Estado.ToString()
-                
-            };
-            listaTareas.Add(tareaDto);
-        }
-        return listaTareas;
+            Titulo = tarea.Titulo,
+            Descripcion = tarea.Descripcion,
+            FechaInicio = tarea.FechaDeInicio,
+            Duracion = tarea.Duracion,
+            ProyectoNombre = tarea.ProyectoNombre,
+            Estado = tarea.Estado.ToString(),
+            UsuariosAsignadosEmails = tarea.UsuariosAsignados.Select(u => u.Email).ToList(),
+            TareasQueYoDependoTitulos = tarea.TareasQueYoDependo.Select(t => t.Titulo).ToList(),
+            TareasQueDependenDeMiTitulos = tarea.TareasQueDependenDeMi.Select(t => t.Titulo).ToList()
+        };
     }
     public List<String> GetTitulosTareasPorNombreProyecto(string nombreProyecto)
     {
@@ -113,6 +130,21 @@ public class ProyectoService
         return listaTitulos;
     }
     
+    public CaminoCriticoDto GetCaminoCritico(string nombreProyecto)
+    {
+        var proyecto = _proyectoRepository.GetProyectoPorNombre(nombreProyecto);
+        if (proyecto == null)
+        {
+            throw new ArgumentNullException("El proyecto no existe");
+        }
+        var resultado = new CalculadoraCaminoCritico().Calcular(proyecto.Tareas);
+        return new CaminoCriticoDto
+        {
+            DuracionTotal = resultado.DuracionTotal,
+            TitulosCriticos = resultado.TitulosCriticos.ToList()
+        };
+    }
+
     public void ExportarProyectos(IExportadorProyectos exportador, string ruta)
     {
         var proyectos = _proyectoRepository.GetListaProyectos();
