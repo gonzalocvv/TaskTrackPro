@@ -4,6 +4,10 @@
 
 Nació como proyecto de la materia **Diseño de Aplicaciones 1 (Universidad ORT Uruguay)** y se completó aplicando **TDD, arquitectura en capas, GitFlow e integración continua**.
 
+## Estado del proyecto
+
+**Terminado y funcional.** Se verificaron de punta a punta todas las funcionalidades: login y roles, creación/borrado de proyectos y tareas, dependencias con bloqueo y desbloqueo automático, cálculo de camino crítico, gestión de recursos con detección de sobreasignación y exportación. Cuenta con **161 pruebas automatizadas en verde** e integración continua en GitHub Actions.
+
 ## Características
 
 - **Usuarios y roles**: registro, login (contraseñas hasheadas con BCrypt) y roles con permisos por flags (Miembro de proyecto, Líder de proyecto, Administrador de proyecto, Administrador de sistema).
@@ -93,12 +97,11 @@ La license key de Syncfusion es de tipo **Community** (gratuita). Si vas a publi
 
 ## Capturas
 
-> Agregar capturas en `docs/` y referenciarlas aquí.
+### Diagrama de Gantt con camino crítico
 
-- Login
-- Mis tareas (completar / borrar)
-- Gantt con dependencias y camino crítico
-- Gestión de recursos
+Vista de un proyecto: el diagrama de Gantt muestra las dependencias entre tareas (flechas), las tareas críticas y la duración total del proyecto calculada por el método del camino crítico (CPM).
+
+![Diagrama de Gantt con camino crítico](docs/gantt-camino-critico.png)
 
 ## Autores
 
