@@ -108,5 +108,3 @@ Vista de un proyecto: el diagrama de Gantt muestra las dependencias entre tareas
 Proyecto del curso Diseño de Aplicaciones 1 - Universidad ORT Uruguay.
 
 - Gonzalo Cabrera
-- Nicolás RLL
-- Juan Bautista Rey
